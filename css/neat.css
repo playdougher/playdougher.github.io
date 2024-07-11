@@ -1,9 +1,3 @@
-/*
-title:      css for long code
-date:       [2024-07-10 Wed 17:13]
-tags:       code  css
-identifier: 20240710T171321
-*/
 body {
     font-family: Arial, sans-serif;
     background-color: #1e1e1e;
@@ -21,20 +15,20 @@ body {
 h1 {
     color: #ffffff;
     border-bottom: 1px solid #444;
-    /* padding-bottom: 10px; */
-    font-size: 2em; /* Change this value to make the h1 header smaller */
+    padding-bottom: 10px;
+    font-size: 2.5em; /* Change this value to make the h1 header smaller */
 }
 h2 {
     color: #ffffff;
     border-bottom: 1px solid #444;
-    /* padding-bottom: 5px; */
-    font-size: 1.5em; /* Change this value to make the h2 header smaller */
+    padding-bottom: 5px;
+    font-size: 2em; /* Change this value to make the h2 header smaller */
 }
 h3 {
     color: #ffffff;
     border-bottom: 1px solid #444;
-    /* padding-bottom: 2.5px; */
-    font-size: 1.17em; /* Change this value to make the h3 header smaller */
+    padding-bottom: 2.5px;
+    font-size: 1.5em; /* Change this value to make the h3 header smaller */
 }
 h4 {
     color: #ffffff;
@@ -43,10 +37,10 @@ h4 {
     font-size: 1em; /* Change this value to make the h4 header smaller */
 }
 h5 {
-    font-size: 0.83em; /* Change this value to make the h5 header smaller */
+    font-size: 0.75em; /* Change this value to make the h5 header smaller */
 }
 h6 {
-    font-size: 0.67em; /* Change this value to make the h6 header smaller */
+    font-size: 0.5em; /* Change this value to make the h6 header smaller */
 }
 
 a {
@@ -109,5 +103,3 @@ th {
 tr:nth-child(even) {
     background-color: #252525;
 }
-
-
