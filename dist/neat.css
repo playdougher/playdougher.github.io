@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Hello, world</title>
+  </head>
+  <body>
+    
+<article>
+  <h1>Hello, world</h1>
+  <p>i# asdfiiiiiiiiiiiiiiiiiii</p>
+<p>This is pretty <em>rad</em>, right?ppppppppppppppppp</p>
+<p><img src="./images/2023-08-06_19-09.png" alt="oi" title="oij"></p>
+<p>Eleventy is a static site generator</p>
+<p>initialize project for 11ty</p>
+<p>zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ ls
+index.md  _layouts  neat.css  neat.html  package.json
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ npm init -y
+Wrote to /home/zhihao/Downloads/playdougher.github.io/package.json:</p>
+<p>{
+&quot;name&quot;: &quot;playdougher.github.io&quot;,
+&quot;version&quot;: &quot;1.0.0&quot;,
+&quot;description&quot;: &quot;&quot;,
+&quot;main&quot;: &quot;index.js&quot;,
+&quot;scripts&quot;: {
+&quot;test&quot;: &quot;echo &quot;Error: no test specified&quot; &amp;&amp; exit 1&quot;
+},
+&quot;keywords&quot;: [],
+&quot;author&quot;: &quot;&quot;,
+&quot;license&quot;: &quot;ISC&quot;
+}
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ cat package.json
+{
+&quot;name&quot;: &quot;playdougher.github.io&quot;,
+&quot;version&quot;: &quot;1.0.0&quot;,
+&quot;description&quot;: &quot;&quot;,
+&quot;main&quot;: &quot;index.js&quot;,
+&quot;scripts&quot;: {
+&quot;test&quot;: &quot;echo &quot;Error: no test specified&quot; &amp;&amp; exit 1&quot;,
+&quot;start&quot;: &quot;npx eleventy --serve&quot;
+},
+&quot;keywords&quot;: [],
+&quot;author&quot;: &quot;&quot;,
+&quot;license&quot;: &quot;ISC&quot;,
+&quot;dependencies&quot;: {
+&quot;@11ty/eleventy&quot;: &quot;^2.0.1&quot;
+}
+}
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$</p>
+<p>install 11ty</p>
+<p>zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ npm install @11ty/eleventy
+npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm WARN deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported</p>
+<p>added 214 packages, and audited 215 packages in 12s</p>
+<p>44 packages are looking for funding
+run <code>npm fund</code> for details</p>
+<p>found 0 vulnerabilities
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$</p>
+<p>run 11ty fails at no template directory</p>
+<p>zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ npx @11ty/eleventy
+(node:6531) [DEP0040] DeprecationWarning: The <code>punycode</code> module is deprecated. Please use a userland alternative instead.
+(Use <code>node21 --trace-deprecation ...</code> to show where the warning was created)
+[11ty] Problem writing Eleventy templates: (more in DEBUG output)
+[11ty] TemplateLayoutPathResolver directory does not exist for default: _includes (via Error)
+[11ty]
+[11ty] Original error stack trace: Error: TemplateLayoutPathResolver directory does not exist for default: _includes
+[11ty]     at TemplateLayoutPathResolver.findFileName (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/TemplateLayoutPathResolver.js:105:13)
+[11ty]     at TemplateLayoutPathResolver.init (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/TemplateLayoutPathResolver.js:74:28)
+[11ty]     at new TemplateLayoutPathResolver (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/TemplateLayoutPathResolver.js:21:10)
+[11ty]     at new TemplateLayout (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/TemplateLayout.js:17:20)
+[11ty]     at TemplateLayout.getTemplate (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/TemplateLayout.js:57:20)
+[11ty]     at Template.getLayout (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/Template.js:146:27)
+[11ty]     at Template.getData (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/Template.js:376:25)
+[11ty]     at async TemplateMap.add (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/TemplateMap.js:65:16)
+[11ty]     at async Promise.all (index 2)
+[11ty]     at async TemplateWriter._createTemplateMap (/home/zhihao/Downloads/playdougher.github.io/node_modules/@11ty/eleventy/src/TemplateWriter.js:325:5)
+[11ty] Wrote 0 files in 0.04 seconds (v2.0.1)
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$</p>
+<p>create .eleventy.js to fix it</p>
+<p>zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ cat .eleventy.js
+module.exports = config =&gt; {
+return {
+dir: {
+input: 'src',
+output: 'dist'
+}
+};
+};
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ ls
+dist  index.html  index.md  _layouts2  neat.css  neat.html  node_modules  package.json  package-lock.json  README.md  src
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ cat src/index.md
+# Hello World
+## aa
+zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ npm start</p>
+<p>&gt; playdougher.github.io@1.0.0 start
+&gt; npx eleventy --serve</p>
+<p>(node:23571) [DEP0040] DeprecationWarning: The <code>punycode</code> module is deprecated. Please use a userland alternative instead.
+(Use <code>node21 --trace-deprecation ...</code> to show where the warning was created)
+[11ty] Writing dist/index.html from ./src/index.md (liquid)
+[11ty] Wrote 1 file in 0.04 seconds (v2.0.1)
+[11ty] Watching…
+[11ty] Server at http://localhost:8080/
+[11ty] File changed: package.json
+[11ty] Writing dist/index.html from ./src/index.md (liquid)
+[11ty] Wrote 1 file in 0.00 seconds (v2.0.1)
+[11ty] Watching…</p>
+
+</article>
+
+  </body>
+</html>
