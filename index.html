@@ -27,11 +27,18 @@
     </a>
   </div>
 </nav></header> -->
-      <!--css: /home/zhihao/Documents/notes/20240710T171321--css-for-long-code__code_css.css-->
-<h1>LFS Project</h1>
-<h2>Introduction</h2>
-<p>LFS helps to build a custom Linux distribution from scratch xxxx.</p>
-<h4>2.2.2 Software Requirements</h4>
+      <!-- <nav class="toc" aria-label="asf">
+        <ol><li><a href="#1.-introduction">1. Introduction</a></li><li><a href="#2.-preparing-the-host-system">2. Preparing the Host System</a><ol><li><a href="#2.2-host-system-requirements">2.2 Host System Requirements</a><ol><li><a href="#2.2.2-software-requirements">2.2.2 Software Requirements</a></li></ol></li><li><a href="#2.4-creating-partitions">2.4 Creating partitions</a></li><li><a href="#2.5-creating-filesystems">2.5 Creating Filesystems</a></li><li><a href="#2.6-setting-%24lfs-variable">2.6 Setting $LFS Variable</a></li><li><a href="#2.7-mounting-partiions">2.7 Mounting partiions</a></li></ol></li><li><a href="#3.-packages-and-patches">3. Packages and Patches</a><ol><li><a href="#3.1-introduction">3.1 Introduction</a></li><li><a href="#4.2-create-limited-directory-layout">4.2 Create Limited Directory Layout</a></li><li><a href="#4.3-add-lfs-user">4.3 Add lfs User</a></li><li><a href="#4.4-setting-up-environment">4.4 Setting Up Environment</a></li><li><a href="#5.2-compile-binutils">5.2 Compile Binutils</a></li><li><a href="#5.3-install-gcc">5.3 Install GCC</a></li><li><a href="#5.4-install-linux-6.7.4">5.4 install linux-6.7.4</a></li><li><a href="#5.5-glibc">5.5 Glibc</a></li><li><a href="#5.6-libstdc%2B%2B-from-gcc-13.2.0">5.6 Libstdc++ from GCC-13.2.0</a></li></ol></li><li><a href="#6.-cross-compiling-temporary-tools">6. Cross Compiling Temporary Tools</a><ol><li><a href="#6.2-m4-1.4.19">6.2 M4-1.4.19</a></li><li><a href="#6.3-ncurses">6.3 Ncurses</a></li><li><a href="#6.4-bash-5.2.21">6.4 Bash-5.2.21</a></li><li><a href="#6.5-coreutils-9.4">6.5 Coreutils-9.4</a></li><li><a href="#6.6-diffutils-3.10">6.6 Diffutils-3.10</a></li><li><a href="#6.7-file-5.45">6.7 File-5.45</a></li><li><a href="#6.8-findutils-4.9.0">6.8 FindUtils-4.9.0</a></li><li><a href="#6.9-gawk-5.3.0">6.9 Gawk-5.3.0</a></li><li><a href="#6.10-grep-3.11">6.10 Grep-3.11</a></li><li><a href="#6.11-gzip-1.13">6.11 Gzip-1.13</a></li><li><a href="#6.12-make-4.4.1">6.12 Make-4.4.1</a></li><li><a href="#6.13-patch-2.7.6">6.13 Patch-2.7.6</a></li><li><a href="#6.14-sed-4.9">6.14 Sed-4.9</a></li><li><a href="#6.15-tar-1.35">6.15 Tar-1.35</a></li><li><a href="#6.16-xz-5.4.6">6.16 Xz-5.4.6</a></li><li><a href="#6.17-binutils-2.42---pass-2">6.17 Binutils-2.42 - Pass 2</a></li><li><a href="#6.18-gcc-13.2.0---pass-2">6.18 GCC-13.2.0 - Pass 2</a></li></ol></li><li><a href="#7.-entering-chroot-and-building-additional-temporary-tools">7. Entering Chroot and Building Additional Temporary Tools</a><ol><li><a href="#7.2-changing-ownership">7.2 Changing Ownership</a></li><li><a href="#7.3-preparing-virtual-kernel-file-systems">7.3 Preparing Virtual Kernel File Systems</a></li><li><a href="#7.3.1-mounting-and-populating-%2Fdev%2F">7.3.1 Mounting and Populating /dev/</a><ol><li><a href="#7.3.2-mounting-virtual-kernel-file-systems">7.3.2 Mounting Virtual Kernel File Systems</a></li></ol></li><li><a href="#7.4-entering-the-chroot-environment">7.4 Entering the Chroot Environment</a></li><li><a href="#7.5-creating-directories">7.5 Creating Directories</a><ol><li><a href="#7.5.1-fhs-compliance-note">7.5.1 FHS Compliance Note</a></li></ol></li><li><a href="#7.6-creating-essential-files-and-symlinks">7.6 Creating Essential Files and Symlinks</a></li><li><a href="#7.7-gettext-0.22.4">7.7 Gettext-0.22.4</a></li><li><a href="#7.8-bison-3.8.2">7.8 Bison-3.8.2</a></li><li><a href="#7.9-perl-5.38.2">7.9 Perl-5.38.2</a></li><li><a href="#7.10-python-3.12.2">7.10 Python-3.12.2</a></li><li><a href="#7.11-texinfo-7.1">7.11 Texinfo-7.1</a></li><li><a href="#7.12-util-linux-2.39.3">7.12 Util-linux-2.39.3</a></li><li><a href="#7.13-cleaning-up-and-saving-the-temporary-system">7.13 Cleaning up and Saving the Temporary System</a><ol><li><a href="#7.13.1-cleaning">7.13.1 Cleaning</a></li><li><a href="#7.13.2-backup">7.13.2 Backup</a></li></ol></li></ol></li><li><a href="#8.-installing-basic-system-software">8. Installing Basic System Software</a><ol><li><a href="#8.3-man-pages-6.06">8.3 Man-pages-6.06</a></li><li><a href="#8.4-iana-etc-20240125">8.4 Iana-Etc-20240125</a></li><li><a href="#8.5-glibc-2.39">8.5 Glibc-2.39</a><ol><li><a href="#8.5.2-configuring-glibc">8.5.2 Configuring Glibc</a></li></ol></li><li><a href="#8.6-zlib-1.3.1">8.6 Zlib-1.3.1</a></li><li><a href="#8.7-bzip2-1.0.8">8.7 Bzip2-1.0.8</a></li><li><a href="#8.8-xz-5.4.6">8.8 Xz-5.4.6</a></li><li><a href="#8.9-zstd-1.5.5">8.9 Zstd-1.5.5</a></li><li><a href="#8.10-file-5.45">8.10 File-5.45</a></li><li><a href="#8.11-readline-8.2">8.11 Readline-8.2</a></li><li><a href="#8.12-m4-1.4.19">8.12 M4-1.4.19</a></li><li><a href="#8.13-bc-6.7.5">8.13 Bc-6.7.5</a></li><li><a href="#8.14-flex-2.6.4">8.14 Flex-2.6.4</a></li><li><a href="#8.15-tcl-8.6.13">8.15 Tcl-8.6.13</a></li><li><a href="#8.16-expect-5.45.4">8.16 Expect-5.45.4</a></li><li><a href="#8.17-dejagnu-1.6.3">8.17 DejaGNU-1.6.3</a></li><li><a href="#8.18-pkgconf-2.1.1">8.18 Pkgconf-2.1.1</a></li><li><a href="#8.19-binutils-2.42">8.19 Binutils-2.42</a></li><li><a href="#8.20-gmp-6.3.0">8.20 GMP-6.3.0</a></li><li><a href="#8.21-mpfr-4.2.1">8.21 MPFR-4.2.1</a></li><li><a href="#8.22-mpc-1.3.1">8.22 MPC-1.3.1</a></li><li><a href="#8.23-attr-2.5.2">8.23 Attr-2.5.2</a></li><li><a href="#8.24-acl-2.3.2">8.24 Acl-2.3.2</a></li><li><a href="#8.25-libcap-2.69">8.25 Libcap-2.69</a></li><li><a href="#8.26-libxcrypt-4.4.36">8.26 Libxcrypt-4.4.36</a></li><li><a href="#8.27-shadow-4.14.5">8.27 Shadow-4.14.5</a></li><li><a href="#8.27.2-configuring-shadow">8.27.2 Configuring Shadow</a></li><li><a href="#8.28-gcc-13.2.0">8.28 GCC-13.2.0</a></li><li><a href="#8.29-ncurses-6.4-20230520">8.29 Ncurses-6.4-20230520</a></li><li><a href="#8.30-sed-4.9">8.30 Sed-4.9</a></li><li><a href="#8.31-psmisc-23.6">8.31 Psmisc-23.6</a></li><li><a href="#8.32-gettext-0.22.4">8.32 Gettext-0.22.4</a></li><li><a href="#8.33-bison-3.8.2">8.33 Bison-3.8.2</a></li><li><a href="#8.35.-bash-5.2.21">8.35. Bash-5.2.21</a></li><li><a href="#8.36-libtool-2.4.7">8.36 Libtool-2.4.7</a></li><li><a href="#8.37-gdbm-1.23">8.37 GDBM-1.23</a></li><li><a href="#8.38-gperf-3.1">8.38 Gperf-3.1</a></li><li><a href="#8.39-expat-2.6.0">8.39 Expat-2.6.0</a></li><li><a href="#8.40-inetutils-2.5">8.40 Inetutils-2.5</a></li><li><a href="#8.41-less-643">8.41 Less-643</a></li><li><a href="#8.42-perl-5.38.2">8.42 Perl-5.38.2</a></li><li><a href="#8.43-xml%3A%3Aparse-2.47">8.43 XML::Parse-2.47</a></li><li><a href="#8.44-intltool-0.51.0">8.44 Intltool-0.51.0</a></li><li><a href="#8.45-autoconf-2.72">8.45 Autoconf-2.72</a></li><li><a href="#8.46-automake-1.16.5">8.46 Automake-1.16.5</a></li><li><a href="#8.47-openssl-3.2.1">8.47 OpenSSL-3.2.1</a></li><li><a href="#8.48-kmod-31">8.48 Kmod-31</a></li><li><a href="#8.49-libelf-from-elfutils-0.190">8.49 Libelf from Elfutils-0.190</a></li><li><a href="#8.50-libffi-3.4.4">8.50 Libffi-3.4.4</a></li><li><a href="#8.51-python-3.12.2">8.51 Python-3.12.2</a></li><li><a href="#8.52-flit-core-3.9.0">8.52 Flit-Core-3.9.0</a></li><li><a href="#8.53-wheel-0.42.0">8.53 Wheel-0.42.0</a></li><li><a href="#8.54-setuptools-69.1.0">8.54 Setuptools-69.1.0</a></li><li><a href="#8.55-ninja-1.11.1">8.55 Ninja-1.11.1</a></li><li><a href="#8.56-meson-1.3.2">8.56 Meson-1.3.2</a></li><li><a href="#8.57-coreutils-9.4">8.57 Coreutils-9.4</a></li><li><a href="#8.58-check-0.15.2">8.58 Check-0.15.2</a></li><li><a href="#8.59-diffutils-3.10">8.59 Diffutils-3.10</a></li><li><a href="#8.60-gawk-5.3.0">8.60 Gawk-5.3.0</a></li><li><a href="#8.61-findutils-4.9.0">8.61 Findutils-4.9.0</a></li><li><a href="#8.62-groff-1.23.0">8.62 Groff-1.23.0</a></li><li><a href="#8.63-grub-2.12">8.63 Grub-2.12</a></li><li><a href="#8.64-gzip-1.13">8.64 Gzip-1.13</a></li><li><a href="#8.65-iproute2-6.7.0">8.65 IPRoute2-6.7.0</a></li><li><a href="#8.66-kbd-2.6.4">8.66 Kbd-2.6.4</a></li><li><a href="#8.67-libpipeline-1.5.7">8.67 Libpipeline-1.5.7</a></li><li><a href="#8.68-make-4.4.1">8.68 Make-4.4.1</a></li><li><a href="#8.69-path-2.7.6">8.69 Path-2.7.6</a></li><li><a href="#8.70-tar-1.35">8.70 Tar-1.35</a></li><li><a href="#8.71-texinfo-7.1">8.71 Texinfo-7.1</a></li><li><a href="#8.72-vim-9.1.0041">8.72 Vim-9.1.0041</a></li><li><a href="#8.73-markupsafe-2.1.5">8.73 MarkupSafe-2.1.5</a></li><li><a href="#8.74-jinja2-3.1.3">8.74 Jinja2-3.1.3</a></li><li><a href="#8.75-udev-from-systemd-255">8.75 Udev from Systemd-255</a><ol><li><a href="#8.75.2-configuring-udev">8.75.2 Configuring Udev</a></li></ol></li><li><a href="#8.76-man-db-2.12.0">8.76 Man-DB-2.12.0</a></li><li><a href="#8.77-procps-ng-4.0.4">8.77 Procps-ng-4.0.4</a></li><li><a href="#8.78-util-linux-2.39.3">8.78 Util-linux-2.39.3</a></li><li><a href="#8.79-e2fsprogs-1.47.0">8.79 E2fsprogs-1.47.0</a><ol><li><a href="#8.79.2-configuring-e2fsprogs">8.79.2 Configuring E2fsprogs</a></li></ol></li><li><a href="#8.80-sysklogd-1.5.1">8.80 Sysklogd-1.5.1</a></li><li><a href="#8.81-sysvinit-3.08">8.81 Sysvinit-3.08</a></li><li><a href="#8.84-cleaning-up">8.84 Cleaning up</a></li></ol></li><li><a href="#9-system-configuration">9 System Configuration</a><ol><li><a href="#9.2-lfs-bootscripts-20230728">9.2 LFS-Bootscripts-20230728</a></li><li><a href="#9.4-managing-devices">9.4 Managing Devices</a><ol><li><a href="#9.5.2-creating-the-%2Fetc%2Fresolv.conf-file">9.5.2 Creating the /etc/resolv.conf File</a></li><li><a href="#9.5.3-configuring-hostname">9.5.3 Configuring hostname</a></li><li><a href="#9.5.4-set-%2Fetc%2Fhosts-file">9.5.4 Set /etc/hosts file</a></li></ol></li><li><a href="#9.6-configuring-sysvint">9.6 Configuring Sysvint</a><ol><li><a href="#9.6.4-configuring-the-system-clock">9.6.4 Configuring the System Clock</a></li><li><a href="#9.6.5-configuring-the-linux-console">9.6.5 Configuring the Linux Console</a></li><li><a href="#9.6.6-creating-files-at-boot">9.6.6 Creating Files at Boot</a></li></ol></li><li><a href="#9.7-configuring-the-system-locale">9.7 Configuring the System Locale</a></li><li><a href="#9.8-creating-%2Fetc%2Finputrc">9.8 Creating /etc/inputrc</a></li><li><a href="#9.9-creating-%2Fetc%2Fshells">9.9 Creating /etc/shells</a></li></ol></li><li><a href="#10-making-the-lfs-system-bootable">10 Making the LFS System Bootable</a><ol><li><a href="#10.3-linux-6.7.4">10.3 Linux-6.7.4</a></li><li><a href="#10.3.2-configuring-linux-module-load-order">10.3.2 Configuring Linux Module Load Order</a></li><li><a href="#10.4-using-grub-to-set-up-the-boot-process">10.4 using GRUB to Set Up the Boot Process</a></li></ol></li><li><a href="#11-the-end">11 The End</a></li></ol>
+      </nav> -->
+      <nav class="toc" aria-label="asf">
+        <ol><li><a href="#1.-introduction">1. Introduction</a></li><li><a href="#2.-preparing-the-host-system">2. Preparing the Host System</a><ol><li><a href="#2.2-host-system-requirements">2.2 Host System Requirements</a><ol><li><a href="#2.2.2-software-requirements">2.2.2 Software Requirements</a></li></ol></li><li><a href="#2.4-creating-partitions">2.4 Creating partitions</a></li><li><a href="#2.5-creating-filesystems">2.5 Creating Filesystems</a></li><li><a href="#2.6-setting-%24lfs-variable">2.6 Setting $LFS Variable</a></li><li><a href="#2.7-mounting-partiions">2.7 Mounting partiions</a></li></ol></li><li><a href="#3.-packages-and-patches">3. Packages and Patches</a><ol><li><a href="#3.1-introduction">3.1 Introduction</a></li><li><a href="#4.2-create-limited-directory-layout">4.2 Create Limited Directory Layout</a></li><li><a href="#4.3-add-lfs-user">4.3 Add lfs User</a></li><li><a href="#4.4-setting-up-environment">4.4 Setting Up Environment</a></li><li><a href="#5.2-compile-binutils">5.2 Compile Binutils</a></li><li><a href="#5.3-install-gcc">5.3 Install GCC</a></li><li><a href="#5.4-install-linux-6.7.4">5.4 install linux-6.7.4</a></li><li><a href="#5.5-glibc">5.5 Glibc</a></li><li><a href="#5.6-libstdc%2B%2B-from-gcc-13.2.0">5.6 Libstdc++ from GCC-13.2.0</a></li></ol></li><li><a href="#6.-cross-compiling-temporary-tools">6. Cross Compiling Temporary Tools</a><ol><li><a href="#6.2-m4-1.4.19">6.2 M4-1.4.19</a></li><li><a href="#6.3-ncurses">6.3 Ncurses</a></li><li><a href="#6.4-bash-5.2.21">6.4 Bash-5.2.21</a></li><li><a href="#6.5-coreutils-9.4">6.5 Coreutils-9.4</a></li><li><a href="#6.6-diffutils-3.10">6.6 Diffutils-3.10</a></li><li><a href="#6.7-file-5.45">6.7 File-5.45</a></li><li><a href="#6.8-findutils-4.9.0">6.8 FindUtils-4.9.0</a></li><li><a href="#6.9-gawk-5.3.0">6.9 Gawk-5.3.0</a></li><li><a href="#6.10-grep-3.11">6.10 Grep-3.11</a></li><li><a href="#6.11-gzip-1.13">6.11 Gzip-1.13</a></li><li><a href="#6.12-make-4.4.1">6.12 Make-4.4.1</a></li><li><a href="#6.13-patch-2.7.6">6.13 Patch-2.7.6</a></li><li><a href="#6.14-sed-4.9">6.14 Sed-4.9</a></li><li><a href="#6.15-tar-1.35">6.15 Tar-1.35</a></li><li><a href="#6.16-xz-5.4.6">6.16 Xz-5.4.6</a></li><li><a href="#6.17-binutils-2.42---pass-2">6.17 Binutils-2.42 - Pass 2</a></li><li><a href="#6.18-gcc-13.2.0---pass-2">6.18 GCC-13.2.0 - Pass 2</a></li></ol></li><li><a href="#7.-entering-chroot-and-building-additional-temporary-tools">7. Entering Chroot and Building Additional Temporary Tools</a><ol><li><a href="#7.2-changing-ownership">7.2 Changing Ownership</a></li><li><a href="#7.3-preparing-virtual-kernel-file-systems">7.3 Preparing Virtual Kernel File Systems</a></li><li><a href="#7.3.1-mounting-and-populating-%2Fdev%2F">7.3.1 Mounting and Populating /dev/</a><ol><li><a href="#7.3.2-mounting-virtual-kernel-file-systems">7.3.2 Mounting Virtual Kernel File Systems</a></li></ol></li><li><a href="#7.4-entering-the-chroot-environment">7.4 Entering the Chroot Environment</a></li><li><a href="#7.5-creating-directories">7.5 Creating Directories</a><ol><li><a href="#7.5.1-fhs-compliance-note">7.5.1 FHS Compliance Note</a></li></ol></li><li><a href="#7.6-creating-essential-files-and-symlinks">7.6 Creating Essential Files and Symlinks</a></li><li><a href="#7.7-gettext-0.22.4">7.7 Gettext-0.22.4</a></li><li><a href="#7.8-bison-3.8.2">7.8 Bison-3.8.2</a></li><li><a href="#7.9-perl-5.38.2">7.9 Perl-5.38.2</a></li><li><a href="#7.10-python-3.12.2">7.10 Python-3.12.2</a></li><li><a href="#7.11-texinfo-7.1">7.11 Texinfo-7.1</a></li><li><a href="#7.12-util-linux-2.39.3">7.12 Util-linux-2.39.3</a></li><li><a href="#7.13-cleaning-up-and-saving-the-temporary-system">7.13 Cleaning up and Saving the Temporary System</a><ol><li><a href="#7.13.1-cleaning">7.13.1 Cleaning</a></li><li><a href="#7.13.2-backup">7.13.2 Backup</a></li></ol></li></ol></li><li><a href="#8.-installing-basic-system-software">8. Installing Basic System Software</a><ol><li><a href="#8.3-man-pages-6.06">8.3 Man-pages-6.06</a></li><li><a href="#8.4-iana-etc-20240125">8.4 Iana-Etc-20240125</a></li><li><a href="#8.5-glibc-2.39">8.5 Glibc-2.39</a><ol><li><a href="#8.5.2-configuring-glibc">8.5.2 Configuring Glibc</a></li></ol></li><li><a href="#8.6-zlib-1.3.1">8.6 Zlib-1.3.1</a></li><li><a href="#8.7-bzip2-1.0.8">8.7 Bzip2-1.0.8</a></li><li><a href="#8.8-xz-5.4.6">8.8 Xz-5.4.6</a></li><li><a href="#8.9-zstd-1.5.5">8.9 Zstd-1.5.5</a></li><li><a href="#8.10-file-5.45">8.10 File-5.45</a></li><li><a href="#8.11-readline-8.2">8.11 Readline-8.2</a></li><li><a href="#8.12-m4-1.4.19">8.12 M4-1.4.19</a></li><li><a href="#8.13-bc-6.7.5">8.13 Bc-6.7.5</a></li><li><a href="#8.14-flex-2.6.4">8.14 Flex-2.6.4</a></li><li><a href="#8.15-tcl-8.6.13">8.15 Tcl-8.6.13</a></li><li><a href="#8.16-expect-5.45.4">8.16 Expect-5.45.4</a></li><li><a href="#8.17-dejagnu-1.6.3">8.17 DejaGNU-1.6.3</a></li><li><a href="#8.18-pkgconf-2.1.1">8.18 Pkgconf-2.1.1</a></li><li><a href="#8.19-binutils-2.42">8.19 Binutils-2.42</a></li><li><a href="#8.20-gmp-6.3.0">8.20 GMP-6.3.0</a></li><li><a href="#8.21-mpfr-4.2.1">8.21 MPFR-4.2.1</a></li><li><a href="#8.22-mpc-1.3.1">8.22 MPC-1.3.1</a></li><li><a href="#8.23-attr-2.5.2">8.23 Attr-2.5.2</a></li><li><a href="#8.24-acl-2.3.2">8.24 Acl-2.3.2</a></li><li><a href="#8.25-libcap-2.69">8.25 Libcap-2.69</a></li><li><a href="#8.26-libxcrypt-4.4.36">8.26 Libxcrypt-4.4.36</a></li><li><a href="#8.27-shadow-4.14.5">8.27 Shadow-4.14.5</a></li><li><a href="#8.27.2-configuring-shadow">8.27.2 Configuring Shadow</a></li><li><a href="#8.28-gcc-13.2.0">8.28 GCC-13.2.0</a></li><li><a href="#8.29-ncurses-6.4-20230520">8.29 Ncurses-6.4-20230520</a></li><li><a href="#8.30-sed-4.9">8.30 Sed-4.9</a></li><li><a href="#8.31-psmisc-23.6">8.31 Psmisc-23.6</a></li><li><a href="#8.32-gettext-0.22.4">8.32 Gettext-0.22.4</a></li><li><a href="#8.33-bison-3.8.2">8.33 Bison-3.8.2</a></li><li><a href="#8.35.-bash-5.2.21">8.35. Bash-5.2.21</a></li><li><a href="#8.36-libtool-2.4.7">8.36 Libtool-2.4.7</a></li><li><a href="#8.37-gdbm-1.23">8.37 GDBM-1.23</a></li><li><a href="#8.38-gperf-3.1">8.38 Gperf-3.1</a></li><li><a href="#8.39-expat-2.6.0">8.39 Expat-2.6.0</a></li><li><a href="#8.40-inetutils-2.5">8.40 Inetutils-2.5</a></li><li><a href="#8.41-less-643">8.41 Less-643</a></li><li><a href="#8.42-perl-5.38.2">8.42 Perl-5.38.2</a></li><li><a href="#8.43-xml%3A%3Aparse-2.47">8.43 XML::Parse-2.47</a></li><li><a href="#8.44-intltool-0.51.0">8.44 Intltool-0.51.0</a></li><li><a href="#8.45-autoconf-2.72">8.45 Autoconf-2.72</a></li><li><a href="#8.46-automake-1.16.5">8.46 Automake-1.16.5</a></li><li><a href="#8.47-openssl-3.2.1">8.47 OpenSSL-3.2.1</a></li><li><a href="#8.48-kmod-31">8.48 Kmod-31</a></li><li><a href="#8.49-libelf-from-elfutils-0.190">8.49 Libelf from Elfutils-0.190</a></li><li><a href="#8.50-libffi-3.4.4">8.50 Libffi-3.4.4</a></li><li><a href="#8.51-python-3.12.2">8.51 Python-3.12.2</a></li><li><a href="#8.52-flit-core-3.9.0">8.52 Flit-Core-3.9.0</a></li><li><a href="#8.53-wheel-0.42.0">8.53 Wheel-0.42.0</a></li><li><a href="#8.54-setuptools-69.1.0">8.54 Setuptools-69.1.0</a></li><li><a href="#8.55-ninja-1.11.1">8.55 Ninja-1.11.1</a></li><li><a href="#8.56-meson-1.3.2">8.56 Meson-1.3.2</a></li><li><a href="#8.57-coreutils-9.4">8.57 Coreutils-9.4</a></li><li><a href="#8.58-check-0.15.2">8.58 Check-0.15.2</a></li><li><a href="#8.59-diffutils-3.10">8.59 Diffutils-3.10</a></li><li><a href="#8.60-gawk-5.3.0">8.60 Gawk-5.3.0</a></li><li><a href="#8.61-findutils-4.9.0">8.61 Findutils-4.9.0</a></li><li><a href="#8.62-groff-1.23.0">8.62 Groff-1.23.0</a></li><li><a href="#8.63-grub-2.12">8.63 Grub-2.12</a></li><li><a href="#8.64-gzip-1.13">8.64 Gzip-1.13</a></li><li><a href="#8.65-iproute2-6.7.0">8.65 IPRoute2-6.7.0</a></li><li><a href="#8.66-kbd-2.6.4">8.66 Kbd-2.6.4</a></li><li><a href="#8.67-libpipeline-1.5.7">8.67 Libpipeline-1.5.7</a></li><li><a href="#8.68-make-4.4.1">8.68 Make-4.4.1</a></li><li><a href="#8.69-path-2.7.6">8.69 Path-2.7.6</a></li><li><a href="#8.70-tar-1.35">8.70 Tar-1.35</a></li><li><a href="#8.71-texinfo-7.1">8.71 Texinfo-7.1</a></li><li><a href="#8.72-vim-9.1.0041">8.72 Vim-9.1.0041</a></li><li><a href="#8.73-markupsafe-2.1.5">8.73 MarkupSafe-2.1.5</a></li><li><a href="#8.74-jinja2-3.1.3">8.74 Jinja2-3.1.3</a></li><li><a href="#8.75-udev-from-systemd-255">8.75 Udev from Systemd-255</a><ol><li><a href="#8.75.2-configuring-udev">8.75.2 Configuring Udev</a></li></ol></li><li><a href="#8.76-man-db-2.12.0">8.76 Man-DB-2.12.0</a></li><li><a href="#8.77-procps-ng-4.0.4">8.77 Procps-ng-4.0.4</a></li><li><a href="#8.78-util-linux-2.39.3">8.78 Util-linux-2.39.3</a></li><li><a href="#8.79-e2fsprogs-1.47.0">8.79 E2fsprogs-1.47.0</a><ol><li><a href="#8.79.2-configuring-e2fsprogs">8.79.2 Configuring E2fsprogs</a></li></ol></li><li><a href="#8.80-sysklogd-1.5.1">8.80 Sysklogd-1.5.1</a></li><li><a href="#8.81-sysvinit-3.08">8.81 Sysvinit-3.08</a></li><li><a href="#8.84-cleaning-up">8.84 Cleaning up</a></li></ol></li><li><a href="#9-system-configuration">9 System Configuration</a><ol><li><a href="#9.2-lfs-bootscripts-20230728">9.2 LFS-Bootscripts-20230728</a></li><li><a href="#9.4-managing-devices">9.4 Managing Devices</a><ol><li><a href="#9.5.2-creating-the-%2Fetc%2Fresolv.conf-file">9.5.2 Creating the /etc/resolv.conf File</a></li><li><a href="#9.5.3-configuring-hostname">9.5.3 Configuring hostname</a></li><li><a href="#9.5.4-set-%2Fetc%2Fhosts-file">9.5.4 Set /etc/hosts file</a></li></ol></li><li><a href="#9.6-configuring-sysvint">9.6 Configuring Sysvint</a><ol><li><a href="#9.6.4-configuring-the-system-clock">9.6.4 Configuring the System Clock</a></li><li><a href="#9.6.5-configuring-the-linux-console">9.6.5 Configuring the Linux Console</a></li><li><a href="#9.6.6-creating-files-at-boot">9.6.6 Creating Files at Boot</a></li></ol></li><li><a href="#9.7-configuring-the-system-locale">9.7 Configuring the System Locale</a></li><li><a href="#9.8-creating-%2Fetc%2Finputrc">9.8 Creating /etc/inputrc</a></li><li><a href="#9.9-creating-%2Fetc%2Fshells">9.9 Creating /etc/shells</a></li></ol></li><li><a href="#10-making-the-lfs-system-bootable">10 Making the LFS System Bootable</a><ol><li><a href="#10.3-linux-6.7.4">10.3 Linux-6.7.4</a></li><li><a href="#10.3.2-configuring-linux-module-load-order">10.3.2 Configuring Linux Module Load Order</a></li><li><a href="#10.4-using-grub-to-set-up-the-boot-process">10.4 using GRUB to Set Up the Boot Process</a></li></ol></li><li><a href="#11-the-end">11 The End</a></li></ol>
+      </nav>
+      <h1 id="lfs-project" tabindex="-1">LFS Project</h1>
+<h2 id="1.-introduction" tabindex="-1">1. Introduction</h2>
+<p>LFS helps to build a custom Linux distribution from scratch.</p>
+<h2 id="2.-preparing-the-host-system" tabindex="-1">2. Preparing the Host System</h2>
+<h3 id="2.2-host-system-requirements" tabindex="-1">2.2 Host System Requirements</h3>
+<h4 id="2.2.2-software-requirements" tabindex="-1">2.2.2 Software Requirements</h4>
 <p>Check software requirements with version-check.sh.</p>
 <pre><code>zhihao@dust|/home/zhihao/Downloads|$ cat version-check.sh
 #!/bin/bash
@@ -149,7 +156,7 @@ OK:    g++ works
 OK: nproc reports 8 logical cores are available
 zhihao@dust|/home/zhihao/Downloads|$
 </code></pre>
-<h3>2.4 Creating partitions</h3>
+<h3 id="2.4-creating-partitions" tabindex="-1">2.4 Creating partitions</h3>
 <p>I use a 106G block device for partitions</p>
 <pre><code>zhihao@dust|/home/zhihao|$ lsblk /dev/sdd
 NAME MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
@@ -640,7 +647,7 @@ initrd.img-6.7.4
 (lfs chroot) root:/tmp# cp initrd.img-6.7.4 /boot/
 (lfs chroot) root:/tmp#
 </code></pre>
-<h3>2.5 Creating Filesystems</h3>
+<h3 id="2.5-creating-filesystems" tabindex="-1">2.5 Creating Filesystems</h3>
 <p>Make all patitions ext4 filesystem</p>
 <pre><code>dust:/home/zhihao # for i in `ls /dev/sdd[0-9]`; do mkfs -v -t ext4 $i; done
 mke2fs 1.46.5 (30-Dec-2021)
@@ -698,7 +705,7 @@ Setting up swapspace version 1, size = 2.5 GiB (2731536384 bytes)
 no label, UUID=b3e382ad-2bac-43f4-a160-37f96fe098dc
 dust:/home/zhihao #
 </code></pre>
-<h3>2.6 Setting $LFS Variable</h3>
+<h3 id="2.6-setting-%24lfs-variable" tabindex="-1">2.6 Setting $LFS Variable</h3>
 <p>Set variable</p>
 <pre><code>zhihao@dust|/home/zhihao|$ sudo su
 [sudo] password for root:
@@ -712,7 +719,7 @@ dust:/home/zhihao # grep LFS /home/zhihao/.bashrc /home/zhihao/.bash_profile	 /r
 /root/.bash_profile:export LFS=/mnt/lfs
 dust:/home/zhihao #
 </code></pre>
-<h3>2.7 Mounting partiions</h3>
+<h3 id="2.7-mounting-partiions" tabindex="-1">2.7 Mounting partiions</h3>
 <pre><code>dust:/home/zhihao # mkdir -pv $LFS
 dust:/home/zhihao # lsblk -o +partlabel /dev/sdd
 NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS PARTLABEL
@@ -784,8 +791,8 @@ Filename                                Type            Size            Used    
 /dev/sdd9                               partition       2667516         0               -3
 dust:/home/zhihao #
 </code></pre>
-<h2>3 Packages and Patches</h2>
-<h3>3.1 Introduction</h3>
+<h2 id="3.-packages-and-patches" tabindex="-1">3. Packages and Patches</h2>
+<h3 id="3.1-introduction" tabindex="-1">3.1 Introduction</h3>
 <p>Create sources directory</p>
 <pre><code>dust:/home/zhihao # echo $LFS
 /mnt/lfs
@@ -932,7 +939,7 @@ dust:/home/zhihao/Downloads # proxychains4 wget --input-file=wget-list-patches -
 <pre><code>    dust:/home/zhihao # chown root:root $LFS/sources/*
     dust:/home/zhihao #
 </code></pre>
-<h3>4.2 Create Limited Directory Layout</h3>
+<h3 id="4.2-create-limited-directory-layout" tabindex="-1">4.2 Create Limited Directory Layout</h3>
 <pre><code>dust:/home/zhihao/Downloads # mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
 mkdir: created directory '/mnt/lfs/etc'
 mkdir: created directory '/mnt/lfs/var'
@@ -971,7 +978,7 @@ dust:/mnt/lfs # mkdir -pv $LFS/tools
 mkdir: created directory '/mnt/lfs/tools'
 dust:/mnt/lfs #
 </code></pre>
-<h3>4.3 Add lfs User</h3>
+<h3 id="4.3-add-lfs-user" tabindex="-1">4.3 Add lfs User</h3>
 <pre><code>dust:/mnt/lfs # groupadd lfs
 dust:/mnt/lfs # useradd -s /bin/bash -g lfs -m -k /dev/null lfs
 dust:/mnt/lfs # passwd lfs
@@ -998,7 +1005,7 @@ dust:/mnt/lfs #
 dust:/mnt/lfs # su - lfs
 lfs@dust:~&gt;
 </code></pre>
-<h3>4.4 Setting Up Environment</h3>
+<h3 id="4.4-setting-up-environment" tabindex="-1">4.4 Setting Up Environment</h3>
 <pre><code>lfs@dust:~&gt; cat &gt; ~/.bash_profile &lt;&lt; &quot;EOF&quot;
 &gt; exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
 &gt; EOF
@@ -1033,7 +1040,7 @@ dust:/mnt/lfs # su - lfs
 lfs:~$ echo $LFS
 /mnt/lfs
 </code></pre>
-<h3>5.2 Compile Binutils</h3>
+<h3 id="5.2-compile-binutils" tabindex="-1">5.2 Compile Binutils</h3>
 <p>Decompress binutils shows file group error, but file is extracted successfully</p>
 <pre><code>lfs:/mnt/lfs/sources$ xz -dk binutils-2.42.tar.xz
 xz: binutils-2.42.tar: Cannot set the file group: Operation not permitted
@@ -1082,7 +1089,7 @@ checking for a BSD-compatible install... /usr/bin/install -c
 lfs:/mnt/lfs/sources/binutils-2.42/build$ make
 lfs:/mnt/lfs/sources/binutils-2.42/build$ make install
 </code></pre>
-<h3>5.3 Install GCC</h3>
+<h3 id="5.3-install-gcc" tabindex="-1">5.3 Install GCC</h3>
 <pre><code>lfs:/mnt/lfs/sources$ xz -dk gcc-13.2.0.tar.xz
 xz: gcc-13.2.0.tar: Cannot set the file group: Operation not permitted
 lfs:/mnt/lfs/sources$ ls -al gcc-13.2.0.tar
@@ -1151,7 +1158,7 @@ lfs:/mnt/lfs/sources/gcc-13.2.0$ cat gcc/limitx.h gcc/glimits.h gcc/limity.h &gt
 &gt;   `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include/limits.h
 lfs:/mnt/lfs/sources/gcc-13.2.0$
 </code></pre>
-<h3>5.4 install linux-6.7.4</h3>
+<h3 id="5.4-install-linux-6.7.4" tabindex="-1">5.4 install linux-6.7.4</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf linux-6.7.4.tar.xz
 lfs:/mnt/lfs/sources$ cd linux-6.7.4
 lfs:/mnt/lfs/sources/linux-6.7.4$ ls
@@ -1193,7 +1200,7 @@ lfs:/mnt/lfs/sources/linux-6.7.4$ cp -rv usr/include $LFS/usr
 'usr/include/asm-generic/kvm_para.h' -&gt; '/mnt/lfs/usr/include/asm-generic/kvm_para.h'
 'usr/include/asm-generic/signal.h' -&gt; '/mnt/lfs/usr/include/asm-generic/signal.h'
 </code></pre>
-<h3>5.5 Glibc</h3>
+<h3 id="5.5-glibc" tabindex="-1">5.5 Glibc</h3>
 <p>Install</p>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf glibc-2.39.tar.xz
 lfs:/mnt/lfs/sources/glibc-2.39$ case $(uname -m) in
@@ -1278,7 +1285,7 @@ lfs:/mnt/lfs/sources/glibc-2.39/build$ rm -v a.out
 removed 'a.out'
 lfs:/mnt/lfs/sources/glibc-2.39/build$
 </code></pre>
-<h3>5.6 Libstdc++ from GCC-13.2.0</h3>
+<h3 id="5.6-libstdc%2B%2B-from-gcc-13.2.0" tabindex="-1">5.6 Libstdc++ from GCC-13.2.0</h3>
 <pre><code>lfs:/mnt/lfs/sources/gcc-13.2.0/build$ ls
 Makefile                   gcc           libcpp        serdep.tmp
 build-x86_64-pc-linux-gnu  gmp           libdecnumber  x86_64-lfs-linux-gnu
@@ -1308,8 +1315,8 @@ removed '/mnt/lfs/usr/lib/libstdc++fs.la'
 removed '/mnt/lfs/usr/lib/libsupc++.la'
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$
 </code></pre>
-<h2>6. Cross Compiling Temporary Tools</h2>
-<h3>6.2 M4-1.4.19</h3>
+<h2 id="6.-cross-compiling-temporary-tools" tabindex="-1">6. Cross Compiling Temporary Tools</h2>
+<h3 id="6.2-m4-1.4.19" tabindex="-1">6.2 M4-1.4.19</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf m4-1.4.19.tar.xz
 lfs:/mnt/lfs/sources$ cd m4-1.4.19
 lfs:/mnt/lfs/sources/m4-1.4.19$
@@ -1405,7 +1412,7 @@ lfs:/mnt/lfs/sources/gcc-13.2.0$ cd ../m4-1.4.19
 lfs:/mnt/lfs/sources/m4-1.4.19$ make
 lfs:/mnt/lfs/sources/m4-1.4.19$ make DESTDIR=$LFS install
 </code></pre>
-<h3>6.3 Ncurses</h3>
+<h3 id="6.3-ncurses" tabindex="-1">6.3 Ncurses</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf ncurses-6.4-20230520.tar.xz
 lfs:/mnt/lfs/sources$ cd ncurses-6.4-20230520
 lfs:/mnt/lfs/sources/ncurses-6.4-20230520$ sed -i s/mawk// configure
@@ -1449,7 +1456,7 @@ lfs:/mnt/lfs/sources/ncurses-6.4-20230520$
 lfs:/mnt/lfs/sources/ncurses-6.4-20230520$ sed -e 's/^#if.*XOPEN.*$/#if 1/' \
 &gt;     -i $LFS/usr/include/curses.h
 </code></pre>
-<h3>6.4 Bash-5.2.21</h3>
+<h3 id="6.4-bash-5.2.21" tabindex="-1">6.4 Bash-5.2.21</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf bash-5.2.21.tar.gz
 lfs:/mnt/lfs/sources$ cd bash-5.2.21
 lfs:/mnt/lfs/sources/bash-5.2.21$ ./configure --prefix=/usr                      \
@@ -1464,7 +1471,7 @@ lfs:/mnt/lfs/sources/bash-5.2.21$ ln -sv bash $LFS/bin/sh
 '/mnt/lfs/bin/sh' -&gt; 'bash'
 lfs:/mnt/lfs/sources/bash-5.2.21$
 </code></pre>
-<h3>6.5 Coreutils-9.4</h3>
+<h3 id="6.5-coreutils-9.4" tabindex="-1">6.5 Coreutils-9.4</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf coreutils-9.4.tar.xz
 lfs:/mnt/lfs/sources$ cd coreutils-9.4
 lfs:/mnt/lfs/sources/coreutils-9.4$ ./configure --prefix=/usr                     \
@@ -1486,7 +1493,7 @@ renamed '/mnt/lfs/usr/share/man/man1/chroot.1' -&gt; '/mnt/lfs/usr/share/man/man
 lfs:/mnt/lfs/sources/coreutils-9.4$ sed -i 's/&quot;1&quot;/&quot;8&quot;/'                    $LFS/usr/share/man/man8/chroot.8
 lfs:/mnt/lfs/sources/coreutils-9.4$
 </code></pre>
-<h3>6.6 Diffutils-3.10</h3>
+<h3 id="6.6-diffutils-3.10" tabindex="-1">6.6 Diffutils-3.10</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf diffutils-3.10.tar.xz
 lfs:/mnt/lfs/sources$ cd diffutils-3.10
 lfs:/mnt/lfs/sources/diffutils-3.10$ ./configure --prefix=/usr   \
@@ -1498,7 +1505,7 @@ lfs:/mnt/lfs/sources/diffutils-3.10$ make
 lfs:/mnt/lfs/sources/diffutils-3.10$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.7 File-5.45</h3>
+<h3 id="6.7-file-5.45" tabindex="-1">6.7 File-5.45</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf file-5.45.tar.gz
 lfs:/mnt/lfs/sources$ cd file-5.45
 lfs:/mnt/lfs/sources/file-5.45$ mkdir build
@@ -1524,7 +1531,7 @@ lfs:/mnt/lfs/sources/file-5.45$ rm -v $LFS/usr/lib/libmagic.la
 removed '/mnt/lfs/usr/lib/libmagic.la'
 lfs:/mnt/lfs/sources/file-5.45$
 </code></pre>
-<h3>6.8 FindUtils-4.9.0</h3>
+<h3 id="6.8-findutils-4.9.0" tabindex="-1">6.8 FindUtils-4.9.0</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf findutils-4.9.0.tar.xz
 lfs:/mnt/lfs/sources$ cd findutils-4.9.0
 lfs:/mnt/lfs/sources/findutils-4.9.0$ ./configure --prefix=/usr                   \
@@ -1537,7 +1544,7 @@ lfs:/mnt/lfs/sources/findutils-4.9.0$ make
 lfs:/mnt/lfs/sources/findutils-4.9.0$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.9 Gawk-5.3.0</h3>
+<h3 id="6.9-gawk-5.3.0" tabindex="-1">6.9 Gawk-5.3.0</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf gawk-5.3.0.tar.xz
 lfs:/mnt/lfs/sources$ cd gawk
 bash: cd: gawk: No such file or directory
@@ -1552,7 +1559,7 @@ lfs:/mnt/lfs/sources/gawk-5.3.0$ make
 lfs:/mnt/lfs/sources/gawk-5.3.0$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.10 Grep-3.11</h3>
+<h3 id="6.10-grep-3.11" tabindex="-1">6.10 Grep-3.11</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf grep-3.11.tar.xz
 lfs:/mnt/lfs/sources$ cd grep-3.11
 lfs:/mnt/lfs/sources/grep-3.11$ ./configure --prefix=/usr   \
@@ -1563,7 +1570,7 @@ lfs:/mnt/lfs/sources/grep-3.11$ make
 lfs:/mnt/lfs/sources/grep-3.11$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.11 Gzip-1.13</h3>
+<h3 id="6.11-gzip-1.13" tabindex="-1">6.11 Gzip-1.13</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf gzip-1.13.tar.xz
 lfs:/mnt/lfs/sources$ cd gzip-1.13
 lfs:/mnt/lfs/sources/gzip-1.13$
@@ -1574,7 +1581,7 @@ lfs:/mnt/lfs/sources/gzip-1.13$ make
 lfs:/mnt/lfs/sources/gzip-1.13$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.12 Make-4.4.1</h3>
+<h3 id="6.12-make-4.4.1" tabindex="-1">6.12 Make-4.4.1</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf make-4.4.1.tar.gz
 lfs:/mnt/lfs/sources$ cd make-4.4.1
 lfs:/mnt/lfs/sources/make-4.4.1$
@@ -1588,7 +1595,7 @@ lfs:/mnt/lfs/sources/make-4.4.1$ make
 lfs:/mnt/lfs/sources/make-4.4.1$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.13 Patch-2.7.6</h3>
+<h3 id="6.13-patch-2.7.6" tabindex="-1">6.13 Patch-2.7.6</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf patch-2.7.6.tar.xz
 lfs:/mnt/lfs/sources$ cd patch-2.7.6
 lfs:/mnt/lfs/sources/patch-2.7.6$ ./configure --prefix=/usr   \
@@ -1600,7 +1607,7 @@ lfs:/mnt/lfs/sources/patch-2.7.6$ make
 lfs:/mnt/lfs/sources/patch-2.7.6$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.14 Sed-4.9</h3>
+<h3 id="6.14-sed-4.9" tabindex="-1">6.14 Sed-4.9</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf sed-4.9.tar.xz
 lfs:/mnt/lfs/sources$ cd sed-4.9
 lfs:/mnt/lfs/sources/sed-4.9$ ./configure --prefix=/usr   \
@@ -1612,7 +1619,7 @@ lfs:/mnt/lfs/sources/sed-4.9$ make
 lfs:/mnt/lfs/sources/sed-4.9$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.15 Tar-1.35</h3>
+<h3 id="6.15-tar-1.35" tabindex="-1">6.15 Tar-1.35</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf tar-1.35.tar.xz
 lfs:/mnt/lfs/sources$ cd tar-1.35
 lfs:/mnt/lfs/sources/tar-1.35$ ./configure --prefix=/usr                     \
@@ -1624,7 +1631,7 @@ lfs:/mnt/lfs/sources/tar-1.35$ make
 lfs:/mnt/lfs/sources/tar-1.35$ make DESTDIR=$LFS install
 ...
 </code></pre>
-<h3>6.16 Xz-5.4.6</h3>
+<h3 id="6.16-xz-5.4.6" tabindex="-1">6.16 Xz-5.4.6</h3>
 <pre><code>lfs:/mnt/lfs/sources$ tar xf xz-5.4.6.tar.xz
 lfs:/mnt/lfs/sources$ cd xz-5.4.6
 lfs:/mnt/lfs/sources/xz-5.4.6$ ./configure --prefix=/usr                     \
@@ -1641,7 +1648,7 @@ lfs:/mnt/lfs/sources/xz-5.4.6$ rm -v $LFS/usr/lib/liblzma.la
 removed '/mnt/lfs/usr/lib/liblzma.la'
 lfs:/mnt/lfs/sources/xz-5.4.6$
 </code></pre>
-<h3>6.17 Binutils-2.42 - Pass 2</h3>
+<h3 id="6.17-binutils-2.42---pass-2" tabindex="-1">6.17 Binutils-2.42 - Pass 2</h3>
 <pre><code>lfs:/mnt/lfs/sources/binutils-2.42$ sed '6009s/$add_dir//' -i ltmain.sh
 lfs:/mnt/lfs/sources/binutils-2.42$ du -sh build
 183M    build
@@ -1677,7 +1684,7 @@ removed '/mnt/lfs/usr/lib/libsframe.a'
 removed '/mnt/lfs/usr/lib/libsframe.la'
 lfs:/mnt/lfs/sources/binutils-2.42/build$
 </code></pre>
-<h3>6.18 GCC-13.2.0 - Pass 2</h3>
+<h3 id="6.18-gcc-13.2.0---pass-2" tabindex="-1">6.18 GCC-13.2.0 - Pass 2</h3>
 <pre><code>lfs:/mnt/lfs/sources/gcc-13.2.0$ tar -xf ../mpfr-4.2.1.tar.xz
 lfs:/mnt/lfs/sources/gcc-13.2.0$ mv -v mpfr-4.2.1 mpfr
 renamed 'mpfr-4.2.1' -&gt; 'mpfr/mpfr-4.2.1'
@@ -1731,14 +1738,14 @@ lfs:/mnt/lfs/sources/gcc-13.2.0/build$ ln -sv gcc $LFS/usr/bin/cc
 '/mnt/lfs/usr/bin/cc' -&gt; 'gcc'
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$
 </code></pre>
-<h2>7. Entering Chroot and Building Additional Temporary Tools</h2>
-<h3>7.2 Changing Ownership</h3>
+<h2 id="7.-entering-chroot-and-building-additional-temporary-tools" tabindex="-1">7. Entering Chroot and Building Additional Temporary Tools</h2>
+<h3 id="7.2-changing-ownership" tabindex="-1">7.2 Changing Ownership</h3>
 <pre><code>bash-5.2# chown -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
 bash-5.2# case $(uname -m) in
 &gt;   x86_64) chown -R root:root $LFS/lib64 ;;
 &gt; esac
 </code></pre>
-<h3>7.3 Preparing Virtual Kernel File Systems</h3>
+<h3 id="7.3-preparing-virtual-kernel-file-systems" tabindex="-1">7.3 Preparing Virtual Kernel File Systems</h3>
 <pre><code>bash-5.2# mkdir -pv $LFS/{dev,proc,sys,run}
 mkdir: created directory '/mnt/lfs/dev'
 mkdir: created directory '/mnt/lfs/proc'
@@ -1746,12 +1753,12 @@ mkdir: created directory '/mnt/lfs/sys'
 mkdir: created directory '/mnt/lfs/run'
 bash-5.2#
 </code></pre>
-<h3>7.3.1 Mounting and Populating /dev/</h3>
+<h3 id="7.3.1-mounting-and-populating-%2Fdev%2F" tabindex="-1">7.3.1 Mounting and Populating /dev/</h3>
 <pre><code>bash-5.2# mount -v --bind /dev $LFS/dev
 mount: /dev bound on /mnt/lfs/dev.
 bash-5.2#
 </code></pre>
-<h4>7.3.2 Mounting Virtual Kernel File Systems</h4>
+<h4 id="7.3.2-mounting-virtual-kernel-file-systems" tabindex="-1">7.3.2 Mounting Virtual Kernel File Systems</h4>
 <pre><code>bash-5.2# mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
 mount: devpts mounted on /mnt/lfs/dev/pts.
 bash-5.2# mount -vt proc proc $LFS/proc
@@ -1769,7 +1776,7 @@ bash-5.2# if [ -h $LFS/dev/shm ]; then
 mount: tmpfs mounted on /mnt/lfs/dev/shm.
 bash-5.2#
 </code></pre>
-<h3>7.4 Entering the Chroot Environment</h3>
+<h3 id="7.4-entering-the-chroot-environment" tabindex="-1">7.4 Entering the Chroot Environment</h3>
 <pre><code>bash-5.2# chroot &quot;$LFS&quot; /usr/bin/env -i   \
 &gt;     HOME=/root                  \
 &gt;     TERM=&quot;$TERM&quot;                \
@@ -1780,7 +1787,7 @@ bash-5.2#
 &gt;     /bin/bash --login
 (lfs chroot) I have no name!:/#
 </code></pre>
-<h3>7.5 Creating Directories</h3>
+<h3 id="7.5-creating-directories" tabindex="-1">7.5 Creating Directories</h3>
 <pre><code>(lfs chroot) I have no name!:/# mkdir -pv /{boot,home,mnt,opt,srv}
 mkdir: created directory '/mnt'
 mkdir: created directory '/srv'
@@ -1850,8 +1857,8 @@ install: creating directory '/root'
 install: creating directory '/var/tmp'
 (lfs chroot) I have no name!:/#
 </code></pre>
-<h4>7.5.1 FHS Compliance Note</h4>
-<h3>7.6 Creating Essential Files and Symlinks</h3>
+<h4 id="7.5.1-fhs-compliance-note" tabindex="-1">7.5.1 FHS Compliance Note</h4>
+<h3 id="7.6-creating-essential-files-and-symlinks" tabindex="-1">7.6 Creating Essential Files and Symlinks</h3>
 <pre><code>(lfs chroot) I have no name!:/# ln -sv /proc/self/mounts /etc/mtab
 '/etc/mtab' -&gt; '/proc/self/mounts'
 (lfs chroot) I have no name!:/#
@@ -1910,7 +1917,7 @@ mode of '/var/log/lastlog' changed from 0644 (rw-r--r--) to 0664 (rw-rw-r--)
 mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 (lfs chroot) root:/#
 </code></pre>
-<h3>7.7 Gettext-0.22.4</h3>
+<h3 id="7.7-gettext-0.22.4" tabindex="-1">7.7 Gettext-0.22.4</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf gettext-0.22.4.tar.xz
 (lfs chroot) root:/sources# cd gettext-0.22.4
 (lfs chroot) root:/sources/gettext-0.22.4# ./configure --disable-shared
@@ -1923,7 +1930,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 'gettext-tools/src/xgettext' -&gt; '/usr/bin/xgettext'
 (lfs chroot) root:/sources/gettext-0.22.4#
 </code></pre>
-<h3>7.8 Bison-3.8.2</h3>
+<h3 id="7.8-bison-3.8.2" tabindex="-1">7.8 Bison-3.8.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf bison-3.8.2.tar.xz
 (lfs chroot) root:/sources# cd bison-3.8.2
 (lfs chroot) root:/sources/bison-3.8.2# ./configure --prefix=/usr \
@@ -1933,7 +1940,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 (lfs chroot) root:/sources/bison-3.8.2# make install
 ...
 </code></pre>
-<h3>7.9 Perl-5.38.2</h3>
+<h3 id="7.9-perl-5.38.2" tabindex="-1">7.9 Perl-5.38.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf perl-5.38.2.tar.xz
 (lfs chroot) root:/sources# cd perl-5.38.2
 (lfs chroot) root:/sources/perl-5.38.2# sh Configure -des                                        \
@@ -1952,7 +1959,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 (lfs chroot) root:/sources/perl-5.38.2# make install
 ...
 </code></pre>
-<h3>7.10 Python-3.12.2</h3>
+<h3 id="7.10-python-3.12.2" tabindex="-1">7.10 Python-3.12.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf Python-3.12.2.tar.xz
 (lfs chroot) root:/sources# cd Python-3.12.2
 (lfs chroot) root:/sources/Python-3.12.2# ./configure --prefix=/usr   \
@@ -1964,7 +1971,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 (lfs chroot) root:/sources/Python-3.12.2# make install
 ...
 </code></pre>
-<h3>7.11 Texinfo-7.1</h3>
+<h3 id="7.11-texinfo-7.1" tabindex="-1">7.11 Texinfo-7.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf texinfo-7.1.tar.xz
 (lfs chroot) root:/sources# cd texinfo-7.1
 (lfs chroot) root:/sources/texinfo-7.1# ./configure --prefix=/usr
@@ -1974,7 +1981,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 (lfs chroot) root:/sources/texinfo-7.1# make install
 ...
 </code></pre>
-<h3>7.12 Util-linux-2.39.3</h3>
+<h3 id="7.12-util-linux-2.39.3" tabindex="-1">7.12 Util-linux-2.39.3</h3>
 <pre><code>(lfs chroot) root:/sources# mkdir -pv /var/lib/hwclock
 mkdir: created directory '/var/lib/hwclock'
 (lfs chroot) root:/sources# tar xf util-linux-2.39.3.tar.xz
@@ -1998,14 +2005,14 @@ cd (lfs chroot) root:/sources# cd util-linux-2.39.3
 (lfs chroot) root:/sources/util-linux-2.39.3# make install
 ...
 </code></pre>
-<h3>7.13 Cleaning up and Saving the Temporary System</h3>
-<h4>7.13.1 Cleaning</h4>
+<h3 id="7.13-cleaning-up-and-saving-the-temporary-system" tabindex="-1">7.13 Cleaning up and Saving the Temporary System</h3>
+<h4 id="7.13.1-cleaning" tabindex="-1">7.13.1 Cleaning</h4>
 <pre><code>(lfs chroot) root:/sources# rm -rf /usr/share/{info,man,doc}/*
 (lfs chroot) root:/sources# find /usr/{lib,libexec} -name \*.la -delete
 (lfs chroot) root:/sources# rm -rf /tools
 (lfs chroot) root:/sources#
 </code></pre>
-<h4>7.13.2 Backup</h4>
+<h4 id="7.13.2-backup" tabindex="-1">7.13.2 Backup</h4>
 <pre><code>(lfs chroot) root:/sources#
 logout
 bash-5.2#
@@ -2032,8 +2039,8 @@ bash-5.2# du -sh /root/lfs-temp-tools-12.1.tar.xz
 2.2G    /root/lfs-temp-tools-12.1.tar.xz
 bash-5.2#
 </code></pre>
-<h2>8. Installing Basic System Software</h2>
-<h3>8.3 Man-pages-6.06</h3>
+<h2 id="8.-installing-basic-system-software" tabindex="-1">8. Installing Basic System Software</h2>
+<h3 id="8.3-man-pages-6.06" tabindex="-1">8.3 Man-pages-6.06</h3>
 <pre><code>bash-5.2# history 10
   537  removed 'man3/crypt.3'
   538  removed 'man3/crypt_r.3'
@@ -2053,13 +2060,13 @@ removed 'man3/crypt.3'
 removed 'man3/crypt_r.3'
 (lfs chroot) root:/sources/man-pages-6.06# make prefix=/usr install
 </code></pre>
-<h3>8.4 Iana-Etc-20240125</h3>
+<h3 id="8.4-iana-etc-20240125" tabindex="-1">8.4 Iana-Etc-20240125</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf iana-etc-20240125.tar.gz
 (lfs chroot) root:/sources# cd iana-etc-20240125
 (lfs chroot) root:/sources/iana-etc-20240125# cp services protocols /etc
 (lfs chroot) root:/sources/iana-etc-20240125#
 </code></pre>
-<h3>8.5 Glibc-2.39</h3>
+<h3 id="8.5-glibc-2.39" tabindex="-1">8.5 Glibc-2.39</h3>
 <pre><code>(lfs chroot) root:/sources/glibc-2.39# patch -Np1 -i ../glibc-2.39-fhs-1.patch
 patching file Makeconfig
 Reversed (or previously applied) patch detected!  Skipping patch.
@@ -2160,7 +2167,7 @@ make: *** [Makefile:9: check] Error 2
 (lfs chroot) root:/sources/glibc-2.39/build#
 (lfs chroot) root:/sources/glibc-2.39/build# make localedata/install-locales
 </code></pre>
-<h4>8.5.2 Configuring Glibc</h4>
+<h4 id="8.5.2-configuring-glibc" tabindex="-1">8.5.2 Configuring Glibc</h4>
 <pre><code>(lfs chroot) root:/sources/glibc-2.39/build# cat &gt; /etc/nsswitch.conf &lt;&lt; &quot;EOF&quot;
 &gt; # Begin /etc/nsswitch.conf
 &gt; passwd: files
@@ -2268,7 +2275,7 @@ TZ='Asia/Shanghai'; export TZ
 '/etc/localtime' -&gt; '/usr/share/zoneinfo/Asia/Shanghai'
 (lfs chroot) root:/sources/glibc-2.39/build#
 </code></pre>
-<h5>8.5.2.3 Configuring the Dynamic Loader</h5>
+<h5 id="8.5.2.3-configuring-the-dynamic-loader" tabindex="-1">8.5.2.3 Configuring the Dynamic Loader</h5>
 <pre><code>(lfs chroot) root:/sources/glibc-2.39/build# cat &gt; /etc/ld.so.conf &lt;&lt; &quot;EOF&quot;
 &gt; # Begin /etc/ld.so.conf
 &gt; /usr/local/lib
@@ -2282,7 +2289,7 @@ TZ='Asia/Shanghai'; export TZ
 mkdir: created directory '/etc/ld.so.conf.d'
 (lfs chroot) root:/sources/glibc-2.39/build#
 </code></pre>
-<h3>8.6 Zlib-1.3.1</h3>
+<h3 id="8.6-zlib-1.3.1" tabindex="-1">8.6 Zlib-1.3.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf zlib-1.3.1.tar.gz
 (lfs chroot) root:/sources# cd zlib-1.3.1
 (lfs chroot) root:/sources/zlib-1.3.1# ./configure --prefix=/usr
@@ -2297,7 +2304,7 @@ mkdir: created directory '/etc/ld.so.conf.d'
 removed '/usr/lib/libz.a'
 (lfs chroot) root:/sources/zlib-1.3.1#
 </code></pre>
-<h3>8.7 Bzip2-1.0.8</h3>
+<h3 id="8.7-bzip2-1.0.8" tabindex="-1">8.7 Bzip2-1.0.8</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf bzip2-1.0.8.tar.gz
 (lfs chroot) root:/sources# cd bzip2-1.0.8
 (lfs chroot) root:/sources/bzip2-1.0.8# patch -Np1 -i ../bzip2-1.0.8-install_docs-1.patch
@@ -2333,7 +2340,7 @@ sample1.tst sample2.tst sample3.tst
 removed '/usr/lib/libbz2.a'
 (lfs chroot) root:/sources/bzip2-1.0.8#
 </code></pre>
-<h3>8.8 Xz-5.4.6</h3>
+<h3 id="8.8-xz-5.4.6" tabindex="-1">8.8 Xz-5.4.6</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf xz-5.4.6.tar.xz
 (lfs chroot) root:/sources# cd xz-5.4.6
 (lfs chroot) root:/sources/xz-5.4.6# ./configure --prefix=/usr    \
@@ -2346,7 +2353,7 @@ removed '/usr/lib/libbz2.a'
 (lfs chroot) root:/sources/xz-5.4.6# make install
 ...
 </code></pre>
-<h3>8.9 Zstd-1.5.5</h3>
+<h3 id="8.9-zstd-1.5.5" tabindex="-1">8.9 Zstd-1.5.5</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf zstd-1.5.5.tar.gz
 (lfs chroot) root:/sources# cd zstd-1.5.5
 (lfs chroot) root:/sources/zstd-1.5.5# make prefix=/usr
@@ -2359,7 +2366,7 @@ removed '/usr/lib/libbz2.a'
 removed '/usr/lib/libzstd.a'
 (lfs chroot) root:/sources/zstd-1.5.5#
 </code></pre>
-<h3>8.10 File-5.45</h3>
+<h3 id="8.10-file-5.45" tabindex="-1">8.10 File-5.45</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf file-5.45.tar.gz
 (lfs chroot) root:/sources# cd file-5.45
 (lfs chroot) root:/sources/file-5.45# ./configure --prefix=/usr
@@ -2371,7 +2378,7 @@ removed '/usr/lib/libzstd.a'
 (lfs chroot) root:/sources/file-5.45# make install
 ...
 </code></pre>
-<h3>8.11 Readline-8.2</h3>
+<h3 id="8.11-readline-8.2" tabindex="-1">8.11 Readline-8.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf readline-8.2.tar.gz
 (lfs chroot) root:/sources# cd readline-8.2
 (lfs chroot) root:/sources/readline-8.2# sed -i '/MV.*old/d' Makefile.in
@@ -2402,7 +2409,7 @@ removed '/usr/lib/libzstd.a'
 'doc/rluserman.dvi' -&gt; '/usr/share/doc/readline-8.2/rluserman.dvi'
 (lfs chroot) root:/sources/readline-8.2#
 </code></pre>
-<h3>8.12 M4-1.4.19</h3>
+<h3 id="8.12-m4-1.4.19" tabindex="-1">8.12 M4-1.4.19</h3>
 <pre><code>(lfs chroot) root:/sources/m4-1.4.19# ./configure --prefix=/usr
 ...
 (lfs chroot) root:/sources/m4-1.4.19# make
@@ -2412,7 +2419,7 @@ removed '/usr/lib/libzstd.a'
 (lfs chroot) root:/sources/m4-1.4.19# make install
 ...
 </code></pre>
-<h3>8.13 Bc-6.7.5</h3>
+<h3 id="8.13-bc-6.7.5" tabindex="-1">8.13 Bc-6.7.5</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf bc-6.7.5.tar.xz
 (lfs chroot) root:/sources# cd bc-6.7.5
 (lfs chroot) root:/sources/bc-6.7.5# CC=gcc ./configure --prefix=/usr -G -O3 -r
@@ -2424,7 +2431,7 @@ removed '/usr/lib/libzstd.a'
 (lfs chroot) root:/sources/bc-6.7.5# make install
 ...
 </code></pre>
-<h3>8.14 Flex-2.6.4</h3>
+<h3 id="8.14-flex-2.6.4" tabindex="-1">8.14 Flex-2.6.4</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf flex-2.6.4.tar.gz
 (lfs chroot) root:/sources# cd flex-2.6.4
 (lfs chroot) root:/sources/flex-2.6.4# ./configure --prefix=/usr \
@@ -2443,7 +2450,7 @@ removed '/usr/lib/libzstd.a'
 '/usr/share/man/man1/lex.1' -&gt; 'flex.1'
 (lfs chroot) root:/sources/flex-2.6.4#
 </code></pre>
-<h3>8.15 Tcl-8.6.13</h3>
+<h3 id="8.15-tcl-8.6.13" tabindex="-1">8.15 Tcl-8.6.13</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf tcl8.6.13-src.tar.gz
 (lfs chroot) root:/sources# cd tcl8.6.13
 (lfs chroot) root:/sources/tcl8.6.13# SRCDIR=$(pwd)
@@ -2487,7 +2494,7 @@ mkdir: created directory '/usr/share/doc/tcl-8.6.13'
 './html/ItclCmd/scope.htm' -&gt; '/usr/share/doc/tcl-8.6.13/ItclCmd/scope.htm'
 ...
 </code></pre>
-<h3>8.16 Expect-5.45.4</h3>
+<h3 id="8.16-expect-5.45.4" tabindex="-1">8.16 Expect-5.45.4</h3>
 <pre><code>(lfs chroot) root:/sources/tcl8.6.13# python3 -c 'from pty import spawn; spawn([&quot;echo&quot;, &quot;ok&quot;])'
 ok
 (lfs chroot) root:/sources/tcl8.6.13#(lfs chroot) root:/sources/tcl8.6.13# cd ..
@@ -2509,7 +2516,7 @@ ok
 '/usr/lib/libexpect5.45.4.so' -&gt; 'expect5.45.4/libexpect5.45.4.so'
 (lfs chroot) root:/sources/expect5.45.4#
 </code></pre>
-<h3>8.17 DejaGNU-1.6.3</h3>
+<h3 id="8.17-dejagnu-1.6.3" tabindex="-1">8.17 DejaGNU-1.6.3</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf dejagnu-1.6.3.tar.gz
 (lfs chroot) root:/sources# cd dejagnu-1.6.3
 (lfs chroot) root:/sources/dejagnu-1.6.3# mkdir -v build
@@ -2530,7 +2537,7 @@ install: creating directory '/usr/share/doc/dejagnu-1.6.3'
 'doc/dejagnu.txt' -&gt; '/usr/share/doc/dejagnu-1.6.3/dejagnu.txt'
 (lfs chroot) root:/sources/dejagnu-1.6.3/build#
 </code></pre>
-<h3>8.18 Pkgconf-2.1.1</h3>
+<h3 id="8.18-pkgconf-2.1.1" tabindex="-1">8.18 Pkgconf-2.1.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf pkgconf-2.1.1.tar.xz
 (lfs chroot) root:/sources# cd pkgconf-2.1.1
 (lfs chroot) root:/sources/pkgconf-2.1.1# ./configure --prefix=/usr              \
@@ -2547,7 +2554,7 @@ install: creating directory '/usr/share/doc/dejagnu-1.6.3'
 '/usr/share/man/man1/pkg-config.1' -&gt; 'pkgconf.1'
 (lfs chroot) root:/sources/pkgconf-2.1.1#
 </code></pre>
-<h3>8.19 Binutils-2.42</h3>
+<h3 id="8.19-binutils-2.42" tabindex="-1">8.19 Binutils-2.42</h3>
 <pre><code>(lfs chroot) root:/sources/binutils-2.42# rm -rf build/
 (lfs chroot) root:/sources/binutils-2.42# mkdir -v build
 mkdir: created directory 'build'
@@ -2614,7 +2621,7 @@ removed '/usr/lib/libopcodes.a'
 removed '/usr/lib/libsframe.a'
 (lfs chroot) root:/sources/binutils-2.42/build#
 </code></pre>
-<h3>8.20 GMP-6.3.0</h3>
+<h3 id="8.20-gmp-6.3.0" tabindex="-1">8.20 GMP-6.3.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf gmp-6.3.0.tar.xz
 (lfs chroot) root:/sources# cd gmp
 bash: cd: gmp: No such file or directory
@@ -2639,7 +2646,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/gmp-6.3.0# make install-html
 ...
 </code></pre>
-<h3>8.21 MPFR-4.2.1</h3>
+<h3 id="8.21-mpfr-4.2.1" tabindex="-1">8.21 MPFR-4.2.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf mpfr-4.2.1.tar.xz
 (lfs chroot) root:/sources# cd mpfr-4.2.1
 (lfs chroot) root:/sources/mpfr-4.2.1# ./configure --prefix=/usr        \
@@ -2656,7 +2663,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/mpfr-4.2.1# make install-html
 ...
 </code></pre>
-<h3>8.22 MPC-1.3.1</h3>
+<h3 id="8.22-mpc-1.3.1" tabindex="-1">8.22 MPC-1.3.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf mpc-1.3.1.tar.gz
 (lfs chroot) root:/sources# cd mpc-1.3.1
 (lfs chroot) root:/sources/mpc-1.3.1# ./configure --prefix=/usr    \
@@ -2674,7 +2681,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/mpc-1.3.1# make install-html
 ...
 </code></pre>
-<h3>8.23 Attr-2.5.2</h3>
+<h3 id="8.23-attr-2.5.2" tabindex="-1">8.23 Attr-2.5.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf attr-2.5.2.tar.gz
 (lfs chroot) root:/sources# cd attr-2.5.2
 (lfs chroot) root:/sources/attr-2.5.2# ./configure --prefix=/usr     \
@@ -2689,7 +2696,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/attr-2.5.2# make install
 ...
 </code></pre>
-<h3>8.24 Acl-2.3.2</h3>
+<h3 id="8.24-acl-2.3.2" tabindex="-1">8.24 Acl-2.3.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf acl-2.3.2.tar.xz
 (lfs chroot) root:/sources# cd acl-2.3.2
 (lfs chroot) root:/sources/acl-2.3.2# ./configure --prefix=/usr         \
@@ -2701,7 +2708,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/acl-2.3.2# make install
 ...
 </code></pre>
-<h3>8.25 Libcap-2.69</h3>
+<h3 id="8.25-libcap-2.69" tabindex="-1">8.25 Libcap-2.69</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf libcap-2.69.tar.xz
 (lfs chroot) root:/sources# cd libcap-2.69
 (lfs chroot) root:/sources/libcap-2.69# sed -i '/install -m.*STA/d' libcap/Makefile
@@ -2712,7 +2719,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/libcap-2.69# make prefix=/usr lib=lib install
 ...
 </code></pre>
-<h3>8.26 Libxcrypt-4.4.36</h3>
+<h3 id="8.26-libxcrypt-4.4.36" tabindex="-1">8.26 Libxcrypt-4.4.36</h3>
 <pre><code>(lfs chroot) root:/sources/libcap-2.69# cd ..
 (lfs chroot) root:/sources# tar xf libxcrypt-4.4.36.tar.xz
 (lfs chroot) root:/sources# cd libxcrypt-4.4.36
@@ -2729,7 +2736,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/libxcrypt-4.4.36# make install
 ...
 </code></pre>
-<h3>8.27 Shadow-4.14.5</h3>
+<h3 id="8.27-shadow-4.14.5" tabindex="-1">8.27 Shadow-4.14.5</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf shadow-4.14.5.tar.xz
 (lfs chroot) root:/sources# cd shadow-4.14.5
 (lfs chroot) root:/sources/shadow-4.14.5# sed -i 's/groups$(EXEEXT) //' src/Makefile.in
@@ -2755,7 +2762,7 @@ bash: cd: gmp: No such file or directory
 (lfs chroot) root:/sources/shadow-4.14.5# make -C man install-man
 ...
 </code></pre>
-<h3>8.27.2 Configuring Shadow</h3>
+<h3 id="8.27.2-configuring-shadow" tabindex="-1">8.27.2 Configuring Shadow</h3>
 <pre><code>(lfs chroot) root:/sources/shadow-4.14.5# pwconv
 (lfs chroot) root:/sources/shadow-4.14.5# grpconv
 (lfs chroot) root:/sources/shadow-4.14.5# mkdir -p /etc/default
@@ -2773,7 +2780,7 @@ Re-enter new password:
 passwd: password changed.
 (lfs chroot) root:/sources/shadow-4.14.5#
 </code></pre>
-<h3>8.28 GCC-13.2.0</h3>
+<h3 id="8.28-gcc-13.2.0" tabindex="-1">8.28 GCC-13.2.0</h3>
 <pre><code>(lfs chroot) root:/sources/gcc-13.2.0# rm -rf build
 (lfs chroot) root:/sources/gcc-13.2.0# case $(uname -m) in
 &gt;   x86_64)
@@ -3053,7 +3060,7 @@ mkdir: created directory '/usr/share/gdb/auto-load/usr/lib'
 renamed '/usr/lib/libstdc++.so.6.0.32-gdb.py' -&gt; '/usr/share/gdb/auto-load/usr/lib/libstdc++.so.6.0.32-gdb.py'
 (lfs chroot) root:/sources/gcc-13.2.0/build#
 </code></pre>
-<h3>8.29 Ncurses-6.4-20230520</h3>
+<h3 id="8.29-ncurses-6.4-20230520" tabindex="-1">8.29 Ncurses-6.4-20230520</h3>
 <pre><code>(lfs chroot) root:/sources/ncurses-6.4-20230520# ./configure --prefix=/usr           \
 &gt;             --mandir=/usr/share/man \
 &gt;             --with-shared           \
@@ -3098,7 +3105,7 @@ removed 'dest/usr/lib/libncursesw.so.6.4'
 (lfs chroot) root:/sources/ncurses-6.4-20230520# cp -v -R doc -T /usr/share/doc/ncurses-6.4-20230520
 ...
 </code></pre>
-<h3>8.30 Sed-4.9</h3>
+<h3 id="8.30-sed-4.9" tabindex="-1">8.30 Sed-4.9</h3>
 <pre><code>(lfs chroot) root:/sources/sed-4.9# ./configure --prefix=/usr
 ...
 (lfs chroot) root:/sources/sed-4.9# make
@@ -3113,7 +3120,7 @@ removed 'dest/usr/lib/libncursesw.so.6.4'
 (lfs chroot) root:/sources/sed-4.9# install -d -m755           /usr/share/doc/sed-4.9
 (lfs chroot) root:/sources/sed-4.9# install -m644 doc/sed.html /usr/share/doc/sed-4.9
 </code></pre>
-<h3>8.31 Psmisc-23.6</h3>
+<h3 id="8.31-psmisc-23.6" tabindex="-1">8.31 Psmisc-23.6</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf psmisc-23.6.tar.xz
 (lfs chroot) root:/sources# cd psmisc-23.6
 (lfs chroot) root:/sources/psmisc-23.6# ./configure --prefix=/usr
@@ -3125,7 +3132,7 @@ removed 'dest/usr/lib/libncursesw.so.6.4'
 (lfs chroot) root:/sources/psmisc-23.6# make install
 ...
 </code></pre>
-<h3>8.32 Gettext-0.22.4</h3>
+<h3 id="8.32-gettext-0.22.4" tabindex="-1">8.32 Gettext-0.22.4</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf gettext-0.22.4
 (lfs chroot) root:/sources# tar xf gettext-0.22.4.tar.xz
 cd (lfs chroot) root:/sources# cd gettext-0.22.4
@@ -3143,7 +3150,7 @@ cd (lfs chroot) root:/sources# cd gettext-0.22.4
 mode of '/usr/lib/preloadable_libintl.so' changed from 0644 (rw-r--r--) to 0755 (rwxr-xr-x)
 (lfs chroot) root:/sources/gettext-0.22.4#
 </code></pre>
-<h3>8.33 Bison-3.8.2</h3>
+<h3 id="8.33-bison-3.8.2" tabindex="-1">8.33 Bison-3.8.2</h3>
 <pre><code>(lfs chroot) root:/sources# rm bison-3.8.2
 rm: cannot remove 'bison-3.8.2': Is a directory
 (lfs chroot) root:/sources# rm -rf bison-3.8.2
@@ -3158,7 +3165,7 @@ rm: cannot remove 'bison-3.8.2': Is a directory
 (lfs chroot) root:/sources/bison-3.8.2# make install
 ...
 </code></pre>
-<h3>8.35. Bash-5.2.21</h3>
+<h3 id="8.35.-bash-5.2.21" tabindex="-1">8.35. Bash-5.2.21</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf bash-5.2.21
 (lfs chroot) root:/sources# tar xf bash-5.2.21.tar.gz
 (lfs chroot) root:/sources# cd bash-5.2.21
@@ -3191,7 +3198,7 @@ patching file patchlevel.h
 (lfs chroot) root:/sources/bash-5.2.21# exec /usr/bin/bash --login
 (lfs chroot) root:/sources/bash-5.2.21#
 </code></pre>
-<h3>8.36 Libtool-2.4.7</h3>
+<h3 id="8.36-libtool-2.4.7" tabindex="-1">8.36 Libtool-2.4.7</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf libtool-2.4.7.tar.xz
 (lfs chroot) root:/sources# cd libtool-2.4.7
 (lfs chroot) root:/sources/libtool-2.4.7# ./configure --prefix=/usr
@@ -3206,7 +3213,7 @@ patching file patchlevel.h
 removed '/usr/lib/libltdl.a'
 (lfs chroot) root:/sources/libtool-2.4.7#
 </code></pre>
-<h3>8.37 GDBM-1.23</h3>
+<h3 id="8.37-gdbm-1.23" tabindex="-1">8.37 GDBM-1.23</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf gdbm-1.23.tar.gz
 (lfs chroot) root:/sources# cd gdbm-1.23
 (lfs chroot) root:/sources/gdbm-1.23# ./configure --prefix=/usr    \
@@ -3220,7 +3227,7 @@ removed '/usr/lib/libltdl.a'
 (lfs chroot) root:/sources/gdbm-1.23# make install
 ...
 </code></pre>
-<h3>8.38 Gperf-3.1</h3>
+<h3 id="8.38-gperf-3.1" tabindex="-1">8.38 Gperf-3.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf gperf-3.1.tar.gz
 (lfs chroot) root:/sources# cd gperf-3.1
 (lfs chroot) root:/sources/gperf-3.1# ./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
@@ -3232,7 +3239,7 @@ removed '/usr/lib/libltdl.a'
 (lfs chroot) root:/sources/gperf-3.1# make install
 ...
 </code></pre>
-<h3>8.39 Expat-2.6.0</h3>
+<h3 id="8.39-expat-2.6.0" tabindex="-1">8.39 Expat-2.6.0</h3>
 <pre><code>(lfs chroot) root:/sources/expat-2.6.2# ./configure --prefix=/usr    \
 &gt;             --disable-static \
 &gt;             --docdir=/usr/share/doc/expat-2.6.2
@@ -3249,7 +3256,7 @@ removed '/usr/lib/libltdl.a'
 'doc/style.css' -&gt; '/usr/share/doc/expat-2.6.2/style.css'
 (lfs chroot) root:/sources/expat-2.6.2#
 </code></pre>
-<h3>8.40 Inetutils-2.5</h3>
+<h3 id="8.40-inetutils-2.5" tabindex="-1">8.40 Inetutils-2.5</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf inetutils-2.5.tar.xz
 (lfs chroot) root:/sources# cd inetutils-2.5
 (lfs chroot) root:/sources/inetutils-2.5# ./configure --prefix=/usr        \
@@ -3273,7 +3280,7 @@ removed '/usr/lib/libltdl.a'
 renamed '/usr/bin/ifconfig' -&gt; '/usr/sbin/ifconfig'
 (lfs chroot) root:/sources/inetutils-2.5#
 </code></pre>
-<h3>8.41 Less-643</h3>
+<h3 id="8.41-less-643" tabindex="-1">8.41 Less-643</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf less-643.tar.gz
 (lfs chroot) root:/sources# cd less-643
 (lfs chroot) root:/sources/less-643# ./configure --prefix=/usr --sysconfdir=/etc
@@ -3292,7 +3299,7 @@ renamed '/usr/bin/ifconfig' -&gt; '/usr/sbin/ifconfig'
 /usr/bin/install -c -m 644 ./lessecho.nro /usr/share/man/man1/lessecho.1
 (lfs chroot) root:/sources/less-643#
 </code></pre>
-<h3>8.42 Perl-5.38.2</h3>
+<h3 id="8.42-perl-5.38.2" tabindex="-1">8.42 Perl-5.38.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf perl-5.38.2.tar.xz
 (lfs chroot) root:/sources# cd perl-5.38.2.tar.xz
 bash: cd: perl-5.38.2.tar.xz: Not a directory
@@ -3324,7 +3331,7 @@ bash: cd: perl-5.38.2.tar.xz: Not a directory
 (lfs chroot) root:/sources/perl-5.38.2# unset BUILD_ZLIB BUILD_BZIP2
 (lfs chroot) root:/sources/perl-5.38.2#
 </code></pre>
-<h3>8.43 XML::Parse-2.47</h3>
+<h3 id="8.43-xml%3A%3Aparse-2.47" tabindex="-1">8.43 XML::Parse-2.47</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf XML-Parser-2.47.tar.gz
 (lfs chroot) root:/sources# cd XML-Parser-2.47
 (lfs chroot) root:/sources/XML-Parser-2.47# perl Makefile.PL
@@ -3343,7 +3350,7 @@ Writing MYMETA.yml and MYMETA.json
 (lfs chroot) root:/sources/XML-Parser-2.47# make install
 ...
 </code></pre>
-<h3>8.44 Intltool-0.51.0</h3>
+<h3 id="8.44-intltool-0.51.0" tabindex="-1">8.44 Intltool-0.51.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf intltool-0.51.0.tar.gz
 (lfs chroot) root:/sources# cd intltool-0.51.0
 (lfs chroot) root:/sources/intltool-0.51.0# sed -i 's:\\\${:\\\$\\{:' intltool-update.in
@@ -3360,7 +3367,7 @@ install: creating directory '/usr/share/doc/intltool-0.51.0'
 'doc/I18N-HOWTO' -&gt; '/usr/share/doc/intltool-0.51.0/I18N-HOWTO'
 (lfs chroot) root:/sources/intltool-0.51.0#
 </code></pre>
-<h3>8.45 Autoconf-2.72</h3>
+<h3 id="8.45-autoconf-2.72" tabindex="-1">8.45 Autoconf-2.72</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf autoconf-2.72.tar.xz
 (lfs chroot) root:/sources# cd autoconf-2.72
 (lfs chroot) root:/sources/autoconf-2.72# ./configure --prefix=/usr
@@ -3372,7 +3379,7 @@ install: creating directory '/usr/share/doc/intltool-0.51.0'
 (lfs chroot) root:/sources/autoconf-2.72# make install
 ...
 </code></pre>
-<h3>8.46 Automake-1.16.5</h3>
+<h3 id="8.46-automake-1.16.5" tabindex="-1">8.46 Automake-1.16.5</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf automake-1.16.5.tar.xz
 (lfs chroot) root:/sources# cd automake-1.16.5
 (lfs chroot) root:/sources/automake-1.16.5# ./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.5
@@ -3384,7 +3391,7 @@ install: creating directory '/usr/share/doc/intltool-0.51.0'
 (lfs chroot) root:/sources/automake-1.16.5# make install
 ...
 </code></pre>
-<h3>8.47 OpenSSL-3.2.1</h3>
+<h3 id="8.47-openssl-3.2.1" tabindex="-1">8.47 OpenSSL-3.2.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf openssl-3.2.1.tar.gz
 cd(lfs chroot) root:/sources# cd openssl-3.2.1
 (lfs chroot) root:/sources/openssl-3.2.1# ./config --prefix=/usr         \
@@ -3429,7 +3436,7 @@ renamed '/usr/share/doc/openssl' -&gt; '/usr/share/doc/openssl-3.2.1'
 (lfs chroot) root:/sources/openssl-3.2.1# cp -vfr doc/* /usr/share/doc/openssl-3.2.1
 ...
 </code></pre>
-<h3>8.48 Kmod-31</h3>
+<h3 id="8.48-kmod-31" tabindex="-1">8.48 Kmod-31</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf kmod-31.tar.xz
 (lfs chroot) root:/sources# cd kmod-31
 (lfs chroot) root:/sources/kmod-31# ./configure --prefix=/usr          \
@@ -3456,7 +3463,7 @@ renamed '/usr/share/doc/openssl' -&gt; '/usr/share/doc/openssl-3.2.1'
 '/usr/bin/lsmod' -&gt; 'kmod'
 (lfs chroot) root:/sources/kmod-31#
 </code></pre>
-<h3>8.49 Libelf from Elfutils-0.190</h3>
+<h3 id="8.49-libelf-from-elfutils-0.190" tabindex="-1">8.49 Libelf from Elfutils-0.190</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf elfutils-0.190.tar.bz2
 cd (lfs chroot) root:/sources# cd elfutils-0.190
 (lfs chroot) root:/sources/elfutils-0.190# ./configure --prefix=/usr                \
@@ -3488,7 +3495,7 @@ make: Leaving directory '/sources/elfutils-0.190/libelf'
 (lfs chroot) root:/sources/elfutils-0.190# rm /usr/lib/libelf.a
 (lfs chroot) root:/sources/elfutils-0.190#
 </code></pre>
-<h3>8.50 Libffi-3.4.4</h3>
+<h3 id="8.50-libffi-3.4.4" tabindex="-1">8.50 Libffi-3.4.4</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf libffi-3.4.4.tar.gz
 (lfs chroot) root:/sources# cd libffi-3.4.4
 (lfs chroot) root:/sources/libffi-3.4.4#
@@ -3503,7 +3510,7 @@ make: Leaving directory '/sources/elfutils-0.190/libelf'
 (lfs chroot) root:/sources/libffi-3.4.4# make install
 ...
 </code></pre>
-<h3>8.51 Python-3.12.2</h3>
+<h3 id="8.51-python-3.12.2" tabindex="-1">8.51 Python-3.12.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf Python-3.12.2.tar.xz
 (lfs chroot) root:/sources# cd Python-3.12.2
 (lfs chroot) root:/sources/Python-3.12.2# ./configure --prefix=/usr        \
@@ -3530,7 +3537,7 @@ install: creating directory '/usr/share/doc/python-3.12.2/html'
 &gt;     /usr/share/doc/python-3.12.2/html
 (lfs chroot) root:/sources/Python-3.12.2#
 </code></pre>
-<h3>8.52 Flit-Core-3.9.0</h3>
+<h3 id="8.52-flit-core-3.9.0" tabindex="-1">8.52 Flit-Core-3.9.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf flit_core-3.9.0.tar.gz
 (lfs chroot) root:/sources# cd flit_core-3.9.0
 (lfs chroot) root:/sources/flit_core-3.9.0# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3549,7 +3556,7 @@ Installing collected packages: flit_core
 Successfully installed flit_core-3.9.0
 (lfs chroot) root:/sources/flit_core-3.9.0#
 </code></pre>
-<h3>8.53 Wheel-0.42.0</h3>
+<h3 id="8.53-wheel-0.42.0" tabindex="-1">8.53 Wheel-0.42.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf wheel-0.42.0.tar.gz
 (lfs chroot) root:/sources# cd wheel-0.42.0
 (lfs chroot) root:/sources/wheel-0.42.0# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3568,7 +3575,7 @@ Installing collected packages: wheel
 Successfully installed wheel-0.42.0
 (lfs chroot) root:/sources/wheel-0.42.0#
 </code></pre>
-<h3>8.54 Setuptools-69.1.0</h3>
+<h3 id="8.54-setuptools-69.1.0" tabindex="-1">8.54 Setuptools-69.1.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf setuptools-69.1.0.tar.gz
 (lfs chroot) root:/sources# cd setuptools-69.1.0
 (lfs chroot) root:/sources/setuptools-69.1.0# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3586,7 +3593,7 @@ Installing collected packages: setuptools
 Successfully installed setuptools-69.1.0
 (lfs chroot) root:/sources/setuptools-69.1.0#
 </code></pre>
-<h3>8.55 Ninja-1.11.1</h3>
+<h3 id="8.55-ninja-1.11.1" tabindex="-1">8.55 Ninja-1.11.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf ninja-1.11.1.tar.gz
 (lfs chroot) root:/sources# cd nin
 bash: cd: nin: No such file or directory
@@ -3617,7 +3624,7 @@ install: creating directory '/usr/share/zsh/site-functions'
 'misc/zsh-completion' -&gt; '/usr/share/zsh/site-functions/_ninja'
 (lfs chroot) root:/sources/ninja-1.11.1#
 </code></pre>
-<h3>8.56 Meson-1.3.2</h3>
+<h3 id="8.56-meson-1.3.2" tabindex="-1">8.56 Meson-1.3.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf meson-1.3.2.tar.gz
 (lfs chroot) root:/sources# cd meson-1.3.2
 (lfs chroot) root:/sources/meson-1.3.2# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3640,7 +3647,7 @@ Successfully installed meson-1.3.2
 'data/shell-completions/zsh/_meson' -&gt; '/usr/share/zsh/site-functions/_meson'
 (lfs chroot) root:/sources/meson-1.3.2#
 </code></pre>
-<h3>8.57 Coreutils-9.4</h3>
+<h3 id="8.57-coreutils-9.4" tabindex="-1">8.57 Coreutils-9.4</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf coreutils-9.4.tar.xz
 (lfs chroot) root:/sources# cd coreutils-9.4
 (lfs chroot) root:/sources/coreutils-9.4# patch -Np1 -i ../coreutils-9.4-i18n-1.patch
@@ -3701,7 +3708,7 @@ renamed '/usr/share/man/man1/chroot.1' -&gt; '/usr/share/man/man8/chroot.8'
 (lfs chroot) root:/sources/coreutils-9.4# sed -i 's/&quot;1&quot;/&quot;8&quot;/' /usr/share/man/man8/chroot.8
 (lfs chroot) root:/sources/coreutils-9.4#
 </code></pre>
-<h3>8.58 Check-0.15.2</h3>
+<h3 id="8.58-check-0.15.2" tabindex="-1">8.58 Check-0.15.2</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf check-0.15.2.tar.gz
 (lfs chroot) root:/sources# cd check-0.15.2
 (lfs chroot) root:/sources/check-0.15.2# ./configure --prefix=/usr --disable-static
@@ -3713,7 +3720,7 @@ renamed '/usr/share/man/man1/chroot.1' -&gt; '/usr/share/man/man8/chroot.8'
 (lfs chroot) root:/sources/check-0.15.2# make docdir=/usr/share/doc/check-0.15.2 install
 ...
 </code></pre>
-<h3>8.59 Diffutils-3.10</h3>
+<h3 id="8.59-diffutils-3.10" tabindex="-1">8.59 Diffutils-3.10</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf diffutils-3.10.tar.xz
 (lfs chroot) root:/sources# cd diffutils-3.10
 (lfs chroot) root:/sources/diffutils-3.10#
@@ -3726,7 +3733,7 @@ renamed '/usr/share/man/man1/chroot.1' -&gt; '/usr/share/man/man8/chroot.8'
 (lfs chroot) root:/sources/diffutils-3.10# make install
 ...
 </code></pre>
-<h3>8.60 Gawk-5.3.0</h3>
+<h3 id="8.60-gawk-5.3.0" tabindex="-1">8.60 Gawk-5.3.0</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf gawk-5.3.0
 (lfs chroot) root:/sources# tar xf gawk-5.3.0.tar.xz
 (lfs chroot) root:/sources# cd gawk-5.3.0
@@ -3768,7 +3775,7 @@ mkdir: created directory '/usr/share/doc/gawk-5.3.0'
 'doc/gawk_statist.jpg' -&gt; '/usr/share/doc/gawk-5.3.0/gawk_statist.jpg'
 (lfs chroot) root:/sources/gawk-5.3.0#
 </code></pre>
-<h3>8.61 Findutils-4.9.0</h3>
+<h3 id="8.61-findutils-4.9.0" tabindex="-1">8.61 Findutils-4.9.0</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf findutils-4.9.0
 (lfs chroot) root:/sources# tar xf findutils-4.9.0.tar.xz
 (lfs chroot) root:/sources# cd findutils-4.9.0
@@ -3782,7 +3789,7 @@ mkdir: created directory '/usr/share/doc/gawk-5.3.0'
 (lfs chroot) root:/sources/findutils-4.9.0# make install
 ...
 </code></pre>
-<h3>8.62 Groff-1.23.0</h3>
+<h3 id="8.62-groff-1.23.0" tabindex="-1">8.62 Groff-1.23.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf groff-1.23.0.tar.gz
 (lfs chroot) root:/sources# cd groff-1.23.0
 (lfs chroot) root:/sources/groff-1.23.0# PAGE=A4 ./configure --prefix=/usr
@@ -3794,7 +3801,7 @@ mkdir: created directory '/usr/share/doc/gawk-5.3.0'
 (lfs chroot) root:/sources/groff-1.23.0# make install
 ...
 </code></pre>
-<h3>8.63 Grub-2.12</h3>
+<h3 id="8.63-grub-2.12" tabindex="-1">8.63 Grub-2.12</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf grub-2.12.tar.xz
 cd (lfs chroot) root:/sources# cd grub-2.12
 (lfs chroot) root:/sources/grub-2.12# unset {C,CPP,CXX,LD}FLAGS
@@ -3813,7 +3820,7 @@ copied '/etc/bash_completion.d/grub' -&gt; '/usr/share/bash-completion/completio
 removed '/etc/bash_completion.d/grub'
 (lfs chroot) root:/sources/grub-2.12#
 </code></pre>
-<h3>8.64 Gzip-1.13</h3>
+<h3 id="8.64-gzip-1.13" tabindex="-1">8.64 Gzip-1.13</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf gzip-1.13
 (lfs chroot) root:/sources# tar xf gzip-1.13.tar.xz
 (lfs chroot) root:/sources# cd gzip-1.13
@@ -3826,7 +3833,7 @@ removed '/etc/bash_completion.d/grub'
 (lfs chroot) root:/sources/gzip-1.13# make install
 ...
 </code></pre>
-<h3>8.65 IPRoute2-6.7.0</h3>
+<h3 id="8.65-iproute2-6.7.0" tabindex="-1">8.65 IPRoute2-6.7.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf iproute2-6.7.0.tar.xz
 (lfs chroot) root:/sources# cd iproute2-6.7.0
 (lfs chroot) root:/sources/iproute2-6.7.0# sed -i /ARPD/d Makefile
@@ -3844,7 +3851,7 @@ mkdir: created directory '/usr/share/doc/iproute2-6.7.0'
 'README.devel' -&gt; '/usr/share/doc/iproute2-6.7.0/README.devel'
 (lfs chroot) root:/sources/iproute2-6.7.0#
 </code></pre>
-<h3>8.66 Kbd-2.6.4</h3>
+<h3 id="8.66-kbd-2.6.4" tabindex="-1">8.66 Kbd-2.6.4</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf kbd-2.6.4
 (lfs chroot) root:/sources# tar xf kbd-2.6.4.tar.xz
 (lfs chroot) root:/sources# cd kbd-2.6.4
@@ -3882,7 +3889,7 @@ patching file data/keymaps/i386/qwerty/ua-ws.map
 (lfs chroot) root:/sources/kbd-2.6.4# cp -R -v docs/doc -T /usr/share/doc/kbd-2.6.4
 ...
 </code></pre>
-<h3>8.67 Libpipeline-1.5.7</h3>
+<h3 id="8.67-libpipeline-1.5.7" tabindex="-1">8.67 Libpipeline-1.5.7</h3>
 <pre><code>(lfs chroot) root:/sources# ls libpipeline-1.5.7.tar.gz
 libpipeline-1.5.7.tar.gz
 (lfs chroot) root:/sources# tar xf libpipeline-1.5.7.tar.gz
@@ -3896,7 +3903,7 @@ libpipeline-1.5.7.tar.gz
 (lfs chroot) root:/sources/libpipeline-1.5.7# make install
 ...
 </code></pre>
-<h3>8.68 Make-4.4.1</h3>
+<h3 id="8.68-make-4.4.1" tabindex="-1">8.68 Make-4.4.1</h3>
 <pre><code>(lfs chroot) root:/sources# ls make-4.4.1
 ABOUT-NLS  Makefile      README.DOS      SCOPTIONS     build_w32.bat  doc           po
 AUTHORS    Makefile.am   README.OS2      aclocal.m4    builddos.bat   lib           src
@@ -3918,7 +3925,7 @@ INSTALL    README.Amiga  README.zOS      build.sh      configure.ac   mk
 (lfs chroot) root:/sources/make-4.4.1# make install
 ...
 </code></pre>
-<h3>8.69 Path-2.7.6</h3>
+<h3 id="8.69-path-2.7.6" tabindex="-1">8.69 Path-2.7.6</h3>
 <pre><code>(lfs chroot) root:/sources# ls patch-2.7.6
 AUTHORS    ChangeLog-2011  Makefile     NEWS    aclocal.m4  cfg.mk      config.log     configure.ac  maint.mk   src
 COPYING    GNUmakefile     Makefile.am  README  bootstrap   config.h    config.status  lib           patch.man  stamp-h1
@@ -3935,7 +3942,7 @@ ChangeLog  INSTALL         Makefile.in  TODO    build-aux   config.hin  configur
 (lfs chroot) root:/sources/patch-2.7.6# make install
 ...
 </code></pre>
-<h3>8.70 Tar-1.35</h3>
+<h3 id="8.70-tar-1.35" tabindex="-1">8.70 Tar-1.35</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf tar-1.35
 (lfs chroot) root:/sources# tar xf tar-1.35.tar.xz
 (lfs chroot) root:/sources# cd tar-1.35
@@ -3957,7 +3964,7 @@ make: Entering directory '/sources/tar-1.35/doc'
 make: Leaving directory '/sources/tar-1.35/doc'
 (lfs chroot) root:/sources/tar-1.35#
 </code></pre>
-<h3>8.71 Texinfo-7.1</h3>
+<h3 id="8.71-texinfo-7.1" tabindex="-1">8.71 Texinfo-7.1</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf texinfo-7.1
 r(lfs chroot) root:/sources# tar xf texinfo-7.1.tar.xz
 (lfs chroot) root:/sources# cd texinfo-7.1
@@ -3972,7 +3979,7 @@ lfs chroot) root:/sources/texinfo-7.1# make install
 (lfs chroot) root:/sources/texinfo-7.1# make TEXMF=/usr/share/texmf install-tex
 ...
 </code></pre>
-<h3>8.72 Vim-9.1.0041</h3>
+<h3 id="8.72-vim-9.1.0041" tabindex="-1">8.72 Vim-9.1.0041</h3>
 <pre><code>(lfs chroot) root:/sources# tar -xf vim-9.1.0041.tar.gz
 cd(lfs chroot) root:/sources# cd vim-9.1.0041
 (lfs chroot) root:/sources/vim-9.1.0041# echo '#define SYS_VIMRC_FILE &quot;/etc/vimrc&quot;' &gt;&gt; src/feature.h
@@ -4033,7 +4040,7 @@ cd(lfs chroot) root:/sources# cd vim-9.1.0041
 &gt; EOF
 (lfs chroot) root:/sources/vim-9.1.0041#
 </code></pre>
-<h3>8.73 MarkupSafe-2.1.5</h3>
+<h3 id="8.73-markupsafe-2.1.5" tabindex="-1">8.73 MarkupSafe-2.1.5</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf MarkupSafe-2.1.5.tar.gz
 (lfs chroot) root:/sources# cd MarkupSafe-2.1.5
 (lfs chroot) root:/sources/MarkupSafe-2.1.5# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -4052,7 +4059,7 @@ Installing collected packages: Markupsafe
 Successfully installed Markupsafe-2.1.5
 (lfs chroot) root:/sources/MarkupSafe-2.1.5#
 </code></pre>
-<h3>8.74 Jinja2-3.1.3</h3>
+<h3 id="8.74-jinja2-3.1.3" tabindex="-1">8.74 Jinja2-3.1.3</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf Jinja2-3.1.3.tar.gz
 (lfs chroot) root:/sources# cd Jinja2-3.1.3
 (lfs chroot) root:/sources/Jinja2-3.1.3# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -4072,7 +4079,7 @@ Installing collected packages: Jinja2
 Successfully installed Jinja2-3.1.3
 (lfs chroot) root:/sources/Jinja2-3.1.3#
 </code></pre>
-<h3>8.75 Udev from Systemd-255</h3>
+<h3 id="8.75-udev-from-systemd-255" tabindex="-1">8.75 Udev from Systemd-255</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf systemd-255.tar.gz
 c(lfs chroot) root:/sources# cd systemd-255
 (lfs chroot) root:/sources/systemd-255# sed -i -e 's/GROUP=&quot;render&quot;/GROUP=&quot;video&quot;/' \
@@ -4252,11 +4259,11 @@ mkdir: created directory '/usr/share/doc/udev-20230818/lfs'
 (lfs chroot) root:/sources/systemd-255/build# unset udev_helpers
 (lfs chroot) root:/sources/systemd-255/build#
 </code></pre>
-<h4>8.75.2 Configuring Udev</h4>
+<h4 id="8.75.2-configuring-udev" tabindex="-1">8.75.2 Configuring Udev</h4>
 <pre><code>(lfs chroot) root:/sources/systemd-255/build# udev-hwdb update
 (lfs chroot) root:/sources/systemd-255/build#
 </code></pre>
-<h3>8.76 Man-DB-2.12.0</h3>
+<h3 id="8.76-man-db-2.12.0" tabindex="-1">8.76 Man-DB-2.12.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf man-db-2.12.0.tar.xz
 (lfs chroot) root:/sources# cd man-db-2.12.0
 (lfs chroot) root:/sources/man-db-2.12.0# ./configure --prefix=/usr                         \
@@ -4275,7 +4282,7 @@ mkdir: created directory '/usr/share/doc/udev-20230818/lfs'
 (lfs chroot) root:/sources/man-db-2.12.0# make install
 ...
 </code></pre>
-<h3>8.77 Procps-ng-4.0.4</h3>
+<h3 id="8.77-procps-ng-4.0.4" tabindex="-1">8.77 Procps-ng-4.0.4</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf procps-ng-4.0.4.tar.xz
 (lfs chroot) root:/sources# cd procps-ng-4.0.4
 (lfs chroot) root:/sources/procps-ng-4.0.4# ./configure --prefix=/usr                           \
@@ -4290,7 +4297,7 @@ mkdir: created directory '/usr/share/doc/udev-20230818/lfs'
 (lfs chroot) root:/sources/procps-ng-4.0.4# make install
 ...
 </code></pre>
-<h3>8.78 Util-linux-2.39.3</h3>
+<h3 id="8.78-util-linux-2.39.3" tabindex="-1">8.78 Util-linux-2.39.3</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf util-linux-2.39.3
 (lfs chroot) root:/sources# tar xf util-linux-2.39.3.tar.xz
 c(lfs chroot) root:/sources# cd util-linux-2.39.3
@@ -4321,7 +4328,7 @@ c(lfs chroot) root:/sources# cd util-linux-2.39.3
 (lfs chroot) root:/sources/util-linux-2.39.3# make install
 ...
 </code></pre>
-<h3>8.79 E2fsprogs-1.47.0</h3>
+<h3 id="8.79-e2fsprogs-1.47.0" tabindex="-1">8.79 E2fsprogs-1.47.0</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf e2fsprogs-1.47.0.tar.gz
 (lfs chroot) root:/sources# cd e2fsprogs-1.47.0
 (lfs chroot) root:/sources/e2fsprogs-1.47.0# mkdir -v build
@@ -4357,11 +4364,11 @@ removed '/usr/lib/libss.a'
 (lfs chroot) root:/sources/e2fsprogs-1.47.0/build# install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
 (lfs chroot) root:/sources/e2fsprogs-1.47.0/build#
 </code></pre>
-<h4>8.79.2 Configuring E2fsprogs</h4>
+<h4 id="8.79.2-configuring-e2fsprogs" tabindex="-1">8.79.2 Configuring E2fsprogs</h4>
 <pre><code>(lfs chroot) root:/sources/e2fsprogs-1.47.0/build# sed 's/metadata_csum_seed,//' -i /etc/mke2fs.conf
 (lfs chroot) root:/sources/e2fsprogs-1.47.0/build#
 </code></pre>
-<h3>8.80 Sysklogd-1.5.1</h3>
+<h3 id="8.80-sysklogd-1.5.1" tabindex="-1">8.80 Sysklogd-1.5.1</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf sysklogd-1.5.1.tar.gz
 (lfs chroot) root:/sources# cd sysklogd-1.5.1
 (lfs chroot) root:/sources/sysklogd-1.5.1# sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c
@@ -4389,7 +4396,7 @@ removed '/usr/lib/libss.a'
 &gt; EOF
 (lfs chroot) root:/sources/sysklogd-1.5.1#
 </code></pre>
-<h3>8.81 Sysvinit-3.08</h3>
+<h3 id="8.81-sysvinit-3.08" tabindex="-1">8.81 Sysvinit-3.08</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf sysvinit-3.08.tar.xz
 (lfs chroot) root:/sources# cd sysvinit-3.08
 (lfs chroot) root:/sources/sysvinit-3.08# patch -Np1 -i ../sysvinit-3.08-consolidated-1.patch
@@ -4399,22 +4406,22 @@ patching file src/Makefile
 (lfs chroot) root:/sources/sysvinit-3.08# make install
 ...
 </code></pre>
-<h3>8.84 Cleaning up</h3>
+<h3 id="8.84-cleaning-up" tabindex="-1">8.84 Cleaning up</h3>
 <pre><code>(lfs chroot) root:/sources/sysvinit-3.08# rm -rf /tmp/*
 (lfs chroot) root:/sources/sysvinit-3.08# find /usr/lib /usr/libexec -name \*.la -delete
 (lfs chroot) root:/sources/sysvinit-3.08# userdel -r tester
 userdel: tester mail spool (/var/mail/tester) not found
 (lfs chroot) root:/sources/sysvinit-3.08#
 </code></pre>
-<h2>9 System Configuration</h2>
-<h3>9.2 LFS-Bootscripts-20230728</h3>
+<h2 id="9-system-configuration" tabindex="-1">9 System Configuration</h2>
+<h3 id="9.2-lfs-bootscripts-20230728" tabindex="-1">9.2 LFS-Bootscripts-20230728</h3>
 <pre><code>(lfs chroot) root:/sources# tar xf lfs-bootscripts-20230728.tar.xz
 (lfs chroot) root:/sources# cd lfs-bootscripts-20230728
 (lfs chroot) root:/sources/lfs-bootscripts-20230728# make install
 ...
 </code></pre>
-<h3>9.4 Managing Devices</h3>
-<h5>9.4.1.2 Creating Custom Udev Rules</h5>
+<h3 id="9.4-managing-devices" tabindex="-1">9.4 Managing Devices</h3>
+<h5 id="9.4.1.2-creating-custom-udev-rules" tabindex="-1">9.4.1.2 Creating Custom Udev Rules</h5>
 <pre><code>(lfs chroot) root:/sys/bus# bash /usr/lib/udev/init-net-rules.sh
 (lfs chroot) root:/sys/bus# ls /etc/udev/rules.d/70-persistent-net.rules
 /etc/udev/rules.d/70-persistent-net.rules
@@ -4442,7 +4449,7 @@ SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, DRIVERS==&quot;?*&quot;, AT
 &gt;  &gt; /etc/udev/network/99-default.link
 (lfs chroot) root:/sys/bus#
 </code></pre>
-<h4>9.5.2 Creating the /etc/resolv.conf File</h4>
+<h4 id="9.5.2-creating-the-%2Fetc%2Fresolv.conf-file" tabindex="-1">9.5.2 Creating the /etc/resolv.conf File</h4>
 <pre><code>(lfs chroot) root:/sys#
 cat &gt; /etc/resolv.conf &lt;&lt; &quot;EOF&quot;
 # Begin /etc/resolv.conf
@@ -4456,11 +4463,11 @@ nameserver 114.114.114.114
 bash: warning: here-document at line 1 delimited by end-of-file (wanted `EOF')
 (lfs chroot) root:/sys#
 </code></pre>
-<h4>9.5.3 Configuring hostname</h4>
+<h4 id="9.5.3-configuring-hostname" tabindex="-1">9.5.3 Configuring hostname</h4>
 <pre><code>(lfs chroot) root:~# echo &quot;lfs&quot; &gt; /etc/hostname
 (lfs chroot) root:~#
 </code></pre>
-<h4>9.5.4 Set /etc/hosts file</h4>
+<h4 id="9.5.4-set-%2Fetc%2Fhosts-file" tabindex="-1">9.5.4 Set /etc/hosts file</h4>
 <pre><code>(lfs chroot) root:~#
 cat &gt; /etc/hosts &lt;&lt; &quot;EOF&quot;
 # Begin /etc/hosts
@@ -4472,7 +4479,7 @@ ff02::2   ip6-allrouters
 EOF
 (lfs chroot) root:~#
 </code></pre>
-<h3>9.6 Configuring Sysvint</h3>
+<h3 id="9.6-configuring-sysvint" tabindex="-1">9.6 Configuring Sysvint</h3>
 <pre><code>(lfs chroot) root:~# cat &gt; /etc/inittab &lt;&lt; &quot;EOF&quot;
 &gt; # Begin /etc/inittab
 &gt; id:3:initdefault:
@@ -4497,7 +4504,7 @@ EOF
 &gt; EOF
 (lfs chroot) root:~#
 </code></pre>
-<h4>9.6.4 Configuring the System Clock</h4>
+<h4 id="9.6.4-configuring-the-system-clock" tabindex="-1">9.6.4 Configuring the System Clock</h4>
 <pre><code>(lfs chroot) root:/etc/rc.d# hwclock --localtime --show
 2024-05-25 02:58:27.853636+08:00
 (lfs chroot) root:/etc/rc.d# date
@@ -4513,7 +4520,7 @@ Sat May 25 10:59:17 CST 2024
 &gt; EOF
 (lfs chroot) root:/etc/rc.d#
 </code></pre>
-<h4>9.6.5 Configuring the Linux Console</h4>
+<h4 id="9.6.5-configuring-the-linux-console" tabindex="-1">9.6.5 Configuring the Linux Console</h4>
 <pre><code>(lfs chroot) root:/etc/rc.d# cat &gt; /etc/sysconfig/console &lt;&lt; &quot;EOF&quot;
 &gt; # Begin /etc/sysconfig/console
 &gt; UNICODE=&quot;1&quot;
@@ -4522,7 +4529,7 @@ Sat May 25 10:59:17 CST 2024
 &gt; EOF
 (lfs chroot) root:/etc/rc.d#
 </code></pre>
-<h4>9.6.6 Creating Files at Boot</h4>
+<h4 id="9.6.6-creating-files-at-boot" tabindex="-1">9.6.6 Creating Files at Boot</h4>
 <pre><code>(lfs chroot) root:/etc/rc.d# echo &quot;/tmp/.ICE-unix dir 777 root root&quot; &gt;&gt; /etc/sysconfig/createfiles
 (lfs chroot) root:/etc/rc.d# cat /etc/sysconfig/createfiles
 ########################################################################
@@ -4559,12 +4566,12 @@ Sat May 25 10:59:17 CST 2024
 /tmp/.ICE-unix dir 777 root root
 (lfs chroot) root:/etc/rc.d#
 </code></pre>
-<h5>9.6.8.1 Customize rc.site</h5>
+<h5 id="9.6.8.1-customize-rc.site" tabindex="-1">9.6.8.1 Customize rc.site</h5>
 <pre><code>(lfs chroot) root:/etc/sysconfig# grep -E -v &quot;^(#|$)&quot; rc.site
 SKIPTMPCLEAN=y
 (lfs chroot) root:/etc/sysconfig#
 </code></pre>
-<h3>9.7 Configuring the System Locale</h3>
+<h3 id="9.7-configuring-the-system-locale" tabindex="-1">9.7 Configuring the System Locale</h3>
 <pre><code>(lfs chroot) root:/etc/sysconfig# locale -a | grep CN
 bo_CN
 bo_CN.utf8
@@ -4606,7 +4613,7 @@ fi
 EOF
 (lfs chroot) root:/etc/sysconfig#
 </code></pre>
-<h3>9.8 Creating /etc/inputrc</h3>
+<h3 id="9.8-creating-%2Fetc%2Finputrc" tabindex="-1">9.8 Creating /etc/inputrc</h3>
 <pre><code>(lfs chroot) root:/etc/sysconfig# cat &gt; /etc/inputrc &lt;&lt; &quot;EOF&quot;
 &gt; # Begin /etc/inputrc
 &gt; # Modified by Chris Lynn &lt;roryo@roryo.dynup.net&gt;
@@ -4642,7 +4649,7 @@ EOF
 &gt; EOF
 (lfs chroot) root:/etc/sysconfig#
 </code></pre>
-<h3>9.9 Creating /etc/shells</h3>
+<h3 id="9.9-creating-%2Fetc%2Fshells" tabindex="-1">9.9 Creating /etc/shells</h3>
 <pre><code>(lfs chroot) root:/etc/sysconfig# cat &gt; /etc/shells &lt;&lt; &quot;EOF&quot;
 &gt; # Begin /etc/shells
 &gt; /bin/sh
@@ -4651,7 +4658,7 @@ EOF
 &gt; EOF
 (lfs chroot) root:/etc/sysconfig#
 </code></pre>
-<h2>10 Making the LFS System Bootable</h2>
+<h2 id="10-making-the-lfs-system-bootable" tabindex="-1">10 Making the LFS System Bootable</h2>
 <pre><code>(lfs chroot) root:/etc/sysconfig#
 cat &gt; /etc/fstab &lt;&lt; &quot;EOF&quot;
 # Begin /etc/fstab
@@ -4678,7 +4685,7 @@ cgroup2        /sys/fs/cgroup cgroup2  nosuid,noexec,nodev 0     0
 EOF
 (lfs chroot) root:/etc/sysconfig#
 </code></pre>
-<h3>10.3 Linux-6.7.4</h3>
+<h3 id="10.3-linux-6.7.4" tabindex="-1">10.3 Linux-6.7.4</h3>
 <pre><code>(lfs chroot) root:/sources# rm -rf linux-6.7.4
 (lfs chroot) root:/sources# tar xf linux-6.7.4.tar.xz
 (lfs chroot) root:/sources# cd linux-6.7.4
@@ -4737,7 +4744,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 (lfs chroot) root:/sources# chown -R 0:0 linux-6.7.4
 (lfs chroot) root:/sources#
 </code></pre>
-<h3>10.3.2 Configuring Linux Module Load Order</h3>
+<h3 id="10.3.2-configuring-linux-module-load-order" tabindex="-1">10.3.2 Configuring Linux Module Load Order</h3>
 <pre><code>(lfs chroot) root:/sources/linux-6.7.4# install -v -m755 -d /etc/modprobe.d
 install: creating directory '/etc/modprobe.d'
 (lfs chroot) root:/sources/linux-6.7.4# cat &gt; /etc/modprobe.d/usb.conf &lt;&lt; &quot;EOF&quot;
@@ -4748,7 +4755,7 @@ install: creating directory '/etc/modprobe.d'
 &gt; EOF
 (lfs chroot) root:/sources/linux-6.7.4#
 </code></pre>
-<h3>10.4 using GRUB to Set Up the Boot Process</h3>
+<h3 id="10.4-using-grub-to-set-up-the-boot-process" tabindex="-1">10.4 using GRUB to Set Up the Boot Process</h3>
 <p>I miss to create a 1-2M grub boot partition, now fix it</p>
 <pre><code>(parted) p
 Model: ATA VBOX HARDDISK (scsi)
@@ -4814,7 +4821,7 @@ bash-5.2#
 &gt; EOF
 (lfs chroot) root:/sources/linux-6.7.4#
 </code></pre>
-<h2>11 The End</h2>
+<h2 id="11-the-end" tabindex="-1">11 The End</h2>
 <pre><code>(lfs chroot) root:/sources/linux-6.7.4# echo 12.1 &gt; /etc/lfs-release
 (lfs chroot) root:/sources/linux-6.7.4# export EDITOR=vim
 (lfs chroot) root:/sources/linux-6.7.4#
