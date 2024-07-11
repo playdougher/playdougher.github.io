@@ -23,8 +23,8 @@ module.exports = function (eleventyConfig) {
     eleventyConfig.addPlugin(pluginTOC, {
         tags: ['h2', 'h3', 'h4'],
         wrapper: 'nav',
+        ul: true,
         flat: false,
-        wrapperLabel: 'asf'
     })
     eleventyConfig.setLibrary("md", markdownit().use(anchor));
     return {
