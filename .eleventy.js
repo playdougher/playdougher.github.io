@@ -3,7 +3,9 @@
 
 // Don’t forget to `npm install @iarna/toml`
 // const toml = require("@iarna/toml");
-
+const markdownit = require("markdown-it");
+const pluginTOC = require('eleventy-plugin-toc');
+const anchor = require("markdown-it-anchor");
 module.exports = function (eleventyConfig) {
     // Copy the `css` directory to the output
     eleventyConfig.addPassthroughCopy('css');
@@ -18,7 +20,13 @@ module.exports = function (eleventyConfig) {
     //         toml: toml.parse.bind(toml),
     //     },
     // });
-    
+    eleventyConfig.addPlugin(pluginTOC, {
+        tags: ['h2', 'h3', 'h4'],
+        wrapper: 'nav',
+        flat: false,
+        wrapperLabel: 'asf'
+    })
+    eleventyConfig.setLibrary("md", markdownit().use(anchor));
     return {
         markdownTemplateEngine: 'njk',
         dataTemplateEngine: 'njk',

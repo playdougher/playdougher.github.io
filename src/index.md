@@ -5,14 +5,15 @@ tags:       ["appnote", "lfs"]
 identifier: "20240421T185748"
 layout: "layouts/base.njk"
 ---
-
-<!--css: /home/zhihao/Documents/notes/20240710T171321--css-for-long-code__code_css.css-->
-
 # LFS Project
 
-## Introduction
+## 1. Introduction
 
-LFS helps to build a custom Linux distribution from scratch xxxx.
+LFS helps to build a custom Linux distribution from scratch.
+
+## 2. Preparing the Host System
+
+### 2.2 Host System Requirements
 
 #### 2.2.2 Software Requirements
 
@@ -787,7 +788,7 @@ Filename                                Type            Size            Used    
 /dev/sdd9                               partition       2667516         0               -3
 dust:/home/zhihao #
 ```
-## 3 Packages and Patches
+## 3. Packages and Patches
 
 ### 3.1 Introduction
 

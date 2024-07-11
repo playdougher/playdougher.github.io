@@ -1,157 +1,113 @@
-:root {
-    color-scheme: light dark;
-    --light: #fff;
-    --lesslight: #efefef;
-    --dark: #404040;
-    --moredark: #000;
-    --link: royalblue;
-    border-top: 5px solid var(--dark);
-    line-height: 1.5em;
-    font-family: system-ui, sans-serif;
-    font-size: 16px;
-}
-
-* {
-    box-sizing: border-box;
-    color: var(--dark);
-}
-
-h1 {
-    line-height: 1em;
-}
-
-button, input {
-    font-size: 1em; /* Override browser default font shrinking*/
-}
-
-input {
-    border: 1px solid var(--dark);
-    background-color: var(--lesslight);
-    border-radius: .25em;
-    padding: .5em;
-}
-
-pre {
-    background-color: var(--lesslight);
-    margin: 0.5em 0 0.5em 0;
-    padding: 0.5em;
-    overflow: auto;
-}
-
-code {
-    background-color: var(--lesslight);
-}
-
+/*
+title:      css for long code
+date:       [2024-07-10 Wed 17:13]
+tags:       code  css
+identifier: 20240710T171321
+*/
 body {
-    background-color: var(--light);
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    line-height: 1.6;
     margin: 0;
+    padding: 20px;
+    font-size: 15px; /* Increased base font size */
+}
+
+.container {
     max-width: 800px;
-    padding: 0 20px 20px 20px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
+}
+h1 {
+    color: #ffffff;
+    border-bottom: 1px solid #444;
+    /* padding-bottom: 10px; */
+    font-size: 2em; /* Change this value to make the h1 header smaller */
+}
+h2 {
+    color: #ffffff;
+    border-bottom: 1px solid #444;
+    /* padding-bottom: 5px; */
+    font-size: 1.5em; /* Change this value to make the h2 header smaller */
+}
+h3 {
+    color: #ffffff;
+    border-bottom: 1px solid #444;
+    /* padding-bottom: 2.5px; */
+    font-size: 1.17em; /* Change this value to make the h3 header smaller */
+}
+h4 {
+    color: #ffffff;
+    border-bottom: 1px solid #444;
+    padding-bottom: 1.125px;
+    font-size: 1em; /* Change this value to make the h4 header smaller */
+}
+h5 {
+    font-size: 0.83em; /* Change this value to make the h5 header smaller */
+}
+h6 {
+    font-size: 0.67em; /* Change this value to make the h6 header smaller */
 }
 
 a {
-    outline: none;
+    color: #4aa8ff;
+    text-decoration: none;
 }
 
 a:hover {
-    text-decoration-color: var(--link);
+    text-decoration: underline;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
+p {
+    margin-bottom: 15px;
 }
 
-button, .button, input[type=submit] {
-    display: inline-block;
-    background-color: var(--dark);
-    color: var(--light);
-    text-align: center;
-    padding: .5em;
-    border-radius: .25em;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
+ul {
+    padding-left: 20px;
 }
 
-button:hover, .button:hover, input[type=submit]:hover {
-    color: var(--lesslight);
-    background-color: var(--moredark);
+code {
+    background-color: #2a2a2a;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9em; /* Slightly smaller than regular text */
 }
 
-/* Add a margin between side-by-side buttons */
-button + button, .button + .button, input[type=submit] + input[type=submit] {
-    margin-left: 1em;
+pre {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 400px; /* Set a maximum height */    
+    overflow-x: auto;
 }
 
-.center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
+pre code {
+    background-color: transparent;
+    padding: 0;
 }
 
-.bordered {
-    border: 3px solid;
+/* Table styles */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
-.home {
-    display: inline-block;
-    background-color: var(--dark);
-    color: var(--light);
-    margin-top: 20px;
-    padding: 5px 10px 5px 10px;
-    text-decoration: none;
+th, td {
+    border: 1px solid #444;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #2a2a2a;
+    color: #ffffff;
     font-weight: bold;
 }
 
-
-/* Desktop sizes */
-@media (min-width: 600px) {
-    ol.twocol {
-        column-count: 2;
-    }
-    
-    .row {
-        display: flex;
-        flex-direction: row;
-        padding: 0;
-        width: 100%;
-    }
-
-    /* Make everything in a row a column */
-    .row > * {
-        display: block;
-        flex: 1 1 auto;
-        max-width: 100%;
-        width: 100%;
-    }
-
-    .row > *:not(:last-child) {
-        margin-right: 10px;
-    }
+tr:nth-child(even) {
+    background-color: #252525;
 }
 
-/* Dark mode overrides (confusingly inverse) */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --light: #222;
-        --lesslight: #333;
-        --dark: #eee;
-        --moredark: #fefefe;
-    }
-    /* This fixes an odd blue then white shadow on FF in dark mode */
-    *:focus {
-        outline: var(--light);
-        box-shadow: 0 0 0 .25em var(--link);
-    }
-}
 
-/* Printing */
-@media print {
-    .home {
-        display: none;
-    }
-}
