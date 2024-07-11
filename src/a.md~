@@ -1,0 +1,7 @@
+---
+layout: "layouts/base.njk"
+eleventyNavigation:
+  key: two
+  parent: one
+---
+# asd

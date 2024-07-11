@@ -6,6 +6,7 @@
 const markdownit = require("markdown-it");
 const pluginTOC = require('eleventy-plugin-toc');
 const anchor = require("markdown-it-anchor");
+// const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 module.exports = function (eleventyConfig) {
     // Copy the `css` directory to the output
     eleventyConfig.addPassthroughCopy('css');
@@ -27,6 +28,7 @@ module.exports = function (eleventyConfig) {
         flat: false,
     })
     eleventyConfig.setLibrary("md", markdownit().use(anchor));
+    // eleventyConfig.addPlugin(eleventyNavigationPlugin);
     return {
         markdownTemplateEngine: 'njk',
         dataTemplateEngine: 'njk',

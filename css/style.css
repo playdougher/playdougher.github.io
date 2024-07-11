@@ -5,13 +5,13 @@ tags:       code  css
 identifier: 20240710T171321
 */
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;    
     background-color: #1e1e1e;
     color: #e0e0e0;
     line-height: 1.6;
     margin: 0;
     padding: 20px;
-    font-size: 15px; /* Increased base font size */
+    font-size: 18px; /* Increased base font size */
 }
 
 .container {
