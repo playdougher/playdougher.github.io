@@ -12,7 +12,7 @@ layout: "layouts/base.njk"
 
 ## Introduction
 
-LFS helps to build a custom Linux distribution from scratch.
+LFS helps to build a custom Linux distribution from scratch xxxx.
 
 #### 2.2.2 Software Requirements
 
