@@ -1,0 +1,15 @@
+---
+layout: layouts/base.njk
+---
+
+<section>
+        <article>
+          <h1>{{ title }}</h1>
+          <p>
+            Published on: {{ page.date }}
+          </p>
+          <h2>TOC</h2>      
+          {{ content | toc | safe }}
+          {{ content | safe }}
+        </article>
+</section>
