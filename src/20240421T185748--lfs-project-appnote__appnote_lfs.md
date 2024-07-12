@@ -5,7 +5,6 @@ tags:       ["appnote", "lfs"]
 identifier: "20240421T185748"
 layout: "layouts/base.njk"
 ---
-
 # LFS Project
 
 ## 1. Introduction
@@ -19,7 +18,7 @@ LFS helps to build a custom Linux distribution from scratch.
 #### 2.2.2 Software Requirements
 
 Check software requirements with version-check.sh.
-```
+```bash
 zhihao@dust|/home/zhihao/Downloads|$ cat version-check.sh
 #!/bin/bash
 # A script to list version numbers of critical development tools
@@ -104,7 +103,7 @@ fi
 zhihao@dust|/home/zhihao/Downloads|$ ^C
 ```
 Run script, requirements are met.
-```
+```bash
 zhihao@dust|/home/zhihao/Downloads|$ bash version-check.sh
 OK:    Coreutils 9.1    >= 8.1
 OK:    Bash      5.2.15 >= 3.2
@@ -140,7 +139,7 @@ zhihao@dust|/home/zhihao/Downloads|$
 ### 2.4 Creating partitions
 
 I use a 106G block device for partitions
-```
+```bash
 zhihao@dust|/home/zhihao|$ lsblk /dev/sdd
 NAME MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
 sdd    8:48   0 106.9G  0 disk
@@ -171,7 +170,7 @@ LFS suggests some other convenience partitions
 * /root - 20G
 
 Run partition commands:
-```
+```bash
 dust:/home/zhihao # parted /dev/sdd
 GNU Parted 3.5
 Using /dev/sdd
@@ -219,7 +218,7 @@ Number  Start          End            Size          File system  Name       Flag
 (parted)
 ```
 2.4.2 Create initramfs
-```
+```bash
 (lfs chroot) root:/#
 cat > /usr/sbin/mkinitramfs << "EOF"
 #!/bin/bash
@@ -586,7 +585,7 @@ EOF
 (lfs chroot) root:/#
 ```
 Install cpio
-```
+```bash
 zhihao@dust|/home/zhihao|$ sudo su
 bash-5.2# https://ftp.gnu.org/gnu/cpio/cpio-2.15.tar.bz2^C
 bash-5.2# cd /mnt/lfs
@@ -627,7 +626,7 @@ bash-5.2#
 ...
 ```
 Generate initramfs
-```
+```bash
 (lfs chroot) root:/tmp# mkinitramfs 6.7.4
 Creating initrd.img-6.7.4... done.
 (lfs chroot) root:/tmp# ls
@@ -638,7 +637,7 @@ initrd.img-6.7.4
 ### 2.5 Creating Filesystems
 
 Make all patitions ext4 filesystem
-```
+```bash
 dust:/home/zhihao # for i in `ls /dev/sdd[0-9]`; do mkfs -v -t ext4 $i; done
 mke2fs 1.46.5 (30-Dec-2021)
 fs_types for mke2fs.conf resolution: 'ext4', 'small'
@@ -689,7 +688,7 @@ Writing superblocks and filesystem accounting information: done
 dust:/home/zhihao # 
 ```
 Create swap partition 
-```
+```bash
 dust:/home/zhihao # mkswap /dev/sdd9
 mkswap: /dev/sdd9: warning: wiping old ext4 signature.
 Setting up swapspace version 1, size = 2.5 GiB (2731536384 bytes)
@@ -699,7 +698,7 @@ dust:/home/zhihao #
 ### 2.6 Setting $LFS Variable
 
 Set variable
-```
+```bash
 zhihao@dust|/home/zhihao|$ sudo su
 [sudo] password for root:
 dust:/home/zhihao #
@@ -714,7 +713,7 @@ dust:/home/zhihao #
 ```
 
 ### 2.7 Mounting partiions
-```
+```bash
 dust:/home/zhihao # mkdir -pv $LFS
 dust:/home/zhihao # lsblk -o +partlabel /dev/sdd
 NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS PARTLABEL
@@ -754,7 +753,7 @@ mount: /dev/sdd7 mounted on /mnt/lfs/usr/src.
 dust:/home/zhihao #
 ```
 Add to fstab 
-```
+```bash
 dust:/home/zhihao # tail -n9 /etc/fstab
 /dev/disk/by-partlabel/root /mnt/lfs/root ext4   defaults      1     1
 /dev/disk/by-partlabel/boot /mnt/lfs/boot ext4   defaults      1     1
@@ -768,7 +767,7 @@ dust:/home/zhihao # tail -n9 /etc/fstab
 dust:/home/zhihao # 
 ```
 Test if fstab works 
-```
+```bash
 dust:/home/zhihao # findmnt $LFS/home
 TARGET        SOURCE    FSTYPE OPTIONS
 /mnt/lfs/home /dev/sdd4 ext4   rw,relatime
@@ -781,7 +780,7 @@ TARGET        SOURCE    FSTYPE OPTIONS
 dust:/home/zhihao #
 ```
 Turn on swap
-```
+```bash
 dust:/home/zhihao # swapon -a
 dust:/home/zhihao # swapon -s
 Filename                                Type            Size            Used            Priority
@@ -794,7 +793,7 @@ dust:/home/zhihao #
 ### 3.1 Introduction
 
 Create sources directory
-```
+```bash
 dust:/home/zhihao # echo $LFS
 /mnt/lfs
 dust:/home/zhihao # mkdir $LFS/sources
@@ -802,7 +801,7 @@ dust:/home/zhihao # chmod -v a+wt $LFS/sources
 mode of '/mnt/lfs/sources' changed from 0755 (rwxr-xr-x) to 1777 (rwxrwxrwt)
 ```
 Create wget-list-sysv
-```
+```bash
 dust:/home/zhihao/Downloads # cat wget-list-sysv
 https://download.savannah.gnu.org/releases/acl/acl-2.3.2.tar.xz
 https://download.savannah.gnu.org/releases/attr/attr-2.5.2.tar.gz
@@ -893,11 +892,11 @@ https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz
 dust:/home/zhihao/Downloads #
 ```
 Download packages
-```
+```bash
 dust:/home/zhihao/Downloads # proxychains4 wget --input-file=wget-list-sysv --continue --directory-prefix=$LFS/sources
 ```
 Some packages are not found
-```
+```bash
 zhihao@dust|/home/zhihao/Downloads|$ wget --continue --directory-prefix=$LFS/sources https://prdownloads.sourceforge.net/expat/expat-2.6.0.tar.xz
 --2024-05-22 11:03:39--  https://prdownloads.sourceforge.net/expat/expat-2.6.0.tar.xz
 Connecting to 10.0.2.2:7890... connected.
@@ -907,7 +906,7 @@ Proxy request sent, awaiting response... 404 Not Found
 The reason is the expat file has been renamed as VULNERABLE https://sourceforge.net/projects/expat/files/expat/2.6.0/expat-2.6.0-RENAMED-VULNERABLE-PLEASE-USE-2.6.2-INSTEAD.tar.xz/download
 
 I download 2.6.2 instead https://sourceforge.net/projects/expat/files/expat/2.6.2/expat-2.6.2.tar.xz/download 
-```
+```bash
 zhihao@dust|/home/zhihao/Downloads|$ wget --continue --directory-prefix=$LFS/sources https://prdownloads.sourceforge.net/expat/expat-2.6.2.tar.xz
 --2024-05-22 11:07:17--  https://prdownloads.sourceforge.net/expat/expat-2.6.2.tar.xz
 Connecting to 10.0.2.2:7890... connected.
@@ -931,7 +930,7 @@ zhihao@dust|/home/zhihao/Downloads|$
 ```
 
 Download patches
-```
+```bash
 dust:/home/zhihao/Downloads # cat wget-list-patches
 https://www.linuxfromscratch.org/patches/lfs/12.1/bash-5.2.21-upstream_fixes-1.patch
 https://www.linuxfromscratch.org/patches/lfs/12.1/bzip2-1.0.8-install_docs-1.patch
@@ -944,12 +943,12 @@ dust:/home/zhihao/Downloads #
 dust:/home/zhihao/Downloads # proxychains4 wget --input-file=wget-list-patches --continue --directory-prefix=$LFS/sources
 ```
 Update owner
-```
+```bash
     dust:/home/zhihao # chown root:root $LFS/sources/*
     dust:/home/zhihao #
 ```
 ### 4.2 Create Limited Directory Layout
-```
+```bash
 dust:/home/zhihao/Downloads # mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
 mkdir: created directory '/mnt/lfs/etc'
 mkdir: created directory '/mnt/lfs/var'
@@ -989,7 +988,7 @@ mkdir: created directory '/mnt/lfs/tools'
 dust:/mnt/lfs #
 ```
 ### 4.3 Add lfs User
-```
+```bash
 dust:/mnt/lfs # groupadd lfs
 dust:/mnt/lfs # useradd -s /bin/bash -g lfs -m -k /dev/null lfs
 dust:/mnt/lfs # passwd lfs
@@ -1017,7 +1016,7 @@ dust:/mnt/lfs # su - lfs
 lfs@dust:~>
 ```
 ### 4.4 Setting Up Environment
-```
+```bash
 lfs@dust:~> cat > ~/.bash_profile << "EOF"
 > exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
 > EOF
@@ -1036,13 +1035,13 @@ lfs@dust:~> cat > ~/.bashrc << "EOF"
 lfs@dust:~>
 ```
 Rename bash.bashrc
-```
+```bash
 dust:/home/zhihao # [ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
 renamed '/etc/bash.bashrc' -> '/etc/bash.bashrc.NOUSE'
 dust:/home/zhihao #
 ```
 Set option and relogin to make it work
-```
+```bash
 lfs@dust:~> cat >> ~/.bashrc << "EOF"
 > export MAKEFLAGS=-j$(nproc)
 > EOF
@@ -1057,7 +1056,7 @@ lfs:~$ echo $LFS
 ### 5.2 Compile Binutils
 
 Decompress binutils shows file group error, but file is extracted successfully
-```
+```bash
 lfs:/mnt/lfs/sources$ xz -dk binutils-2.42.tar.xz
 xz: binutils-2.42.tar: Cannot set the file group: Operation not permitted
 lfs:/mnt/lfs/sources$
@@ -1067,7 +1066,7 @@ lfs:/mnt/lfs/sources$ ls -al binutils-2.42.tar*
 lfs:/mnt/lfs/sources$
 ```
 Decompress tar file
-```
+```bash
 lfs:/mnt/lfs/sources$ tar -xvf binutils-2.42.tar
 lfs:/mnt/lfs/sources/binutils-2.42$ ls
 COPYING                 SECURITY.txt  cpu         libiberty       mkinstalldirs
@@ -1085,7 +1084,7 @@ README-maintainer-mode  configure.ac  libctf      mkdep           zlib
 lfs:/mnt/lfs/sources/binutils-2.42$
 ```
 Configure binutils
-```
+```bash
 lfs:/mnt/lfs/sources/binutils-2.42$ mkdir -v build
 mkdir: created directory 'build'
 lfs:/mnt/lfs/sources/binutils-2.42$ cd build/
@@ -1108,7 +1107,7 @@ lfs:/mnt/lfs/sources/binutils-2.42/build$ make
 lfs:/mnt/lfs/sources/binutils-2.42/build$ make install
 ```
 ### 5.3 Install GCC
-```
+```bash
 lfs:/mnt/lfs/sources$ xz -dk gcc-13.2.0.tar.xz
 xz: gcc-13.2.0.tar: Cannot set the file group: Operation not permitted
 lfs:/mnt/lfs/sources$ ls -al gcc-13.2.0.tar
@@ -1119,7 +1118,7 @@ lfs:/mnt/lfs/sources$ cd gcc-13.2.0
 lfs:/mnt/lfs/sources/gcc-13.2.0$
 ```
 Handle requirements
-```
+```bash
 lfs:/mnt/lfs/sources/gcc-13.2.0$ tar -xf ../mpfr-4.2.1.tar.xz
 lfs:/mnt/lfs/sources/gcc-13.2.0$ mv -v mpfr-4.2.1 mpfr
 renamed 'mpfr-4.2.1' -> 'mpfr'
@@ -1142,13 +1141,13 @@ lfs:/mnt/lfs/sources/gcc-13.2.0$ case $(uname -m) in
 lfs:/mnt/lfs/sources/gcc-13.2.0$
 ```
 Create build dir
-```
+```bash
 lfs:/mnt/lfs/sources/gcc-13.2.0$ mkdir -v build; cd build
 mkdir: created directory 'build'
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$
 ```
 Configure
-```
+```bash
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$ ../configure                  \
 >     --target=$LFS_TGT         \
 >     --prefix=$LFS/tools       \
@@ -1171,19 +1170,19 @@ lfs:/mnt/lfs/sources/gcc-13.2.0/build$ ../configure                  \
 >     --enable-languages=c,c++
 ```
 Start install
-```
+```bash
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$ make
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$ make install
 ```
 Update limits.h
-```
+```bash
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$ cd ..
 lfs:/mnt/lfs/sources/gcc-13.2.0$ cat gcc/limitx.h gcc/glimits.h gcc/limity.h > \
 >   `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include/limits.h
 lfs:/mnt/lfs/sources/gcc-13.2.0$
 ```
 ### 5.4 install linux-6.7.4
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf linux-6.7.4.tar.xz
 lfs:/mnt/lfs/sources$ cd linux-6.7.4
 lfs:/mnt/lfs/sources/linux-6.7.4$ ls
@@ -1228,7 +1227,7 @@ lfs:/mnt/lfs/sources/linux-6.7.4$ cp -rv usr/include $LFS/usr
 ### 5.5 Glibc
 
 Install
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf glibc-2.39.tar.xz
 lfs:/mnt/lfs/sources/glibc-2.39$ case $(uname -m) in
 >     i?86)   ln -sfv ld-linux.so.2 $LFS/lib/ld-lsb.so.3
@@ -1300,7 +1299,7 @@ lfs:/mnt/lfs$
 sed '/RTLDLIST=/s@/usr@@g' -i $LFS/usr/bin/ldd
 ```
 Test if installed successfully
-```
+```bash
 lfs:/mnt/lfs/sources/glibc-2.39/build$ echo 'int main(){}' | $LFS_TGT-gcc -xc -
 lfs:/mnt/lfs/sources/glibc-2.39/build$ readelf -l a.out | grep ld-linux
       [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
@@ -1314,7 +1313,7 @@ removed 'a.out'
 lfs:/mnt/lfs/sources/glibc-2.39/build$
 ```
 ### 5.6 Libstdc++ from GCC-13.2.0
-```
+```bash
 lfs:/mnt/lfs/sources/gcc-13.2.0/build$ ls
 Makefile                   gcc           libcpp        serdep.tmp
 build-x86_64-pc-linux-gnu  gmp           libdecnumber  x86_64-lfs-linux-gnu
@@ -1347,7 +1346,7 @@ lfs:/mnt/lfs/sources/gcc-13.2.0/build$
 ## 6. Cross Compiling Temporary Tools
 
 ### 6.2 M4-1.4.19
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf m4-1.4.19.tar.xz
 lfs:/mnt/lfs/sources$ cd m4-1.4.19
 lfs:/mnt/lfs/sources/m4-1.4.19$
@@ -1360,7 +1359,7 @@ checking for x86_64-lfs-linux-gnu-strip... x86_64-lfs-linux-gnu-strip
 ...
 ```
 Make fails at MB_LEN_MAX error
-```
+```bash
 lfs:/mnt/lfs/sources/m4-1.4.19$ make
 ...
 /mnt/lfs/usr/include/bits/stdlib.h: In function 'wctomb':
@@ -1383,7 +1382,7 @@ make[3]: *** [Makefile:2866: openat-proc.o] Error 1
 ...
 ```
 There is an FAQ about it in https://linuxfromscratch.org/lfs/faq.html#m4-mb-len-max-wrong , untar gcc and generate limits.h again fixes it
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf gcc-13.2.0.tar.xz
 lfs:/mnt/lfs/sources$ cd gcc-13.2.0
 lfs:/mnt/lfs$ ls `dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include/limits.h
@@ -1446,7 +1445,7 @@ lfs:/mnt/lfs/sources/m4-1.4.19$ make
 lfs:/mnt/lfs/sources/m4-1.4.19$ make DESTDIR=$LFS install
 ```
 ### 6.3 Ncurses 
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf ncurses-6.4-20230520.tar.xz
 lfs:/mnt/lfs/sources$ cd ncurses-6.4-20230520
 lfs:/mnt/lfs/sources/ncurses-6.4-20230520$ sed -i s/mawk// configure
@@ -1491,7 +1490,7 @@ lfs:/mnt/lfs/sources/ncurses-6.4-20230520$ sed -e 's/^#if.*XOPEN.*$/#if 1/' \
 >     -i $LFS/usr/include/curses.h
 ```
 ### 6.4 Bash-5.2.21
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf bash-5.2.21.tar.gz
 lfs:/mnt/lfs/sources$ cd bash-5.2.21
 lfs:/mnt/lfs/sources/bash-5.2.21$ ./configure --prefix=/usr                      \
@@ -1507,7 +1506,7 @@ lfs:/mnt/lfs/sources/bash-5.2.21$ ln -sv bash $LFS/bin/sh
 lfs:/mnt/lfs/sources/bash-5.2.21$
 ```
 ### 6.5 Coreutils-9.4
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf coreutils-9.4.tar.xz
 lfs:/mnt/lfs/sources$ cd coreutils-9.4
 lfs:/mnt/lfs/sources/coreutils-9.4$ ./configure --prefix=/usr                     \
@@ -1530,7 +1529,7 @@ lfs:/mnt/lfs/sources/coreutils-9.4$ sed -i 's/"1"/"8"/'                    $LFS/
 lfs:/mnt/lfs/sources/coreutils-9.4$
 ```
 ### 6.6 Diffutils-3.10
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf diffutils-3.10.tar.xz
 lfs:/mnt/lfs/sources$ cd diffutils-3.10
 lfs:/mnt/lfs/sources/diffutils-3.10$ ./configure --prefix=/usr   \
@@ -1543,7 +1542,7 @@ lfs:/mnt/lfs/sources/diffutils-3.10$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.7 File-5.45
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf file-5.45.tar.gz
 lfs:/mnt/lfs/sources$ cd file-5.45
 lfs:/mnt/lfs/sources/file-5.45$ mkdir build
@@ -1570,7 +1569,7 @@ removed '/mnt/lfs/usr/lib/libmagic.la'
 lfs:/mnt/lfs/sources/file-5.45$
 ```
 ### 6.8 FindUtils-4.9.0
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf findutils-4.9.0.tar.xz
 lfs:/mnt/lfs/sources$ cd findutils-4.9.0
 lfs:/mnt/lfs/sources/findutils-4.9.0$ ./configure --prefix=/usr                   \
@@ -1584,7 +1583,7 @@ lfs:/mnt/lfs/sources/findutils-4.9.0$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.9 Gawk-5.3.0
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf gawk-5.3.0.tar.xz
 lfs:/mnt/lfs/sources$ cd gawk
 bash: cd: gawk: No such file or directory
@@ -1600,7 +1599,7 @@ lfs:/mnt/lfs/sources/gawk-5.3.0$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.10 Grep-3.11
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf grep-3.11.tar.xz
 lfs:/mnt/lfs/sources$ cd grep-3.11
 lfs:/mnt/lfs/sources/grep-3.11$ ./configure --prefix=/usr   \
@@ -1612,7 +1611,7 @@ lfs:/mnt/lfs/sources/grep-3.11$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.11 Gzip-1.13
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf gzip-1.13.tar.xz
 lfs:/mnt/lfs/sources$ cd gzip-1.13
 lfs:/mnt/lfs/sources/gzip-1.13$
@@ -1624,7 +1623,7 @@ lfs:/mnt/lfs/sources/gzip-1.13$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.12 Make-4.4.1
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf make-4.4.1.tar.gz
 lfs:/mnt/lfs/sources$ cd make-4.4.1
 lfs:/mnt/lfs/sources/make-4.4.1$
@@ -1639,7 +1638,7 @@ lfs:/mnt/lfs/sources/make-4.4.1$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.13 Patch-2.7.6
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf patch-2.7.6.tar.xz
 lfs:/mnt/lfs/sources$ cd patch-2.7.6
 lfs:/mnt/lfs/sources/patch-2.7.6$ ./configure --prefix=/usr   \
@@ -1652,7 +1651,7 @@ lfs:/mnt/lfs/sources/patch-2.7.6$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.14 Sed-4.9
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf sed-4.9.tar.xz
 lfs:/mnt/lfs/sources$ cd sed-4.9
 lfs:/mnt/lfs/sources/sed-4.9$ ./configure --prefix=/usr   \
@@ -1665,7 +1664,7 @@ lfs:/mnt/lfs/sources/sed-4.9$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.15 Tar-1.35
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf tar-1.35.tar.xz
 lfs:/mnt/lfs/sources$ cd tar-1.35
 lfs:/mnt/lfs/sources/tar-1.35$ ./configure --prefix=/usr                     \
@@ -1678,7 +1677,7 @@ lfs:/mnt/lfs/sources/tar-1.35$ make DESTDIR=$LFS install
 ...
 ```
 ### 6.16 Xz-5.4.6
-```
+```bash
 lfs:/mnt/lfs/sources$ tar xf xz-5.4.6.tar.xz
 lfs:/mnt/lfs/sources$ cd xz-5.4.6
 lfs:/mnt/lfs/sources/xz-5.4.6$ ./configure --prefix=/usr                     \
@@ -1696,7 +1695,7 @@ removed '/mnt/lfs/usr/lib/liblzma.la'
 lfs:/mnt/lfs/sources/xz-5.4.6$
 ```
 ### 6.17 Binutils-2.42 - Pass 2
-```
+```bash
 lfs:/mnt/lfs/sources/binutils-2.42$ sed '6009s/$add_dir//' -i ltmain.sh
 lfs:/mnt/lfs/sources/binutils-2.42$ du -sh build
 183M    build
@@ -1733,7 +1732,7 @@ removed '/mnt/lfs/usr/lib/libsframe.la'
 lfs:/mnt/lfs/sources/binutils-2.42/build$
 ```
 ### 6.18 GCC-13.2.0 - Pass 2
-```
+```bash
 lfs:/mnt/lfs/sources/gcc-13.2.0$ tar -xf ../mpfr-4.2.1.tar.xz
 lfs:/mnt/lfs/sources/gcc-13.2.0$ mv -v mpfr-4.2.1 mpfr
 renamed 'mpfr-4.2.1' -> 'mpfr/mpfr-4.2.1'
@@ -1790,14 +1789,14 @@ lfs:/mnt/lfs/sources/gcc-13.2.0/build$
 ## 7. Entering Chroot and Building Additional Temporary Tools
 
 ### 7.2 Changing Ownership
-```
+```bash
 bash-5.2# chown -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
 bash-5.2# case $(uname -m) in
 >   x86_64) chown -R root:root $LFS/lib64 ;;
 > esac
 ```
 ### 7.3 Preparing Virtual Kernel File Systems
-```
+```bash
 bash-5.2# mkdir -pv $LFS/{dev,proc,sys,run}
 mkdir: created directory '/mnt/lfs/dev'
 mkdir: created directory '/mnt/lfs/proc'
@@ -1806,13 +1805,13 @@ mkdir: created directory '/mnt/lfs/run'
 bash-5.2#
 ```
 ### 7.3.1 Mounting and Populating /dev/
-```
+```bash
 bash-5.2# mount -v --bind /dev $LFS/dev
 mount: /dev bound on /mnt/lfs/dev.
 bash-5.2#
 ```
 #### 7.3.2 Mounting Virtual Kernel File Systems
-```
+```bash
 bash-5.2# mount -vt devpts devpts -o gid=5,mode=0620 $LFS/dev/pts
 mount: devpts mounted on /mnt/lfs/dev/pts.
 bash-5.2# mount -vt proc proc $LFS/proc
@@ -1831,7 +1830,7 @@ mount: tmpfs mounted on /mnt/lfs/dev/shm.
 bash-5.2#
 ```
 ### 7.4 Entering the Chroot Environment
-```
+```bash
 bash-5.2# chroot "$LFS" /usr/bin/env -i   \
 >     HOME=/root                  \
 >     TERM="$TERM"                \
@@ -1843,7 +1842,7 @@ bash-5.2# chroot "$LFS" /usr/bin/env -i   \
 (lfs chroot) I have no name!:/#
 ```
 ### 7.5 Creating Directories
-```
+```bash
 (lfs chroot) I have no name!:/# mkdir -pv /{boot,home,mnt,opt,srv}
 mkdir: created directory '/mnt'
 mkdir: created directory '/srv'
@@ -1916,7 +1915,7 @@ install: creating directory '/var/tmp'
 #### 7.5.1 FHS Compliance Note
 
 ### 7.6 Creating Essential Files and Symlinks
-```
+```bash
 (lfs chroot) I have no name!:/# ln -sv /proc/self/mounts /etc/mtab
 '/etc/mtab' -> '/proc/self/mounts'
 (lfs chroot) I have no name!:/#
@@ -1976,7 +1975,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 (lfs chroot) root:/#
 ```
 ### 7.7 Gettext-0.22.4
-```
+```bash
 (lfs chroot) root:/sources# tar xf gettext-0.22.4.tar.xz
 (lfs chroot) root:/sources# cd gettext-0.22.4
 (lfs chroot) root:/sources/gettext-0.22.4# ./configure --disable-shared
@@ -1990,7 +1989,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 (lfs chroot) root:/sources/gettext-0.22.4#
 ```
 ### 7.8 Bison-3.8.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf bison-3.8.2.tar.xz
 (lfs chroot) root:/sources# cd bison-3.8.2
 (lfs chroot) root:/sources/bison-3.8.2# ./configure --prefix=/usr \
@@ -2001,7 +2000,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 ...
 ```
 ### 7.9 Perl-5.38.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf perl-5.38.2.tar.xz
 (lfs chroot) root:/sources# cd perl-5.38.2
 (lfs chroot) root:/sources/perl-5.38.2# sh Configure -des                                        \
@@ -2021,7 +2020,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 ...
 ```
 ### 7.10 Python-3.12.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf Python-3.12.2.tar.xz
 (lfs chroot) root:/sources# cd Python-3.12.2
 (lfs chroot) root:/sources/Python-3.12.2# ./configure --prefix=/usr   \
@@ -2034,7 +2033,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 ...
 ```
 ### 7.11 Texinfo-7.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf texinfo-7.1.tar.xz
 (lfs chroot) root:/sources# cd texinfo-7.1
 (lfs chroot) root:/sources/texinfo-7.1# ./configure --prefix=/usr
@@ -2045,7 +2044,7 @@ mode of '/var/log/btmp' changed from 0644 (rw-r--r--) to 0600 (rw-------)
 ...
 ```
 ### 7.12 Util-linux-2.39.3
-```
+```bash
 (lfs chroot) root:/sources# mkdir -pv /var/lib/hwclock
 mkdir: created directory '/var/lib/hwclock'
 (lfs chroot) root:/sources# tar xf util-linux-2.39.3.tar.xz
@@ -2072,14 +2071,14 @@ cd (lfs chroot) root:/sources# cd util-linux-2.39.3
 ### 7.13 Cleaning up and Saving the Temporary System
 
 #### 7.13.1 Cleaning
-```
+```bash
 (lfs chroot) root:/sources# rm -rf /usr/share/{info,man,doc}/*
 (lfs chroot) root:/sources# find /usr/{lib,libexec} -name \*.la -delete
 (lfs chroot) root:/sources# rm -rf /tools
 (lfs chroot) root:/sources#
 ```
 #### 7.13.2 Backup
-```
+```bash
 (lfs chroot) root:/sources#
 logout
 bash-5.2#
@@ -2109,7 +2108,7 @@ bash-5.2#
 ## 8. Installing Basic System Software
 
 ### 8.3 Man-pages-6.06
-```
+```bash
 bash-5.2# history 10
   537  removed 'man3/crypt.3'
   538  removed 'man3/crypt_r.3'
@@ -2130,14 +2129,14 @@ removed 'man3/crypt_r.3'
 (lfs chroot) root:/sources/man-pages-6.06# make prefix=/usr install
 ```
 ### 8.4 Iana-Etc-20240125
-```
+```bash
 (lfs chroot) root:/sources# tar xf iana-etc-20240125.tar.gz
 (lfs chroot) root:/sources# cd iana-etc-20240125
 (lfs chroot) root:/sources/iana-etc-20240125# cp services protocols /etc
 (lfs chroot) root:/sources/iana-etc-20240125#
 ```
 ### 8.5 Glibc-2.39
-```
+```bash
 (lfs chroot) root:/sources/glibc-2.39# patch -Np1 -i ../glibc-2.39-fhs-1.patch
 patching file Makeconfig
 Reversed (or previously applied) patch detected!  Skipping patch.
@@ -2173,7 +2172,7 @@ mkdir: created directory 'build'
 ...
 ```
 I ignore some fails 
-```
+```bash
 (lfs chroot) root:/sources/glibc-2.39/build# make check
 ...
 FAIL: io/tst-lchmod
@@ -2196,7 +2195,7 @@ make: *** [Makefile:9: check] Error 2
 (lfs chroot) root:/sources/glibc-2.39/build#
 ```
 Continue
-```
+```bash
 (lfs chroot) root:/sources/glibc-2.39/build# touch /etc/ld.so.conf
 (lfs chroot) root:/sources/glibc-2.39/build# sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 (lfs chroot) root:/sources/glibc-2.39/build# make install
@@ -2241,7 +2240,7 @@ Continue
 (lfs chroot) root:/sources/glibc-2.39/build# make localedata/install-locales
 ```
 #### 8.5.2 Configuring Glibc
-```
+```bash
 (lfs chroot) root:/sources/glibc-2.39/build# cat > /etc/nsswitch.conf << "EOF"
 > # Begin /etc/nsswitch.conf
 > passwd: files
@@ -2285,7 +2284,7 @@ warning: "leapseconds", line 80: "#expires" is obsolescent; use "Expires"
 (lfs chroot) root:/sources/glibc-2.39/build#
 ```
 Select timezone
-```
+```bash
 (lfs chroot) root:/sources/glibc-2.39/build# tzselect
 Please identify a location so that time zone rules can be set correctly.
 Please select a continent, ocean, "coord", or "TZ".
@@ -2351,7 +2350,7 @@ TZ='Asia/Shanghai'; export TZ
 (lfs chroot) root:/sources/glibc-2.39/build#
 ```
 ##### 8.5.2.3 Configuring the Dynamic Loader
-```
+```bash
 (lfs chroot) root:/sources/glibc-2.39/build# cat > /etc/ld.so.conf << "EOF"
 > # Begin /etc/ld.so.conf
 > /usr/local/lib
@@ -2366,7 +2365,7 @@ mkdir: created directory '/etc/ld.so.conf.d'
 (lfs chroot) root:/sources/glibc-2.39/build#
 ```
 ### 8.6 Zlib-1.3.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf zlib-1.3.1.tar.gz
 (lfs chroot) root:/sources# cd zlib-1.3.1
 (lfs chroot) root:/sources/zlib-1.3.1# ./configure --prefix=/usr
@@ -2382,7 +2381,7 @@ removed '/usr/lib/libz.a'
 (lfs chroot) root:/sources/zlib-1.3.1#
 ```
 ### 8.7 Bzip2-1.0.8
-```
+```bash
 (lfs chroot) root:/sources# tar xf bzip2-1.0.8.tar.gz
 (lfs chroot) root:/sources# cd bzip2-1.0.8
 (lfs chroot) root:/sources/bzip2-1.0.8# patch -Np1 -i ../bzip2-1.0.8-install_docs-1.patch
@@ -2419,7 +2418,7 @@ removed '/usr/lib/libbz2.a'
 (lfs chroot) root:/sources/bzip2-1.0.8#
 ```
 ### 8.8 Xz-5.4.6
-```
+```bash
 (lfs chroot) root:/sources# tar xf xz-5.4.6.tar.xz
 (lfs chroot) root:/sources# cd xz-5.4.6
 (lfs chroot) root:/sources/xz-5.4.6# ./configure --prefix=/usr    \
@@ -2433,7 +2432,7 @@ removed '/usr/lib/libbz2.a'
 ...
 ```
 ### 8.9 Zstd-1.5.5
-```
+```bash
 (lfs chroot) root:/sources# tar xf zstd-1.5.5.tar.gz
 (lfs chroot) root:/sources# cd zstd-1.5.5
 (lfs chroot) root:/sources/zstd-1.5.5# make prefix=/usr
@@ -2447,7 +2446,7 @@ removed '/usr/lib/libzstd.a'
 (lfs chroot) root:/sources/zstd-1.5.5#
 ```
 ### 8.10 File-5.45
-```
+```bash
 (lfs chroot) root:/sources# tar xf file-5.45.tar.gz
 (lfs chroot) root:/sources# cd file-5.45
 (lfs chroot) root:/sources/file-5.45# ./configure --prefix=/usr
@@ -2460,7 +2459,7 @@ removed '/usr/lib/libzstd.a'
 ...
 ```
 ### 8.11 Readline-8.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf readline-8.2.tar.gz
 (lfs chroot) root:/sources# cd readline-8.2
 (lfs chroot) root:/sources/readline-8.2# sed -i '/MV.*old/d' Makefile.in
@@ -2492,7 +2491,7 @@ removed '/usr/lib/libzstd.a'
 (lfs chroot) root:/sources/readline-8.2#
 ```
 ### 8.12 M4-1.4.19
-```
+```bash
 (lfs chroot) root:/sources/m4-1.4.19# ./configure --prefix=/usr
 ...
 (lfs chroot) root:/sources/m4-1.4.19# make
@@ -2503,7 +2502,7 @@ removed '/usr/lib/libzstd.a'
 ...
 ```
 ### 8.13 Bc-6.7.5
-```
+```bash
 (lfs chroot) root:/sources# tar xf bc-6.7.5.tar.xz
 (lfs chroot) root:/sources# cd bc-6.7.5
 (lfs chroot) root:/sources/bc-6.7.5# CC=gcc ./configure --prefix=/usr -G -O3 -r
@@ -2516,7 +2515,7 @@ removed '/usr/lib/libzstd.a'
 ...
 ```
 ### 8.14 Flex-2.6.4
-```
+```bash
 (lfs chroot) root:/sources# tar xf flex-2.6.4.tar.gz
 (lfs chroot) root:/sources# cd flex-2.6.4
 (lfs chroot) root:/sources/flex-2.6.4# ./configure --prefix=/usr \
@@ -2536,7 +2535,7 @@ removed '/usr/lib/libzstd.a'
 (lfs chroot) root:/sources/flex-2.6.4#
 ```
 ### 8.15 Tcl-8.6.13
-```
+```bash
 (lfs chroot) root:/sources# tar xf tcl8.6.13-src.tar.gz
 (lfs chroot) root:/sources# cd tcl8.6.13
 (lfs chroot) root:/sources/tcl8.6.13# SRCDIR=$(pwd)
@@ -2581,7 +2580,7 @@ mkdir: created directory '/usr/share/doc/tcl-8.6.13'
 ...
 ```
 ### 8.16 Expect-5.45.4
-```
+```bash
 (lfs chroot) root:/sources/tcl8.6.13# python3 -c 'from pty import spawn; spawn(["echo", "ok"])'
 ok
 (lfs chroot) root:/sources/tcl8.6.13#(lfs chroot) root:/sources/tcl8.6.13# cd ..
@@ -2604,7 +2603,7 @@ ok
 (lfs chroot) root:/sources/expect5.45.4#
 ```
 ### 8.17 DejaGNU-1.6.3
-```
+```bash
 (lfs chroot) root:/sources# tar xf dejagnu-1.6.3.tar.gz
 (lfs chroot) root:/sources# cd dejagnu-1.6.3
 (lfs chroot) root:/sources/dejagnu-1.6.3# mkdir -v build
@@ -2626,7 +2625,7 @@ install: creating directory '/usr/share/doc/dejagnu-1.6.3'
 (lfs chroot) root:/sources/dejagnu-1.6.3/build#
 ```
 ### 8.18 Pkgconf-2.1.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf pkgconf-2.1.1.tar.xz
 (lfs chroot) root:/sources# cd pkgconf-2.1.1
 (lfs chroot) root:/sources/pkgconf-2.1.1# ./configure --prefix=/usr              \
@@ -2644,7 +2643,7 @@ install: creating directory '/usr/share/doc/dejagnu-1.6.3'
 (lfs chroot) root:/sources/pkgconf-2.1.1#
 ```
 ### 8.19 Binutils-2.42
-```
+```bash
 (lfs chroot) root:/sources/binutils-2.42# rm -rf build/
 (lfs chroot) root:/sources/binutils-2.42# mkdir -v build
 mkdir: created directory 'build'
@@ -2712,7 +2711,7 @@ removed '/usr/lib/libsframe.a'
 (lfs chroot) root:/sources/binutils-2.42/build#
 ```
 ### 8.20 GMP-6.3.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf gmp-6.3.0.tar.xz
 (lfs chroot) root:/sources# cd gmp
 bash: cd: gmp: No such file or directory
@@ -2738,7 +2737,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.21 MPFR-4.2.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf mpfr-4.2.1.tar.xz
 (lfs chroot) root:/sources# cd mpfr-4.2.1
 (lfs chroot) root:/sources/mpfr-4.2.1# ./configure --prefix=/usr        \
@@ -2756,7 +2755,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.22 MPC-1.3.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf mpc-1.3.1.tar.gz
 (lfs chroot) root:/sources# cd mpc-1.3.1
 (lfs chroot) root:/sources/mpc-1.3.1# ./configure --prefix=/usr    \
@@ -2775,7 +2774,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.23 Attr-2.5.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf attr-2.5.2.tar.gz
 (lfs chroot) root:/sources# cd attr-2.5.2
 (lfs chroot) root:/sources/attr-2.5.2# ./configure --prefix=/usr     \
@@ -2791,7 +2790,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.24 Acl-2.3.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf acl-2.3.2.tar.xz
 (lfs chroot) root:/sources# cd acl-2.3.2
 (lfs chroot) root:/sources/acl-2.3.2# ./configure --prefix=/usr         \
@@ -2804,7 +2803,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.25 Libcap-2.69
-```
+```bash
 (lfs chroot) root:/sources# tar xf libcap-2.69.tar.xz
 (lfs chroot) root:/sources# cd libcap-2.69
 (lfs chroot) root:/sources/libcap-2.69# sed -i '/install -m.*STA/d' libcap/Makefile
@@ -2816,7 +2815,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.26 Libxcrypt-4.4.36
-```
+```bash
 (lfs chroot) root:/sources/libcap-2.69# cd ..
 (lfs chroot) root:/sources# tar xf libxcrypt-4.4.36.tar.xz
 (lfs chroot) root:/sources# cd libxcrypt-4.4.36
@@ -2834,7 +2833,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.27 Shadow-4.14.5
-```
+```bash
 (lfs chroot) root:/sources# tar xf shadow-4.14.5.tar.xz
 (lfs chroot) root:/sources# cd shadow-4.14.5
 (lfs chroot) root:/sources/shadow-4.14.5# sed -i 's/groups$(EXEEXT) //' src/Makefile.in
@@ -2861,7 +2860,7 @@ bash: cd: gmp: No such file or directory
 ...
 ```
 ### 8.27.2 Configuring Shadow
-```
+```bash
 (lfs chroot) root:/sources/shadow-4.14.5# pwconv
 (lfs chroot) root:/sources/shadow-4.14.5# grpconv
 (lfs chroot) root:/sources/shadow-4.14.5# mkdir -p /etc/default
@@ -2880,7 +2879,7 @@ passwd: password changed.
 (lfs chroot) root:/sources/shadow-4.14.5#
 ```
 ### 8.28 GCC-13.2.0
-```
+```bash
 (lfs chroot) root:/sources/gcc-13.2.0# rm -rf build
 (lfs chroot) root:/sources/gcc-13.2.0# case $(uname -m) in
 >   x86_64)
@@ -3161,7 +3160,7 @@ renamed '/usr/lib/libstdc++.so.6.0.32-gdb.py' -> '/usr/share/gdb/auto-load/usr/l
 (lfs chroot) root:/sources/gcc-13.2.0/build#
 ```
 ### 8.29 Ncurses-6.4-20230520
-```
+```bash
 (lfs chroot) root:/sources/ncurses-6.4-20230520# ./configure --prefix=/usr           \
 >             --mandir=/usr/share/man \
 >             --with-shared           \
@@ -3207,7 +3206,7 @@ removed 'dest/usr/lib/libncursesw.so.6.4'
 ...
 ```
 ### 8.30 Sed-4.9
-```
+```bash
 (lfs chroot) root:/sources/sed-4.9# ./configure --prefix=/usr
 ...
 (lfs chroot) root:/sources/sed-4.9# make
@@ -3223,7 +3222,7 @@ removed 'dest/usr/lib/libncursesw.so.6.4'
 (lfs chroot) root:/sources/sed-4.9# install -m644 doc/sed.html /usr/share/doc/sed-4.9
 ```
 ### 8.31 Psmisc-23.6
-```
+```bash
 (lfs chroot) root:/sources# tar xf psmisc-23.6.tar.xz
 (lfs chroot) root:/sources# cd psmisc-23.6
 (lfs chroot) root:/sources/psmisc-23.6# ./configure --prefix=/usr
@@ -3236,7 +3235,7 @@ removed 'dest/usr/lib/libncursesw.so.6.4'
 ...
 ```
 ### 8.32 Gettext-0.22.4
-```
+```bash
 (lfs chroot) root:/sources# rm -rf gettext-0.22.4
 (lfs chroot) root:/sources# tar xf gettext-0.22.4.tar.xz
 cd (lfs chroot) root:/sources# cd gettext-0.22.4
@@ -3255,7 +3254,7 @@ mode of '/usr/lib/preloadable_libintl.so' changed from 0644 (rw-r--r--) to 0755 
 (lfs chroot) root:/sources/gettext-0.22.4#
 ```
 ### 8.33 Bison-3.8.2
-```
+```bash
 (lfs chroot) root:/sources# rm bison-3.8.2
 rm: cannot remove 'bison-3.8.2': Is a directory
 (lfs chroot) root:/sources# rm -rf bison-3.8.2
@@ -3271,7 +3270,7 @@ rm: cannot remove 'bison-3.8.2': Is a directory
 ...
 ```
 ### 8.35. Bash-5.2.21
-```
+```bash
 (lfs chroot) root:/sources# rm -rf bash-5.2.21
 (lfs chroot) root:/sources# tar xf bash-5.2.21.tar.gz
 (lfs chroot) root:/sources# cd bash-5.2.21
@@ -3305,7 +3304,7 @@ patching file patchlevel.h
 (lfs chroot) root:/sources/bash-5.2.21#
 ```
 ### 8.36 Libtool-2.4.7
-```
+```bash
 (lfs chroot) root:/sources# tar xf libtool-2.4.7.tar.xz
 (lfs chroot) root:/sources# cd libtool-2.4.7
 (lfs chroot) root:/sources/libtool-2.4.7# ./configure --prefix=/usr
@@ -3321,7 +3320,7 @@ removed '/usr/lib/libltdl.a'
 (lfs chroot) root:/sources/libtool-2.4.7#
 ```
 ### 8.37 GDBM-1.23
-```
+```bash
 (lfs chroot) root:/sources# tar xf gdbm-1.23.tar.gz
 (lfs chroot) root:/sources# cd gdbm-1.23
 (lfs chroot) root:/sources/gdbm-1.23# ./configure --prefix=/usr    \
@@ -3336,7 +3335,7 @@ removed '/usr/lib/libltdl.a'
 ...
 ```
 ### 8.38 Gperf-3.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf gperf-3.1.tar.gz
 (lfs chroot) root:/sources# cd gperf-3.1
 (lfs chroot) root:/sources/gperf-3.1# ./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
@@ -3349,7 +3348,7 @@ removed '/usr/lib/libltdl.a'
 ...
 ```
 ### 8.39 Expat-2.6.0
-```
+```bash
 (lfs chroot) root:/sources/expat-2.6.2# ./configure --prefix=/usr    \
 >             --disable-static \
 >             --docdir=/usr/share/doc/expat-2.6.2
@@ -3367,7 +3366,7 @@ removed '/usr/lib/libltdl.a'
 (lfs chroot) root:/sources/expat-2.6.2#
 ```
 ### 8.40 Inetutils-2.5
-```
+```bash
 (lfs chroot) root:/sources# tar xf inetutils-2.5.tar.xz
 (lfs chroot) root:/sources# cd inetutils-2.5
 (lfs chroot) root:/sources/inetutils-2.5# ./configure --prefix=/usr        \
@@ -3392,7 +3391,7 @@ renamed '/usr/bin/ifconfig' -> '/usr/sbin/ifconfig'
 (lfs chroot) root:/sources/inetutils-2.5#
 ```
 ### 8.41 Less-643
-```
+```bash
 (lfs chroot) root:/sources# tar xf less-643.tar.gz
 (lfs chroot) root:/sources# cd less-643
 (lfs chroot) root:/sources/less-643# ./configure --prefix=/usr --sysconfdir=/etc
@@ -3412,7 +3411,7 @@ renamed '/usr/bin/ifconfig' -> '/usr/sbin/ifconfig'
 (lfs chroot) root:/sources/less-643#
 ```
 ### 8.42 Perl-5.38.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf perl-5.38.2.tar.xz
 (lfs chroot) root:/sources# cd perl-5.38.2.tar.xz
 bash: cd: perl-5.38.2.tar.xz: Not a directory
@@ -3445,7 +3444,7 @@ bash: cd: perl-5.38.2.tar.xz: Not a directory
 (lfs chroot) root:/sources/perl-5.38.2#
 ```
 ### 8.43 XML::Parse-2.47
-```
+```bash
 (lfs chroot) root:/sources# tar xf XML-Parser-2.47.tar.gz
 (lfs chroot) root:/sources# cd XML-Parser-2.47
 (lfs chroot) root:/sources/XML-Parser-2.47# perl Makefile.PL
@@ -3465,7 +3464,7 @@ Writing MYMETA.yml and MYMETA.json
 ...
 ```
 ### 8.44 Intltool-0.51.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf intltool-0.51.0.tar.gz
 (lfs chroot) root:/sources# cd intltool-0.51.0
 (lfs chroot) root:/sources/intltool-0.51.0# sed -i 's:\\\${:\\\$\\{:' intltool-update.in
@@ -3483,7 +3482,7 @@ install: creating directory '/usr/share/doc/intltool-0.51.0'
 (lfs chroot) root:/sources/intltool-0.51.0#
 ```
 ### 8.45 Autoconf-2.72
-```
+```bash
 (lfs chroot) root:/sources# tar xf autoconf-2.72.tar.xz
 (lfs chroot) root:/sources# cd autoconf-2.72
 (lfs chroot) root:/sources/autoconf-2.72# ./configure --prefix=/usr
@@ -3496,7 +3495,7 @@ install: creating directory '/usr/share/doc/intltool-0.51.0'
 ...
 ```
 ### 8.46 Automake-1.16.5
-```
+```bash
 (lfs chroot) root:/sources# tar xf automake-1.16.5.tar.xz
 (lfs chroot) root:/sources# cd automake-1.16.5
 (lfs chroot) root:/sources/automake-1.16.5# ./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.5
@@ -3509,7 +3508,7 @@ install: creating directory '/usr/share/doc/intltool-0.51.0'
 ...
 ```
 ### 8.47 OpenSSL-3.2.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf openssl-3.2.1.tar.gz
 cd(lfs chroot) root:/sources# cd openssl-3.2.1
 (lfs chroot) root:/sources/openssl-3.2.1# ./config --prefix=/usr         \
@@ -3555,7 +3554,7 @@ renamed '/usr/share/doc/openssl' -> '/usr/share/doc/openssl-3.2.1'
 ...
 ```
 ### 8.48 Kmod-31
-```
+```bash
 (lfs chroot) root:/sources# tar xf kmod-31.tar.xz
 (lfs chroot) root:/sources# cd kmod-31
 (lfs chroot) root:/sources/kmod-31# ./configure --prefix=/usr          \
@@ -3583,7 +3582,7 @@ renamed '/usr/share/doc/openssl' -> '/usr/share/doc/openssl-3.2.1'
 (lfs chroot) root:/sources/kmod-31#
 ```
 ### 8.49 Libelf from Elfutils-0.190
-```
+```bash
 (lfs chroot) root:/sources# tar xf elfutils-0.190.tar.bz2
 cd (lfs chroot) root:/sources# cd elfutils-0.190
 (lfs chroot) root:/sources/elfutils-0.190# ./configure --prefix=/usr                \
@@ -3616,7 +3615,7 @@ make: Leaving directory '/sources/elfutils-0.190/libelf'
 (lfs chroot) root:/sources/elfutils-0.190#
 ```
 ### 8.50 Libffi-3.4.4
-```
+```bash
 (lfs chroot) root:/sources# tar xf libffi-3.4.4.tar.gz
 (lfs chroot) root:/sources# cd libffi-3.4.4
 (lfs chroot) root:/sources/libffi-3.4.4#
@@ -3632,7 +3631,7 @@ make: Leaving directory '/sources/elfutils-0.190/libelf'
 ...
 ```
 ### 8.51 Python-3.12.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf Python-3.12.2.tar.xz
 (lfs chroot) root:/sources# cd Python-3.12.2
 (lfs chroot) root:/sources/Python-3.12.2# ./configure --prefix=/usr        \
@@ -3660,7 +3659,7 @@ install: creating directory '/usr/share/doc/python-3.12.2/html'
 (lfs chroot) root:/sources/Python-3.12.2#
 ```
 ### 8.52 Flit-Core-3.9.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf flit_core-3.9.0.tar.gz
 (lfs chroot) root:/sources# cd flit_core-3.9.0
 (lfs chroot) root:/sources/flit_core-3.9.0# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3680,7 +3679,7 @@ Successfully installed flit_core-3.9.0
 (lfs chroot) root:/sources/flit_core-3.9.0#
 ```
 ### 8.53 Wheel-0.42.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf wheel-0.42.0.tar.gz
 (lfs chroot) root:/sources# cd wheel-0.42.0
 (lfs chroot) root:/sources/wheel-0.42.0# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3700,7 +3699,7 @@ Successfully installed wheel-0.42.0
 (lfs chroot) root:/sources/wheel-0.42.0#
 ```
 ### 8.54 Setuptools-69.1.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf setuptools-69.1.0.tar.gz
 (lfs chroot) root:/sources# cd setuptools-69.1.0
 (lfs chroot) root:/sources/setuptools-69.1.0# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3719,7 +3718,7 @@ Successfully installed setuptools-69.1.0
 (lfs chroot) root:/sources/setuptools-69.1.0#
 ```
 ### 8.55 Ninja-1.11.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf ninja-1.11.1.tar.gz
 (lfs chroot) root:/sources# cd nin
 bash: cd: nin: No such file or directory
@@ -3751,7 +3750,7 @@ install: creating directory '/usr/share/zsh/site-functions'
 (lfs chroot) root:/sources/ninja-1.11.1#
 ```
 ### 8.56 Meson-1.3.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf meson-1.3.2.tar.gz
 (lfs chroot) root:/sources# cd meson-1.3.2
 (lfs chroot) root:/sources/meson-1.3.2# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -3775,7 +3774,7 @@ Successfully installed meson-1.3.2
 (lfs chroot) root:/sources/meson-1.3.2#
 ```
 ### 8.57 Coreutils-9.4
-```
+```bash
 (lfs chroot) root:/sources# tar xf coreutils-9.4.tar.xz
 (lfs chroot) root:/sources# cd coreutils-9.4
 (lfs chroot) root:/sources/coreutils-9.4# patch -Np1 -i ../coreutils-9.4-i18n-1.patch
@@ -3837,7 +3836,7 @@ renamed '/usr/share/man/man1/chroot.1' -> '/usr/share/man/man8/chroot.8'
 (lfs chroot) root:/sources/coreutils-9.4#
 ```
 ### 8.58 Check-0.15.2
-```
+```bash
 (lfs chroot) root:/sources# tar xf check-0.15.2.tar.gz
 (lfs chroot) root:/sources# cd check-0.15.2
 (lfs chroot) root:/sources/check-0.15.2# ./configure --prefix=/usr --disable-static
@@ -3850,7 +3849,7 @@ renamed '/usr/share/man/man1/chroot.1' -> '/usr/share/man/man8/chroot.8'
 ...
 ```
 ### 8.59 Diffutils-3.10
-```
+```bash
 (lfs chroot) root:/sources# tar xf diffutils-3.10.tar.xz
 (lfs chroot) root:/sources# cd diffutils-3.10
 (lfs chroot) root:/sources/diffutils-3.10#
@@ -3864,7 +3863,7 @@ renamed '/usr/share/man/man1/chroot.1' -> '/usr/share/man/man8/chroot.8'
 ...
 ```
 ### 8.60 Gawk-5.3.0
-```
+```bash
 (lfs chroot) root:/sources# rm -rf gawk-5.3.0
 (lfs chroot) root:/sources# tar xf gawk-5.3.0.tar.xz
 (lfs chroot) root:/sources# cd gawk-5.3.0
@@ -3907,7 +3906,7 @@ mkdir: created directory '/usr/share/doc/gawk-5.3.0'
 (lfs chroot) root:/sources/gawk-5.3.0#
 ```
 ### 8.61 Findutils-4.9.0
-```
+```bash
 (lfs chroot) root:/sources# rm -rf findutils-4.9.0
 (lfs chroot) root:/sources# tar xf findutils-4.9.0.tar.xz
 (lfs chroot) root:/sources# cd findutils-4.9.0
@@ -3922,7 +3921,7 @@ mkdir: created directory '/usr/share/doc/gawk-5.3.0'
 ...
 ```
 ### 8.62 Groff-1.23.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf groff-1.23.0.tar.gz
 (lfs chroot) root:/sources# cd groff-1.23.0
 (lfs chroot) root:/sources/groff-1.23.0# PAGE=A4 ./configure --prefix=/usr
@@ -3935,7 +3934,7 @@ mkdir: created directory '/usr/share/doc/gawk-5.3.0'
 ...
 ```
 ### 8.63 Grub-2.12
-```
+```bash
 (lfs chroot) root:/sources# tar xf grub-2.12.tar.xz
 cd (lfs chroot) root:/sources# cd grub-2.12
 (lfs chroot) root:/sources/grub-2.12# unset {C,CPP,CXX,LD}FLAGS
@@ -3955,7 +3954,7 @@ removed '/etc/bash_completion.d/grub'
 (lfs chroot) root:/sources/grub-2.12#
 ```
 ### 8.64 Gzip-1.13
-```
+```bash
 (lfs chroot) root:/sources# rm -rf gzip-1.13
 (lfs chroot) root:/sources# tar xf gzip-1.13.tar.xz
 (lfs chroot) root:/sources# cd gzip-1.13
@@ -3969,7 +3968,7 @@ removed '/etc/bash_completion.d/grub'
 ...
 ```
 ### 8.65 IPRoute2-6.7.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf iproute2-6.7.0.tar.xz
 (lfs chroot) root:/sources# cd iproute2-6.7.0
 (lfs chroot) root:/sources/iproute2-6.7.0# sed -i /ARPD/d Makefile
@@ -3988,7 +3987,7 @@ mkdir: created directory '/usr/share/doc/iproute2-6.7.0'
 (lfs chroot) root:/sources/iproute2-6.7.0#
 ```
 ### 8.66 Kbd-2.6.4
-```
+```bash
 (lfs chroot) root:/sources# rm -rf kbd-2.6.4
 (lfs chroot) root:/sources# tar xf kbd-2.6.4.tar.xz
 (lfs chroot) root:/sources# cd kbd-2.6.4
@@ -4027,7 +4026,7 @@ patching file data/keymaps/i386/qwerty/ua-ws.map
 ...
 ```
 ### 8.67 Libpipeline-1.5.7
-```
+```bash
 (lfs chroot) root:/sources# ls libpipeline-1.5.7.tar.gz
 libpipeline-1.5.7.tar.gz
 (lfs chroot) root:/sources# tar xf libpipeline-1.5.7.tar.gz
@@ -4042,7 +4041,7 @@ libpipeline-1.5.7.tar.gz
 ...
 ```
 ### 8.68 Make-4.4.1
-```
+```bash
 (lfs chroot) root:/sources# ls make-4.4.1
 ABOUT-NLS  Makefile      README.DOS      SCOPTIONS     build_w32.bat  doc           po
 AUTHORS    Makefile.am   README.OS2      aclocal.m4    builddos.bat   lib           src
@@ -4065,7 +4064,7 @@ INSTALL    README.Amiga  README.zOS      build.sh      configure.ac   mk
 ...
 ```
 ### 8.69 Path-2.7.6
-```
+```bash
 (lfs chroot) root:/sources# ls patch-2.7.6
 AUTHORS    ChangeLog-2011  Makefile     NEWS    aclocal.m4  cfg.mk      config.log     configure.ac  maint.mk   src
 COPYING    GNUmakefile     Makefile.am  README  bootstrap   config.h    config.status  lib           patch.man  stamp-h1
@@ -4083,7 +4082,7 @@ ChangeLog  INSTALL         Makefile.in  TODO    build-aux   config.hin  configur
 ...
 ```
 ### 8.70 Tar-1.35
-```
+```bash
 (lfs chroot) root:/sources# rm -rf tar-1.35
 (lfs chroot) root:/sources# tar xf tar-1.35.tar.xz
 (lfs chroot) root:/sources# cd tar-1.35
@@ -4106,7 +4105,7 @@ make: Leaving directory '/sources/tar-1.35/doc'
 (lfs chroot) root:/sources/tar-1.35#
 ```
 ### 8.71 Texinfo-7.1
-```
+```bash
 (lfs chroot) root:/sources# rm -rf texinfo-7.1
 r(lfs chroot) root:/sources# tar xf texinfo-7.1.tar.xz
 (lfs chroot) root:/sources# cd texinfo-7.1
@@ -4122,7 +4121,7 @@ lfs chroot) root:/sources/texinfo-7.1# make install
 ...
 ```
 ### 8.72 Vim-9.1.0041
-```
+```bash
 (lfs chroot) root:/sources# tar -xf vim-9.1.0041.tar.gz
 cd(lfs chroot) root:/sources# cd vim-9.1.0041
 (lfs chroot) root:/sources/vim-9.1.0041# echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
@@ -4184,7 +4183,7 @@ cd(lfs chroot) root:/sources# cd vim-9.1.0041
 (lfs chroot) root:/sources/vim-9.1.0041#
 ```
 ### 8.73 MarkupSafe-2.1.5
-```
+```bash
 (lfs chroot) root:/sources# tar xf MarkupSafe-2.1.5.tar.gz
 (lfs chroot) root:/sources# cd MarkupSafe-2.1.5
 (lfs chroot) root:/sources/MarkupSafe-2.1.5# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -4204,7 +4203,7 @@ Successfully installed Markupsafe-2.1.5
 (lfs chroot) root:/sources/MarkupSafe-2.1.5#
 ```
 ### 8.74 Jinja2-3.1.3
-```
+```bash
 (lfs chroot) root:/sources# tar xf Jinja2-3.1.3.tar.gz
 (lfs chroot) root:/sources# cd Jinja2-3.1.3
 (lfs chroot) root:/sources/Jinja2-3.1.3# pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD
@@ -4225,7 +4224,7 @@ Successfully installed Jinja2-3.1.3
 (lfs chroot) root:/sources/Jinja2-3.1.3#
 ```
 ### 8.75 Udev from Systemd-255
-```
+```bash
 (lfs chroot) root:/sources# tar xf systemd-255.tar.gz
 c(lfs chroot) root:/sources# cd systemd-255
 (lfs chroot) root:/sources/systemd-255# sed -i -e 's/GROUP="render"/GROUP="video"/' \
@@ -4406,12 +4405,12 @@ mkdir: created directory '/usr/share/doc/udev-20230818/lfs'
 (lfs chroot) root:/sources/systemd-255/build#
 ```
 #### 8.75.2 Configuring Udev
-```
+```bash
 (lfs chroot) root:/sources/systemd-255/build# udev-hwdb update
 (lfs chroot) root:/sources/systemd-255/build#
 ```
 ### 8.76 Man-DB-2.12.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf man-db-2.12.0.tar.xz
 (lfs chroot) root:/sources# cd man-db-2.12.0
 (lfs chroot) root:/sources/man-db-2.12.0# ./configure --prefix=/usr                         \
@@ -4431,7 +4430,7 @@ mkdir: created directory '/usr/share/doc/udev-20230818/lfs'
 ...
 ```
 ### 8.77 Procps-ng-4.0.4
-```
+```bash
 (lfs chroot) root:/sources# tar xf procps-ng-4.0.4.tar.xz
 (lfs chroot) root:/sources# cd procps-ng-4.0.4
 (lfs chroot) root:/sources/procps-ng-4.0.4# ./configure --prefix=/usr                           \
@@ -4447,7 +4446,7 @@ mkdir: created directory '/usr/share/doc/udev-20230818/lfs'
 ...
 ```
 ### 8.78 Util-linux-2.39.3
-```
+```bash
 (lfs chroot) root:/sources# rm -rf util-linux-2.39.3
 (lfs chroot) root:/sources# tar xf util-linux-2.39.3.tar.xz
 c(lfs chroot) root:/sources# cd util-linux-2.39.3
@@ -4479,7 +4478,7 @@ c(lfs chroot) root:/sources# cd util-linux-2.39.3
 ...
 ```
 ### 8.79 E2fsprogs-1.47.0
-```
+```bash
 (lfs chroot) root:/sources# tar xf e2fsprogs-1.47.0.tar.gz
 (lfs chroot) root:/sources# cd e2fsprogs-1.47.0
 (lfs chroot) root:/sources/e2fsprogs-1.47.0# mkdir -v build
@@ -4516,12 +4515,12 @@ removed '/usr/lib/libss.a'
 (lfs chroot) root:/sources/e2fsprogs-1.47.0/build#
 ```
 #### 8.79.2 Configuring E2fsprogs
-```
+```bash
 (lfs chroot) root:/sources/e2fsprogs-1.47.0/build# sed 's/metadata_csum_seed,//' -i /etc/mke2fs.conf
 (lfs chroot) root:/sources/e2fsprogs-1.47.0/build#
 ```
 ### 8.80 Sysklogd-1.5.1
-```
+```bash
 (lfs chroot) root:/sources# tar xf sysklogd-1.5.1.tar.gz
 (lfs chroot) root:/sources# cd sysklogd-1.5.1
 (lfs chroot) root:/sources/sysklogd-1.5.1# sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c
@@ -4550,7 +4549,7 @@ removed '/usr/lib/libss.a'
 (lfs chroot) root:/sources/sysklogd-1.5.1#
 ```
 ### 8.81 Sysvinit-3.08
-```
+```bash
 (lfs chroot) root:/sources# tar xf sysvinit-3.08.tar.xz
 (lfs chroot) root:/sources# cd sysvinit-3.08
 (lfs chroot) root:/sources/sysvinit-3.08# patch -Np1 -i ../sysvinit-3.08-consolidated-1.patch
@@ -4561,7 +4560,7 @@ patching file src/Makefile
 ...
 ```
 ### 8.84 Cleaning up
-```
+```bash
 (lfs chroot) root:/sources/sysvinit-3.08# rm -rf /tmp/*
 (lfs chroot) root:/sources/sysvinit-3.08# find /usr/lib /usr/libexec -name \*.la -delete
 (lfs chroot) root:/sources/sysvinit-3.08# userdel -r tester
@@ -4571,7 +4570,7 @@ userdel: tester mail spool (/var/mail/tester) not found
 ## 9 System Configuration
 
 ### 9.2 LFS-Bootscripts-20230728
-```
+```bash
 (lfs chroot) root:/sources# tar xf lfs-bootscripts-20230728.tar.xz
 (lfs chroot) root:/sources# cd lfs-bootscripts-20230728
 (lfs chroot) root:/sources/lfs-bootscripts-20230728# make install
@@ -4580,7 +4579,7 @@ userdel: tester mail spool (/var/mail/tester) not found
 ### 9.4 Managing Devices
 
 ##### 9.4.1.2 Creating Custom Udev Rules
-```
+```bash
 (lfs chroot) root:/sys/bus# bash /usr/lib/udev/init-net-rules.sh
 (lfs chroot) root:/sys/bus# ls /etc/udev/rules.d/70-persistent-net.rules
 /etc/udev/rules.d/70-persistent-net.rules
@@ -4603,7 +4602,7 @@ SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="08:00:27:7a:18:1
 >      > /etc/udev/network/99-default.link
 ```
 I think the book is wrong, need to delete to get content
-```
+```bash
 (lfs chroot) root:/sys/bus# sed -e '/^AlternativeNamesPolicy/s/=.*$/=/'  \
 >      /usr/lib/udev/network/99-default.link \
 >  > /etc/udev/network/99-default.link
@@ -4611,7 +4610,7 @@ I think the book is wrong, need to delete to get content
 ```
 
 #### 9.5.2 Creating the /etc/resolv.conf File
-```
+```bash
 (lfs chroot) root:/sys#
 cat > /etc/resolv.conf << "EOF"
 # Begin /etc/resolv.conf
@@ -4626,12 +4625,12 @@ bash: warning: here-document at line 1 delimited by end-of-file (wanted `EOF')
 (lfs chroot) root:/sys#
 ```
 #### 9.5.3 Configuring hostname
-```
+```bash
 (lfs chroot) root:~# echo "lfs" > /etc/hostname
 (lfs chroot) root:~#
 ```
 #### 9.5.4 Set /etc/hosts file
-```
+```bash
 (lfs chroot) root:~#
 cat > /etc/hosts << "EOF"
 # Begin /etc/hosts
@@ -4644,7 +4643,7 @@ EOF
 (lfs chroot) root:~#
 ```
 ### 9.6 Configuring Sysvint
-```
+```bash
 (lfs chroot) root:~# cat > /etc/inittab << "EOF"
 > # Begin /etc/inittab
 > id:3:initdefault:
@@ -4670,7 +4669,7 @@ EOF
 (lfs chroot) root:~#
 ```
 #### 9.6.4 Configuring the System Clock
-```
+```bash
 (lfs chroot) root:/etc/rc.d# hwclock --localtime --show
 2024-05-25 02:58:27.853636+08:00
 (lfs chroot) root:/etc/rc.d# date
@@ -4687,7 +4686,7 @@ Sat May 25 10:59:17 CST 2024
 (lfs chroot) root:/etc/rc.d#
 ```
 #### 9.6.5 Configuring the Linux Console
-```
+```bash
 (lfs chroot) root:/etc/rc.d# cat > /etc/sysconfig/console << "EOF"
 > # Begin /etc/sysconfig/console
 > UNICODE="1"
@@ -4697,7 +4696,7 @@ Sat May 25 10:59:17 CST 2024
 (lfs chroot) root:/etc/rc.d#
 ```
 #### 9.6.6 Creating Files at Boot
-```
+```bash
 (lfs chroot) root:/etc/rc.d# echo "/tmp/.ICE-unix dir 777 root root" >> /etc/sysconfig/createfiles
 (lfs chroot) root:/etc/rc.d# cat /etc/sysconfig/createfiles
 ########################################################################
@@ -4735,13 +4734,13 @@ Sat May 25 10:59:17 CST 2024
 (lfs chroot) root:/etc/rc.d#
 ```
 ##### 9.6.8.1 Customize rc.site
-```
+```bash
 (lfs chroot) root:/etc/sysconfig# grep -E -v "^(#|$)" rc.site
 SKIPTMPCLEAN=y
 (lfs chroot) root:/etc/sysconfig#
 ```
 ### 9.7 Configuring the System Locale
-```
+```bash
 (lfs chroot) root:/etc/sysconfig# locale -a | grep CN
 bo_CN
 bo_CN.utf8
@@ -4784,7 +4783,7 @@ EOF
 (lfs chroot) root:/etc/sysconfig#
 ```
 ### 9.8 Creating /etc/inputrc
-```
+```bash
 (lfs chroot) root:/etc/sysconfig# cat > /etc/inputrc << "EOF"
 > # Begin /etc/inputrc
 > # Modified by Chris Lynn <roryo@roryo.dynup.net>
@@ -4821,7 +4820,7 @@ EOF
 (lfs chroot) root:/etc/sysconfig#
 ```
 ### 9.9 Creating /etc/shells
-```
+```bash
 (lfs chroot) root:/etc/sysconfig# cat > /etc/shells << "EOF"
 > # Begin /etc/shells
 > /bin/sh
@@ -4831,7 +4830,7 @@ EOF
 (lfs chroot) root:/etc/sysconfig#
 ```
 ## 10 Making the LFS System Bootable
-```
+```bash
 (lfs chroot) root:/etc/sysconfig#
 cat > /etc/fstab << "EOF"
 # Begin /etc/fstab
@@ -4859,7 +4858,7 @@ EOF
 (lfs chroot) root:/etc/sysconfig#
 ```
 ### 10.3 Linux-6.7.4
-```
+```bash
 (lfs chroot) root:/sources# rm -rf linux-6.7.4
 (lfs chroot) root:/sources# tar xf linux-6.7.4.tar.xz
 (lfs chroot) root:/sources# cd linux-6.7.4
@@ -4919,7 +4918,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 (lfs chroot) root:/sources#
 ```
 ### 10.3.2 Configuring Linux Module Load Order
-```
+```bash
 (lfs chroot) root:/sources/linux-6.7.4# install -v -m755 -d /etc/modprobe.d
 install: creating directory '/etc/modprobe.d'
 (lfs chroot) root:/sources/linux-6.7.4# cat > /etc/modprobe.d/usb.conf << "EOF"
@@ -4933,7 +4932,7 @@ install: creating directory '/etc/modprobe.d'
 ### 10.4 using GRUB to Set Up the Boot Process
 
 I miss to create a 1-2M grub boot partition, now fix it
-```
+```bash
 (parted) p
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sdd: 115GB
@@ -4962,7 +4961,7 @@ Installing for i386-pc platform.
 Installation finished. No error reported.
 ```
 Create filesystem for boot partition
-```
+```bash
 bash-5.2# mkfs.ext4 /dev/disk/by-partlabel/boot
 mke2fs 1.46.5 (30-Dec-2021)
 Creating filesystem with 202752 1k blocks and 50600 inodes
@@ -4982,7 +4981,7 @@ bash-5.2# rm -rf /mnt/lfs/boot2
 bash-5.2#
 ```
 Continue 
-```
+```bash
 (lfs chroot) root:/sources/linux-6.7.4#
 (lfs chroot) root:/sources/linux-6.7.4# cat > /boot/grub/grub.cfg << "EOF"
 > # Begin /boot/grub/grub.cfg
@@ -5001,7 +5000,7 @@ Continue
 (lfs chroot) root:/sources/linux-6.7.4#
 ```
 ## 11 The End
-```
+```bash
 (lfs chroot) root:/sources/linux-6.7.4# echo 12.1 > /etc/lfs-release
 (lfs chroot) root:/sources/linux-6.7.4# export EDITOR=vim
 (lfs chroot) root:/sources/linux-6.7.4#
@@ -5036,7 +5035,7 @@ umount: /mnt/lfs/sys unmounted
 bash-5.2# umount -R /mnt/lfs/
 ```
 There is kernel panic after boots, I think the reason is /usr is not mounted when boot, I merge / to /usr
-```
+```bash
 bash-5.2# mount /dev/sdd8 /mnt/lfs
 bash-5.2# mkdir /mnt/usr
 bash-5.2# mount /dev/sdd3 /mnt/usr
@@ -5060,7 +5059,7 @@ bash-5.2#
 bash-5.2# cp -a /mnt/lfs/. /mnt/usr/.
 ```
 Update fstab
-```
+```bash
 bash-5.2# cat /mnt/lfs/etc/fstab
 # Begin /etc/fstab
 # file system  mount-point    type     options             dump  fsck

@@ -96,6 +96,8 @@ ul {
 
 code {
     background-color: #2a2a2a;
+    color: #abb2bf;
+    /* background-color: #2a2a2a; */
     padding: 2px 4px;
     border-radius: 3px;
     font-family: monospace;
@@ -103,8 +105,8 @@ code {
 }
 
 pre {
-    background-color: #2a2a2a;
-    padding: 15px;
+    background-color: #282c34;
+    padding: 10px;
     border-radius: 5px;
     max-height: 800px; /* Set a maximum height */    
     overflow-x: scroll;
