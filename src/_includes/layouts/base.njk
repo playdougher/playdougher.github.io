@@ -9,9 +9,11 @@
     <title>{{ title }}</title>
   </head>
   <body>
-    <header>WuZhihao's Blog</header> 
+    <header>
+    <a href="/">WuZhihao's Blog</a>
+    </header> 
     <main>
-      {% include "./nav.njk" %}      
+      {% include "./nav.njk" %}
       <!--<header>{% include "./nav.njk" %}</header> -->
       {{ content | safe }}
     </main>

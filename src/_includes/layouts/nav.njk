@@ -1,9 +1,29 @@
 <nav>
-    <a href="/">
-      Home
-    </a>
-    <a href="/a" class="navbar-item">
-      About Me
-    </a>
-  </div>
+{# {% set navigationOptions = {
+  listElement: "ul",
+  listItemElement: "li",
+  listClass: "",
+  listItemClass: "",
+  listItemHasChildrenClass: "",
+  activeListItemClass: "",
+  anchorClass: "",
+  activeAnchorClass: "",
+  activeKey: eleventyNavigation.key,
+  showExcerpt: false
+} %}
+
+<ul class="breadcrumb">
+{{ collections.all | eleventyNavigationBreadcrumb(eleventyNavigation.key, { includeSelf: true }) | eleventyNavigationToHtml(navigationOptions) | safe }}
+</ul>
+#}
+
+{% set navPages = collections.all | eleventyNavigationBreadcrumb(eleventyNavigation.key, { includeSelf: true }) %}
+<ul class="breadcrumb">
+{%- for entry in navPages %}
+  <li{% if entry.url == page.url %} class="my-active-class"{% endif %}>
+    <a href="{{ entry.url }}">{{ entry.title }}</a>
+  </li>
+{%- endfor %}
+</ul>
 </nav>
+

@@ -4,6 +4,9 @@ date:       2024-04-21T18:57:48+08:00
 tags:       ["appnote", "lfs"]
 identifier: "20240421T185748"
 layout: "layouts/post.njk"
+eleventyNavigation:
+  key: "LFS project appnote"
+  parent: Home
 ---
 ## 1. Introduction
 

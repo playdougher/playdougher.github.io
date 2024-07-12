@@ -3,7 +3,10 @@ title: My First Blog Post
 description: This is the first post on my blog
 tags: post
 date: 2021-06-19
-layout: layouts/nav.njk
+layout: "layouts/post.njk"
+eleventyNavigation:
+  key: My First Blog Post
+  parent: LFS project appnote
 ---
 
 # asdf
