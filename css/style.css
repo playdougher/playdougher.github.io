@@ -11,7 +11,7 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 20px;
-    font-size: 18px; /* Increased base font size */
+    font-size: 15px; /* Increased base font size */
 }
 
 .container {
@@ -19,35 +19,55 @@ body {
     margin: 0 auto;
 }
 
+header {
+    padding-bottom: 15px;
+    font-size: 1.6em;
+} 
+
+nav {
+    background-color: #2d2d2d;
+    padding: 5px;
+} 
+
+nav a {
+    text-decoration: none;
+    margin-right: 20px;
+    display: inline-block;
+} 
+
 h1 {
     color: #ffffff;
     border-bottom: 1px solid #444;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;    
     /* padding-bottom: 10px; */
-    font-size: 2em; /* Change this value to make the h1 header smaller */
+    font-size: 1.6em; /* Change this value to make the h1 header smaller */
 }
 h2 {
     color: #ffffff;
     border-bottom: 1px solid #444;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;    
     /* padding-bottom: 5px; */
-    font-size: 1.5em; /* Change this value to make the h2 header smaller */
+    font-size: 1.2em; /* Change this value to make the h2 header smaller */
 }
 h3 {
     color: #ffffff;
-    border-bottom: 1px solid #444;
+    /* border-bottom: 1px solid #444; */
     /* padding-bottom: 2.5px; */
-    font-size: 1.17em; /* Change this value to make the h3 header smaller */
+    font-size: 0.936em; /* Change this value to make the h3 header smaller */
 }
 h4 {
     color: #ffffff;
-    border-bottom: 1px solid #444;
-    padding-bottom: 1.125px;
+    /* border-bottom: 1px solid #444; */
+    padding-bottom: 0.9px;
     font-size: 1em; /* Change this value to make the h4 header smaller */
 }
 h5 {
-    font-size: 0.83em; /* Change this value to make the h5 header smaller */
+    font-size: 0.664em; /* Change this value to make the h5 header smaller */
 }
 h6 {
-    font-size: 0.67em; /* Change this value to make the h6 header smaller */
+    font-size: 0.536em; /* Change this value to make the h6 header smaller */
 }
 
 .toc {
@@ -88,6 +108,8 @@ a:hover {
 
 p {
     margin-bottom: 15px;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;    
 }
 
 ul {
@@ -101,13 +123,14 @@ code {
     padding: 2px 4px;
     border-radius: 3px;
     font-family: monospace;
-    font-size: 0.9em; /* Slightly smaller than regular text */
+    font-size: 0.8em; /* Slightly smaller than regular text */
 }
 
 pre {
     background-color: #282c34;
     padding: 10px;
     border-radius: 5px;
+    border-left: 3px solid #73BFE1;    
     max-height: 800px; /* Set a maximum height */    
     overflow-x: scroll;
 }
