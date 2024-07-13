@@ -7,10 +7,11 @@ identifier: 20240710T171321
 ul.breadcrumb {
     list-style: none;
     padding: 0em;
+    margin: 0em;
 }
 ul.breadcrumb li {
     display: inline;
-    font-size: 18px;
+    font-size: 1em;
 }
 ul.breadcrumb li+li:before {
     padding: 8px;
@@ -31,9 +32,9 @@ body {
     font-family: "Segoe UI", Arial, sans-serif;    
     background-color: #1e1e1e;
     color: #e0e0e0;
-    line-height: 1.6;
+    line-height: 1.3em;
     margin: 0;
-    padding: 20px;
+    padding: 1rem;
     font-size: 15px; /* Increased base font size */
 }
 
@@ -43,12 +44,16 @@ body {
 }
 
 header {
-    padding-bottom: 15px;
-    font-size: 1.6em;
+    margin: -1rem calc(50% - 50vw) 1rem; 
+    background-color: #2c3e50;
+    font-size: 1em;
+    justify-content: space-between;
+    display: flex;
+    padding: 8px;
 } 
 
 nav {
-    background-color: #2d2d2d;
+    /* background-color: #2d2d2d; */
 } 
 
 nav a {
@@ -93,6 +98,7 @@ h6 {
 }
 
 .toc {
+    background-color: #2c3e50;    
     color: #73BFE1;
     max-height: 800px; /* Set a maximum height */    
     overflow-x: scroll;
