@@ -8,6 +8,7 @@ const pluginTOC = require('eleventy-plugin-toc');
 const anchor = require("markdown-it-anchor");
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
+const { DateTime } = require("luxon");
 module.exports = function (eleventyConfig) {
     // Copy the `themes` directory to the output
     eleventyConfig.addPassthroughCopy('themes');
@@ -37,7 +38,11 @@ module.exports = function (eleventyConfig) {
     })
     eleventyConfig.setLibrary("md", markdownit().use(anchor));
     eleventyConfig.addPlugin(eleventyNavigationPlugin);
-    eleventyConfig.addPlugin(syntaxHighlight);    
+    eleventyConfig.addPlugin(syntaxHighlight);
+
+    eleventyConfig.addFilter("myDateFormat", (dateObj) => {
+        return DateTime.fromJSDate(dateObj).toFormat("yyyy-LL-dd'T'HH:mm:ss");
+    });
     return {
         markdownTemplateEngine: 'njk',
         dataTemplateEngine: 'njk',

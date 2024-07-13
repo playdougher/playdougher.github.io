@@ -6,7 +6,7 @@ layout: layouts/base.njk
   <article>
     <h1>{{ title }}</h1>
     <p>
-      Published on: {{ date }}
+      Published on: {{ page.date | myDateFormat }}
     </p>
     <h2>TOC</h2>      
     {{ content | toc | safe }}
