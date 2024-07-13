@@ -4,6 +4,8 @@ date:       [2024-07-10 Wed 17:13]
 tags:       code  css
 identifier: 20240710T171321
 */
+
+/* colors: #71c9ce #a6e3e9 #cbf1f5 #e3fdfd */
 ul.breadcrumb {
     list-style: none;
     padding: 0em;
@@ -190,4 +192,25 @@ tr:nth-child(even) {
     background-color: #252525;
 }
 
+
+#topButton {
+    display: none;
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    z-index: 99;
+    font-size: 15px;
+    border: none;
+    outline: none;
+    background-color: #71c9ce;
+    color: inherit;
+    cursor: pointer;
+    padding: 1em 0.5em;
+
+    border-radius: 4px;
+}
+
+#topButton:hover {
+    background-color: #e3fdfd;
+}
 

@@ -10,12 +10,11 @@ const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const { DateTime } = require("luxon");
 module.exports = function (eleventyConfig) {
+    // Set directories to pass through to the dist folder
     // Copy the `themes` directory to the output
     eleventyConfig.addPassthroughCopy('themes');
-    // Watch the `themes` directory for changes
-    eleventyConfig.addWatchTarget('themes');
-    // Set directories to pass through to the dist folder
-
+    // Copy the `javascript` directory to the output
+    eleventyConfig.addPassthroughCopy('javascript');
     // Copy the `css` directory to the output
     eleventyConfig.addPassthroughCopy('css');
     // Watch the `css` directory for changes
