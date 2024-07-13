@@ -104,7 +104,7 @@ h6 {
     color: #73BFE1;
     max-height: 800px; /* Set a maximum height */    
     overflow-x: scroll;
-    /* border-right: 2px solid; */
+    border-left: 3px solid;
 }
 
 .toc ul {
