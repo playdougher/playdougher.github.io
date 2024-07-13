@@ -1,5 +1,7 @@
 # WuZhihao Blogs
 
+I use [eleventy](https://www.11ty.dev/) as my site generator.
+
 ## Dependencies
 
 It needs some npm packages to run the blog.
