@@ -5,7 +5,10 @@ tags:       code  css
 identifier: 20240710T171321
 */
 
-/* colors: #577A9E #415C76 #2C3E50 #22303F */
+/* colors: 
+for background, use #577A9E #415C76 #2C3E50(hsl(210, 29%, 24%)) #22303F(hsl(211, 30%, 19%)) 
+for grey, use hsl(0, 0%, 65%)
+*/
 ul.breadcrumb {
     list-style: none;
     padding: 0em;
@@ -146,13 +149,13 @@ ul {
 }
 
 code {
-    background-color: #2a2a2a;
-    color: #abb2bf;
+    /* background-color: #2a2a2a; */
+    /* color: #abb2bf; */
     /* background-color: #2a2a2a; */
     padding: 2px 4px;
     border-radius: 3px;
     font-family: monospace;
-    font-size: 0.8em; /* Slightly smaller than regular text */
+    font-size: 0.85em; /* Slightly smaller than regular text */
 }
 
 pre {
