@@ -1,4 +1,4 @@
-# WuZhihao Blogs
+# WuZhihao's Blog
 
 I use [eleventy](https://www.11ty.dev/) as my site generator.
 
