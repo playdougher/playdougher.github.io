@@ -48,7 +48,7 @@ pre[class*="language-"] ::selection {
 
 /* Properties specific to code blocks */
 pre[class*="language-"] {
-	padding: 1em; /* this is standard */
+	/* padding: 1em; /\* this is standard *\/ */
 	margin: 0.5em 0; /* this is the default */
 	overflow: auto; /* this is standard */
 	/* border-radius: 0.5em; */
