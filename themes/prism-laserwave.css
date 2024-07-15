@@ -12,13 +12,13 @@ pre[class*="language-"] {
 	color: #ffffff;
 	font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace; /* this is the default */
 	/* The following properties are standard, please leave them as they are */
-	font-size: 1em;
+	/* font-size: 1em; */
 	direction: ltr;
 	text-align: left;
 	white-space: pre;
 	word-spacing: normal;
 	word-break: normal;
-	line-height: 1.5;
+	/* line-height: 1.5; */
 	-moz-tab-size: 2;
 	-o-tab-size: 2;
 	tab-size: 2;
@@ -50,7 +50,7 @@ pre[class*="language-"] {
 	padding: 1em; /* this is standard */
 	margin: 0.5em 0; /* this is the default */
 	overflow: auto; /* this is standard */
-	border-radius: 0.5em;
+	/* border-radius: 0.5em; */
 }
 
 /* Properties specific to inline code */
@@ -68,7 +68,8 @@ pre[class*="language-"] {
 }
 
 .token.punctuation {
-	color: #7b6995;
+	/* color: #7b6995; */
+    color: hsl(265, 17%, 70%);
 }
 
 .token.builtin,
