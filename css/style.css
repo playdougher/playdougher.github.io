@@ -163,8 +163,9 @@ code {
     /* background-color: #2a2a2a; */
     /* color: #abb2bf; */
     /* background-color: #2a2a2a; */
-    padding: 2px 4px;
+    /* padding: 2px 4px; */
     /* border-radius: 3px; */
+    padding: 0.2em;    
     font-family: monospace;
     font-size: 0.9em; /* Slightly smaller than regular text */
 }
@@ -172,7 +173,7 @@ code {
 pre {
     /* background-color: #282c34; */
     background: hsl(211, 30%, 19%);    
-    padding: 10px;
+    padding: 0.3em;
     /* border-radius: 5px; */
     border-left: 3px solid #73BFE1;    
     max-height: 800px; /* Set a maximum height */    
