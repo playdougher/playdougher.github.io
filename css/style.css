@@ -176,7 +176,7 @@ pre {
     padding: 0.3em;
     /* border-radius: 5px; */
     border-left: 3px solid #73BFE1;    
-    max-height: 800px; /* Set a maximum height */    
+    max-height: 50em; /* Set a maximum height */
     overflow-x: scroll;
 }
 
