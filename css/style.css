@@ -166,7 +166,7 @@ code {
     /* padding: 2px 4px; */
     /* border-radius: 3px; */
     padding: 0.2em;    
-    font-family: monospace;
+	font-family: Consolas, monospace; /* this is the default */    
     font-size: 0.9em; /* Slightly smaller than regular text */
 }
 
