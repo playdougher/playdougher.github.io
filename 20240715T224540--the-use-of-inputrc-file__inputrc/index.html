@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- Some html boilerplate omitted -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-light.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-dark.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-material-dark.css" /> -->
+    <link rel="stylesheet" href="/themes/prism-laserwave.css" />
+    <!-- <link rel="stylesheet" href="/themes/new.css" />     -->
+    <title>the use of .inputrc file</title>
+  </head>
+  <body>
+    <button onclick="topFunction()" id="topButton" title="Go to top"><b>^</b></button>    
+    <header>
+      <a href="/">WuZhihao's Blog</a>
+      <nav>
+        <a href="/about">About</a> 
+      </nav>
+    </header>
+    <main>
+      <nav>
+
+
+
+<ul class="breadcrumb">
+</ul>
+</nav>
+
+
+      <!--<header><nav>
+
+
+
+<ul class="breadcrumb">
+</ul>
+</nav>
+
+</header> -->
+      
+<section>
+  <article>
+    <h1>the use of .inputrc file</h1>
+    <p>
+      Published on: 2024-07-15T14:45:40
+    </p>
+    <h2>Table Of Contents</h2>      
+    <nav class="toc" >
+        <ul><li><a href="#overview">Overview</a></li><li><a href="#usages-for-.inputrc-file">Usages for .inputrc file</a><ul><li><a href="#better-completion">better completion</a></li><li><a href="#better-cursor-movement">better cursor movement</a></li><li><a href="#better-looking">better looking</a></li><li><a href="#better-history">better history</a></li></ul></li><li><a href="#other-resources">Other Resources</a></li></ul>
+      </nav>
+    <h2 id="overview" tabindex="-1">Overview</h2>
+<p>.inputrc file is init file of readline library, we can custmize shortcuts to make terminal more useful and productive.</p>
+<h2 id="usages-for-.inputrc-file" tabindex="-1">Usages for .inputrc file</h2>
+<p>File below shows my daily use config. We can check all shortcuts current shell uses with <code>bind -p</code>, show all options we enabled with <code>bind -v</code></p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ <span class="token function">grep</span> <span class="token parameter variable">-vE</span> <span class="token string">"^(#|$)"</span> .inputrc
+<span class="token string">"\C-o"</span><span class="token builtin class-name">:</span> menu-complete
+<span class="token string">"\C-x\C-o"</span><span class="token builtin class-name">:</span> menu-complete-backward
+<span class="token builtin class-name">set</span> show-all-if-ambiguous on
+<span class="token builtin class-name">set</span> colored-stats On
+<span class="token builtin class-name">set</span> visible-stats On
+<span class="token builtin class-name">set</span> mark-symlinked-directories On
+<span class="token builtin class-name">set</span> colored-completion-prefix On
+<span class="token builtin class-name">set</span> menu-complete-display-prefix off
+<span class="token builtin class-name">set</span> revert-all-at-newline on
+<span class="token builtin class-name">set</span> page-completions off
+<span class="token string">"\C-p"</span><span class="token builtin class-name">:</span> history-search-backward
+<span class="token string">"\C-n"</span><span class="token builtin class-name">:</span> history-search-forward
+<span class="token string">"\C-xz"</span><span class="token builtin class-name">:</span> <span class="token string">"sudo -E bash --rcfile ~/.sptzh/.ssh-bashrc<span class="token entity" title="\n">\n</span>"</span>
+<span class="token string">"<span class="token entity" title="\e">\e</span>\C-p"</span><span class="token builtin class-name">:</span> history-substring-search-backward
+<span class="token string">"<span class="token entity" title="\e">\e</span>\C-n"</span><span class="token builtin class-name">:</span> history-substring-search-forward
+<span class="token builtin class-name">set</span> skip-completed-text on
+<span class="token builtin class-name">set</span> completion-prefix-display-length <span class="token number">0</span>
+<span class="token string">"<span class="token entity" title="\e">\e</span>\C-b"</span><span class="token builtin class-name">:</span> shell-backward-word
+<span class="token string">"<span class="token entity" title="\e">\e</span>\C-f"</span><span class="token builtin class-name">:</span> shell-forward-word
+<span class="token string">"<span class="token entity" title="\e">\e</span>\C-d"</span><span class="token builtin class-name">:</span> shell-kill-word
+<span class="token string">"<span class="token entity" title="\e">\e</span>h"</span><span class="token builtin class-name">:</span> shell-backward-kill-word
+<span class="token string">"<span class="token entity" title="\e">\e</span>[7~"</span><span class="token builtin class-name">:</span> beginning-of-line
+<span class="token string">"<span class="token entity" title="\e">\e</span>[8~"</span><span class="token builtin class-name">:</span> end-of-line
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-p</span> <span class="token operator">|</span> <span class="token function">head</span>
+
+<span class="token string">"\C-g"</span><span class="token builtin class-name">:</span> abort
+<span class="token string">"\C-x\C-g"</span><span class="token builtin class-name">:</span> abort
+<span class="token string">"<span class="token entity" title="\e">\e</span>\C-g"</span><span class="token builtin class-name">:</span> abort
+<span class="token string">"\C-j"</span><span class="token builtin class-name">:</span> accept-line
+<span class="token string">"\C-m"</span><span class="token builtin class-name">:</span> accept-line
+<span class="token comment"># alias-expand-line (not bound)</span>
+<span class="token comment"># arrow-key-prefix (not bound)</span>
+<span class="token comment"># backward-byte (not bound)</span>
+<span class="token string">"\C-b"</span><span class="token builtin class-name">:</span> backward-char
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">head</span>
+<span class="token builtin class-name">set</span> bind-tty-special-chars on
+<span class="token builtin class-name">set</span> blink-matching-paren on
+<span class="token builtin class-name">set</span> byte-oriented off
+<span class="token builtin class-name">set</span> colored-completion-prefix on
+<span class="token builtin class-name">set</span> colored-stats on
+<span class="token builtin class-name">set</span> completion-ignore-case on
+<span class="token builtin class-name">set</span> completion-map-case off
+<span class="token builtin class-name">set</span> convert-meta off
+<span class="token builtin class-name">set</span> disable-completion off
+<span class="token builtin class-name">set</span> echo-control-characters on
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$</code></pre>
+<h3 id="better-completion" tabindex="-1">better completion</h3>
+<p>Menu-complete can select a completion entry in order, which helps to quickly select an entry when there are not many completions. I often use menu-complete together with <code>fasd</code> to quickly access directories from my command line history.<br>
+Menu-complete-backward is like menu-complete, but selects in reverse order, which is useful for quickly selecting the lastest log entry.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token string">"\C-o"</span><span class="token builtin class-name">:</span> menu-complete 
+<span class="token string">"\C-x\C-o"</span><span class="token builtin class-name">:</span> menu-complete-backward</code></pre>
+<p>Example of menu-complete:</p>
+<pre class="language-shell"><code class="language-shell">bash-5.2<span class="token comment"># ls Xorg.&lt;C-o></span>
+Xorg.0.log      Xorg.0.log.old  Xorg.1.log      Xorg.1.log.old  Xorg.2.log      Xorg.2.log.old
+bash-5.2<span class="token comment"># ls Xorg.0.log</span></code></pre>
+<p>Example of menu-complete-backward:</p>
+<pre class="language-shell"><code class="language-shell">bash-5.2<span class="token comment"># ls Xor&lt;C-i></span>
+Xorg.0.log      Xorg.0.log.old  Xorg.1.log      Xorg.1.log.old  Xorg.2.log      Xorg.2.log.old
+bash-5.2<span class="token comment"># ls Xorg.&lt;C-x>&lt;C-o></span>
+Xorg.0.log      Xorg.0.log.old  Xorg.1.log      Xorg.1.log.old  Xorg.2.log      Xorg.2.log.old
+bash-5.2<span class="token comment"># ls Xorg.2.log.old</span></code></pre>
+<p>Show-all-if-unmodified and show-all-if-ambiguous options help to use word completion efficiently.</p>
+<p>When these two options are off, as line 6-7 shows, &lt;C-i&gt; will make &quot;f&quot; partial completes to &quot;file&quot;, and &lt;C-i&gt;&lt;C-i&gt; will list matches.</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> show-all
+<span class="token builtin class-name">set</span> show-all-if-ambiguous off
+<span class="token builtin class-name">set</span> show-all-if-unmodified off
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ ls<span class="token operator">&lt;</span>C-m<span class="token operator">></span>
+file1  file2  file3
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> f<span class="token operator">&lt;</span>C-i<span class="token operator">></span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> file<span class="token operator">&lt;</span>C-i<span class="token operator">></span><span class="token operator">&lt;</span>C-i<span class="token operator">></span>
+file1  file2  file3  
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span></code></pre>
+<p>When show-all-if-unmodified option is on, only one &lt;C-i&gt; in line 7 is needed to list matches.</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> show-all
+<span class="token builtin class-name">set</span> show-all-if-ambiguous off
+<span class="token builtin class-name">set</span> show-all-if-unmodified on
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ ls<span class="token operator">&lt;</span>C-m<span class="token operator">></span>
+file1  file2  file3
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> f<span class="token operator">&lt;</span>C-i<span class="token operator">></span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> file<span class="token operator">&lt;</span>C-i<span class="token operator">></span>
+file1  file2  file3  
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span></code></pre>
+<p>When show-all-if-ambiguous option is on, only one &lt;C-i&gt; will perform partial completion and list matches</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> show-all
+<span class="token builtin class-name">set</span> show-all-if-ambiguous on
+<span class="token builtin class-name">set</span> show-all-if-unmodified off
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> f<span class="token operator">&lt;</span>C-i<span class="token operator">></span>
+file1  file2  file3  
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span></code></pre>
+<p>Set menu-complete-display-prefix to off can avoid showing common prefix and directly select the first match.</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-p</span> <span class="token operator">|</span> <span class="token function">grep</span> menu-complete$
+<span class="token string">"\C-o"</span><span class="token builtin class-name">:</span> menu-complete
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> menu-complete-display-prefix
+<span class="token builtin class-name">set</span> menu-complete-display-prefix off
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> f<span class="token operator">&lt;</span>C-o<span class="token operator">></span>
+fa/    fb/    file1  file2  file3  file4  
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> fa/</code></pre>
+<p>Set page-completions off can avoid using 'more' like pager to show completions, use pager will interrupt the coherence of the input.</p>
+<p>Skip-completed-text will be active when perform completion in the middle of word, it will skip characters that duplicate with completion, like cursor '<em>' in Down_loads will generate Downloads</em>, not Downloadsloads_.</p>
+<p>Completion-prefix-display-length default value is 0, I just check what will happen when use value larger than 0. Test is as follows:</p>
+<p>The value is 3, length of common prefix &quot;file&quot; is 4, so it will output ... . Set value to 0 shows the full file name.</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> display-leng
+<span class="token builtin class-name">set</span> completion-prefix-display-length <span class="token number">3</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> file*
+file1  file2  file3  file4
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> fi<span class="token operator">&lt;</span>C-i<span class="token operator">></span>
+<span class="token punctuation">..</span>.1  <span class="token punctuation">..</span>.2  <span class="token punctuation">..</span>.3  <span class="token punctuation">..</span>.4  
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> display-leng
+<span class="token builtin class-name">set</span> completion-prefix-display-length <span class="token number">0</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token keyword">fi</span>
+file1  file2  file3  file4  
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span></code></pre>
+<h3 id="better-cursor-movement" tabindex="-1">better cursor movement</h3>
+<p>Shell-backward-word and shell-forward-word can move cursor '_' from <code>ls a/b/c/d/e_</code> to <code>ls _a/b/c/d/e</code>, but backward-word(&lt;M-b&gt;) and forward-word(&lt;M-f&gt;) can only move cursor '_' from <code>ls a/b/c/d/e_</code> to <code>ls a/b/c/d/_e</code>.</p>
+<p>Shell-kill-word and shell-backward-kill-word can kill 'a/<em>b/c abc' to 'a/</em> abc', kill-word(&lt;M-d&gt;) can only kill to 'a/_/c abc'</p>
+<p>Beginning-of-line and end-of-line make &lt;Home&gt; and &lt;End&gt; work as expected instead of generate ~.</p>
+<h3 id="better-looking" tabindex="-1">better looking</h3>
+<p>Colored-stats enable color for different file types, visible-stats appends a character to denote a file's type.<br>
+Mark-symlinked-directories will add trailing '/' to completed symlinks which link to directories.
+Colored-completion-prefix colors common prefix of completions.</p>
+<h3 id="better-history" tabindex="-1">better history</h3>
+<p>Set revert-all-at-newline to on can avoid to modify history list by mistake.<br>
+when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We <code>&lt;C-r&gt;</code> to search history, type <code>ooo</code> to modify history, <code>&lt;M-S-.&gt;</code> to move to end of command history (currently being input command), check history again, we see 4 becomes ooo4.</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">1</span>
+-bash: <span class="token number">1</span>: <span class="token builtin class-name">command</span> not found
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">2</span>
+-bash: <span class="token number">2</span>: <span class="token builtin class-name">command</span> not found
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">3</span>
+-bash: <span class="token number">3</span>: <span class="token builtin class-name">command</span> not found
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">4</span>
+-bash: <span class="token number">4</span>: <span class="token builtin class-name">command</span> not found
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">5</span>
+-bash: <span class="token number">5</span>: <span class="token builtin class-name">command</span> not found
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">6</span>
+-bash: <span class="token number">6</span>: <span class="token builtin class-name">command</span> not found
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">history</span> <span class="token number">7</span>
+<span class="token number">10204</span>  <span class="token number">1</span>
+<span class="token number">10205</span>  <span class="token number">2</span>
+<span class="token number">10206</span>  <span class="token number">3</span>
+<span class="token number">10207</span>  <span class="token number">4</span>
+<span class="token number">10208</span>  <span class="token number">5</span>
+<span class="token number">10209</span>  <span class="token number">6</span>
+<span class="token number">10210</span>  <span class="token function">history</span> <span class="token number">7</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token operator">&lt;</span>C-r<span class="token operator">></span><span class="token operator"><span class="token file-descriptor important">4</span>&lt;</span>C-j<span class="token operator">></span>ooo<span class="token operator">&lt;</span>M-S-.<span class="token operator">></span>history <span class="token operator"><span class="token file-descriptor important">7</span>&lt;</span>C-j<span class="token operator">></span>
+<span class="token number">10204</span>  <span class="token number">1</span>
+<span class="token number">10205</span>  <span class="token number">2</span>
+<span class="token number">10206</span>  <span class="token number">3</span>
+<span class="token number">10207</span>* ooo4
+<span class="token number">10208</span>  <span class="token number">5</span>
+<span class="token number">10209</span>  <span class="token number">6</span>
+<span class="token number">10210</span>  <span class="token function">history</span> <span class="token number">7</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$</code></pre>
+<p>when revert-all-at-newline is on, the * line will be like what it was.</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token operator">&lt;</span>C-r<span class="token operator">></span><span class="token operator"><span class="token file-descriptor important">4</span>&lt;</span>C-j<span class="token operator">></span>ooo<span class="token operator">&lt;</span>M-S-.<span class="token operator">></span>history <span class="token operator"><span class="token file-descriptor important">7</span>&lt;</span>C-j<span class="token operator">></span>
+<span class="token number">10204</span>  <span class="token number">1</span>
+<span class="token number">10205</span>  <span class="token number">2</span>
+<span class="token number">10206</span>  <span class="token number">3</span>
+<span class="token number">10207</span>  <span class="token number">4</span>
+<span class="token number">10208</span>  <span class="token number">5</span>
+<span class="token number">10209</span>  <span class="token number">6</span>
+<span class="token number">10210</span>  <span class="token function">history</span> <span class="token number">7</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$</code></pre>
+<p>History-search-backward and history-search-forward can search history for entries whose strings begin with what you type.</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ <span class="token function">history</span> <span class="token number">5</span>
+ <span class="token number">9990</span>  aaaaaaaaaaaaaaaaa
+ <span class="token number">9991</span>  bbbbbbbbbbbbbbbbb
+ <span class="token number">9992</span>  ccccccccccccccccc
+ <span class="token number">9993</span>  <span class="token function">history</span>
+ <span class="token number">9994</span>  <span class="token function">history</span> <span class="token number">5</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ b<span class="token operator">&lt;</span>C-p<span class="token operator">></span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ bbbbbbbbbbbbbbbbb</code></pre>
+<p>History-substring-search-backward and history-substring-search-forward can search history for entries that have a substring of your input</p>
+<pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ <span class="token function">history</span> <span class="token number">5</span>
+ <span class="token number">9920</span>  <span class="token function">man</span> <span class="token function">bash</span>
+ <span class="token punctuation">..</span>.
+ <span class="token number">9990</span>  aaaaaaaaaaaaaaaaa
+ <span class="token number">9991</span>  bbbbbbbbbbbbbbbbb
+ <span class="token number">9992</span>  ccccccccccccccccc
+ <span class="token number">9993</span>  <span class="token function">history</span>
+ <span class="token number">9994</span>  <span class="token function">history</span> <span class="token number">5</span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ b<span class="token operator">&lt;</span>C-M-p<span class="token operator">></span><span class="token operator">&lt;</span>C-M-p<span class="token operator">></span>
+zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ <span class="token function">man</span> <span class="token function">bash</span></code></pre>
+<h2 id="other-resources" tabindex="-1">Other Resources</h2>
+<ul>
+<li>Check info page <code>info readline</code></li>
+<li>Check man page <code>man bash</code></li>
+<li><a href="https://wiki.archlinux.org/title/Readline">https://wiki.archlinux.org/title/Readline</a></li>
+</ul>
+
+  </article>
+</section>
+    </main>
+    <script src="/javascript/bundle.js"></script>
+    </script>
+  </body>
+</html>

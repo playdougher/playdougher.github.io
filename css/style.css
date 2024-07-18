@@ -83,25 +83,29 @@ h2 {
     margin-bottom: 0.5em;
     margin-top: 0.5em;    
     padding-bottom: 0.3em;
-    font-size: 1.2em; /* Change this value to make the h2 header smaller */
+    font-size: 1.4em; /* Change this value to make the h2 header smaller */
 }
 h3 {
     color: #ffffff;
     /* border-bottom: 1px solid #444; */
     /* padding-bottom: 2.5px; */
-    font-size: 0.936em; /* Change this value to make the h3 header smaller */
+    border-bottom: 1px solid #444;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;    
+    padding-bottom: 0.3em;    
+    font-size: 1.2em; /* Change this value to make the h3 header smaller */
 }
 h4 {
     color: #ffffff;
     /* border-bottom: 1px solid #444; */
     padding-bottom: 0.9px;
-    font-size: 0.8em; /* Change this value to make the h4 header smaller */
+    font-size: 0.936em; /* Change this value to make the h4 header smaller */
 }
 h5 {
-    font-size: 0.53em; /* Change this value to make the h5 header smaller */
+    font-size: 0.8em; /* Change this value to make the h5 header smaller */
 }
 h6 {
-    font-size: 0.42em; /* Change this value to make the h6 header smaller */
+    font-size: 0.53em; /* Change this value to make the h6 header smaller */
 }
 
 .toc {
@@ -146,7 +150,13 @@ p {
     margin-bottom: 0.5em;
     margin-top: 0.5em;    
 }
-
+li code {
+    background: hsl(211, 30%, 19%);
+    border: 1px solid hsl(0,0%,65%);
+    /* background: #415C76; */
+    color: hsl(322, 100%, 68%);
+    /* color: hsl(187, 90%, 70%); */
+}
 p code {
     background: hsl(211, 30%, 19%);
     border: 1px solid hsl(0,0%,65%);
