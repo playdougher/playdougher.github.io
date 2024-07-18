@@ -13,7 +13,7 @@ eleventyNavigation:
 
 .inputrc file is init file of readline library, we can custmize shortcuts to make terminal more useful and productive.
 
-## Usages for .inputrc file
+## Usages for .Inputrc File
 
 File below shows my daily use config. We can check all shortcuts current shell uses with `bind -p`, show all options we enabled with `bind -v`
 ```sh
@@ -67,7 +67,7 @@ set echo-control-characters on
 zhihao@dust|/home/zhihao|$
 ```
 
-### better completion
+### Fast Completion
 
 Menu-complete can select a completion entry in order, which helps to quickly select an entry when there are not many completions. I often use menu-complete together with `fasd` to quickly access directories from my command line history.  
 Menu-complete-backward is like menu-complete, but selects in reverse order, which is useful for quickly selecting the lastest log entry.
@@ -162,7 +162,7 @@ file1  file2  file3  file4
 zhihao@dust|/home/zhihao/Downloads/aa|$ ls file
 ```
 
-### better cursor movement
+### Fast Cursor Movement
 
 Shell-backward-word and shell-forward-word can move cursor '\_' from `ls a/b/c/d/e_` to `ls _a/b/c/d/e`, but backward-word(<M-b>) and forward-word(<M-f>) can only move cursor '\_' from `ls a/b/c/d/e_` to `ls a/b/c/d/_e`.
 
@@ -170,13 +170,13 @@ Shell-kill-word and shell-backward-kill-word can kill 'a/_b/c abc' to 'a/_ abc',
 
 Beginning-of-line and end-of-line make <Home> and <End> work as expected instead of generate ~.
 
-### better looking
+### Colored Completion
 
-Colored-stats enable color for different file types, visible-stats appends a character to denote a file's type.  
-Mark-symlinked-directories will add trailing '/' to completed symlinks which link to directories.
+Colored-stats enables color for different file types, visible-stats appends a character to denote a file's type.  
+Mark-symlinked-directories will add trailing '/' to completed directory symlinks.
 Colored-completion-prefix colors common prefix of completions.
 
-### better history
+### Fast History
 
 Set revert-all-at-newline to on can avoid to modify history list by mistake.  
 when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We `<C-r>` to search history, type `ooo` to modify history, `<M-S-.>` to move to end of command history (currently being input command), check history again, we see 4 becomes `ooo4`.
