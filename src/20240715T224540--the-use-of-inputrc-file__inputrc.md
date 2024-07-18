@@ -93,7 +93,7 @@ bash-5.2# ls Xorg.2.log.old
 
 Show-all-if-unmodified and show-all-if-ambiguous options help to use word completion efficiently.
 
-When these two options are off, as line 6-7 shows, <C-i> will make "f" partial completes to "file", and <C-i><C-i> will list matches.
+When these two options are off, as line 6-7 shows, `<C-i>` will make "f" partial completes to "file", and `<C-i><C-i>` will list matches.
 ```sh
 zhihao@dust|/home/zhihao/Downloads/aa|$ bind -v | grep show-all
 set show-all-if-ambiguous off
@@ -106,7 +106,7 @@ file1  file2  file3
 zhihao@dust|/home/zhihao/Downloads/aa|$ ls file
 ```
 
-When show-all-if-unmodified option is on, only one <C-i> in line 7 is needed to list matches.
+When show-all-if-unmodified option is on, only one `<C-i>` in line 7 is needed to list matches.
 ```sh
 zhihao@dust|/home/zhihao/Downloads/aa|$ bind -v | grep show-all
 set show-all-if-ambiguous off
@@ -119,7 +119,7 @@ file1  file2  file3
 zhihao@dust|/home/zhihao/Downloads/aa|$ ls file
 ```
 
-When show-all-if-ambiguous option is on, only one <C-i> will perform partial completion and list matches 
+When show-all-if-ambiguous option is on, only one `<C-i>` will perform partial completion and list matches 
 ```sh
 zhihao@dust|/home/zhihao/Downloads/aa|$ bind -v | grep show-all
 set show-all-if-ambiguous on
@@ -179,7 +179,7 @@ Colored-completion-prefix colors common prefix of completions.
 ### better history
 
 Set revert-all-at-newline to on can avoid to modify history list by mistake.  
-when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We `<C-r>` to search history, type `ooo` to modify history, `<M-S-.>` to move to end of command history (currently being input command), check history again, we see 4 becomes ooo4.
+when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We `<C-r>` to search history, type `ooo` to modify history, `<M-S-.>` to move to end of command history (currently being input command), check history again, we see 4 becomes `ooo4`.
 ```sh
 zhihao@dust|/home/zhihao/Downloads/aa|$ 1
 -bash: 1: command not found

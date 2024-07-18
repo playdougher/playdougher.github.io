@@ -11,5 +11,7 @@ eleventyNavigation:
 ## Software projects
 
 - [lfs project appnote](20240421T185748--lfs-project-appnote__appnote_lfs)
-- [a](a)
 - [20240715T224540--the-use-of-inputrc-file__inputrc](20240715T224540--the-use-of-inputrc-file__inputrc)
+
+- [test](a)
+
