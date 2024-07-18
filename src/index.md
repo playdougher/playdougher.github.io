@@ -10,8 +10,7 @@ eleventyNavigation:
 
 ## Software projects
 
-- [lfs project appnote](20240421T185748--lfs-project-appnote__appnote_lfs)
-- [20240715T224540--the-use-of-inputrc-file__inputrc](20240715T224540--the-use-of-inputrc-file__inputrc)
-
-- [test](a)
+- [LFS Project Appnote](20240421T185748--lfs-project-appnote__appnote_lfs)
+- [The-Use-of-Inputrc-File](20240715T224540--the-use-of-inputrc-file__inputrc)
+- [TEST](a)
 
