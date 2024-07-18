@@ -179,7 +179,7 @@ Colored-completion-prefix colors common prefix of completions.
 ### Fast History
 
 Set revert-all-at-newline to on can avoid to modify history list by mistake.  
-when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We `<C-r>` to search history, type `ooo` to modify history, `<M-S-.>` to move to end of command history (currently being input command), check history again, we see 4 becomes `ooo4`.
+when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We `<C-r>` to search history, type `ooo` to modify history, `<M-S-.>` to move to end of command history (currently being input command), check history again, we see 4 becomes ooo4.
 ```sh
 zhihao@dust|/home/zhihao/Downloads/aa|$ 1
 -bash: 1: command not found
