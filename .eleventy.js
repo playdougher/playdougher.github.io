@@ -43,7 +43,7 @@ module.exports = function (eleventyConfig) {
         return DateTime.fromJSDate(dateObj).toFormat("yyyy-LL-dd'T'HH:mm:ss");
     });
     return {
-        markdownTemplateEngine: 'njk',
+        //markdownTemplateEngine: 'njk',
         dataTemplateEngine: 'njk',
         htmlTemplateEngine: 'njk',
         dir: {
