@@ -29,8 +29,8 @@
   <li>
     <a href="/">Home</a>
   </li>
-  <li class="my-active-class">
-    <a href="/20240718T195719--the-use-of-bashrc-file__bashrc/">The Use of Bashrc File</a>
+  <li>
+    <a href="/20240421T185748--lfs-project-appnote__appnote_lfs/">LFS project appnote</a>
   </li>
 </ul>
 </nav>
@@ -44,8 +44,8 @@
   <li>
     <a href="/">Home</a>
   </li>
-  <li class="my-active-class">
-    <a href="/20240718T195719--the-use-of-bashrc-file__bashrc/">The Use of Bashrc File</a>
+  <li>
+    <a href="/20240421T185748--lfs-project-appnote__appnote_lfs/">LFS project appnote</a>
   </li>
 </ul>
 </nav>
@@ -60,9 +60,11 @@
     </p>
     <h2>Table Of Contents</h2>      
     <nav class="toc" >
-        <ul><li><a href="#terminal-title">Terminal Title</a></li><li><a href="#history-configuration">History Configuration</a></li><li><a href="#shell-notification">Shell Notification</a></li><li><a href="#miscellaneous">Miscellaneous</a></li></ul>
+        <ul><li><a href="#overview">Overview</a></li><li><a href="#terminal-title">Terminal Title</a></li><li><a href="#history-configuration">History Configuration</a></li><li><a href="#shell-notification">Shell Notification</a></li><li><a href="#miscellaneous">Miscellaneous</a></li></ul>
       </nav>
     <h1 id="the-use-of-bashrc-file" tabindex="-1">The Use of Bashrc File</h1>
+<h2 id="overview" tabindex="-1">Overview</h2>
+<p>Bashrc file is interactive shell startup file.</p>
 <h2 id="terminal-title" tabindex="-1">Terminal Title</h2>
 <p>I'm using Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title to make it easier to identify and swith between them. To achive this, I use <code>trap DEBUG</code> and handle different <code>TERM</code> variables for updating terminal titles.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">trap</span> <span class="token string">'commandName=$(history 1| sed "s/^[ ]*[0-9]*[ ]*//g"); backspacedString="${commandName//\\/\\\\}"; echo -ne "\033]0;$HOSTNAME:$PWD \$ $backspacedString\007"'</span> DEBUG
@@ -83,7 +85,7 @@
 <p>Below appends history entries to file instead of overwrits it.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">shopt</span> <span class="token parameter variable">-s</span> histappend</code></pre>
 <h2 id="shell-notification" tabindex="-1">Shell Notification</h2>
-<p>Function below will bel for <code>$1</code> times, it's useful to bell as remind when there is a ssh session running a long time job.</p>
+<p>Function below will bell for <code>$1</code> times, it's useful to bell as remind when there is a ssh session running a long time job.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token keyword">function</span> <span class="token function-name function">bel</span> <span class="token punctuation">{</span>
   <span class="token keyword">for</span> <span class="token for-or-select variable">i</span> <span class="token keyword">in</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">seq</span> <span class="token number">1</span> <span class="token string">"<span class="token variable">$1</span>"</span><span class="token variable">)</span></span><span class="token punctuation">;</span> <span class="token keyword">do</span> tput bel<span class="token punctuation">;</span> <span class="token keyword">done</span>
 <span class="token punctuation">}</span></code></pre>
