@@ -48,11 +48,11 @@
     </p>
     <h2>Table Of Contents</h2>      
     <nav class="toc" >
-        <ul><li><a href="#overview">Overview</a></li><li><a href="#usages-for-.inputrc-file">Usages for .inputrc file</a><ul><li><a href="#better-completion">better completion</a></li><li><a href="#better-cursor-movement">better cursor movement</a></li><li><a href="#better-looking">better looking</a></li><li><a href="#better-history">better history</a></li></ul></li><li><a href="#other-resources">Other Resources</a></li></ul>
+        <ul><li><a href="#overview">Overview</a></li><li><a href="#usages-for-.inputrc-file">Usages for .Inputrc File</a><ul><li><a href="#fast-completion">Fast Completion</a></li><li><a href="#fast-cursor-movement">Fast Cursor Movement</a></li><li><a href="#colored-completion">Colored Completion</a></li><li><a href="#fast-history">Fast History</a></li></ul></li><li><a href="#other-resources">Other Resources</a></li></ul>
       </nav>
     <h2 id="overview" tabindex="-1">Overview</h2>
 <p>.inputrc file is init file of readline library, we can custmize shortcuts to make terminal more useful and productive.</p>
-<h2 id="usages-for-.inputrc-file" tabindex="-1">Usages for .inputrc file</h2>
+<h2 id="usages-for-.inputrc-file" tabindex="-1">Usages for .Inputrc File</h2>
 <p>File below shows my daily use config. We can check all shortcuts current shell uses with <code>bind -p</code>, show all options we enabled with <code>bind -v</code></p>
 <pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$ <span class="token function">grep</span> <span class="token parameter variable">-vE</span> <span class="token string">"^(#|$)"</span> .inputrc
 <span class="token string">"\C-o"</span><span class="token builtin class-name">:</span> menu-complete
@@ -102,7 +102,7 @@ zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token o
 <span class="token builtin class-name">set</span> disable-completion off
 <span class="token builtin class-name">set</span> echo-control-characters on
 zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$</code></pre>
-<h3 id="better-completion" tabindex="-1">better completion</h3>
+<h3 id="fast-completion" tabindex="-1">Fast Completion</h3>
 <p>Menu-complete can select a completion entry in order, which helps to quickly select an entry when there are not many completions. I often use menu-complete together with <code>fasd</code> to quickly access directories from my command line history.<br>
 Menu-complete-backward is like menu-complete, but selects in reverse order, which is useful for quickly selecting the lastest log entry.</p>
 <pre class="language-shell"><code class="language-shell"><span class="token string">"\C-o"</span><span class="token builtin class-name">:</span> menu-complete 
@@ -169,15 +169,15 @@ zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span c
 zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token keyword">fi</span>
 file1  file2  file3  file4  
 zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span></code></pre>
-<h3 id="better-cursor-movement" tabindex="-1">better cursor movement</h3>
+<h3 id="fast-cursor-movement" tabindex="-1">Fast Cursor Movement</h3>
 <p>Shell-backward-word and shell-forward-word can move cursor '_' from <code>ls a/b/c/d/e_</code> to <code>ls _a/b/c/d/e</code>, but backward-word(&lt;M-b&gt;) and forward-word(&lt;M-f&gt;) can only move cursor '_' from <code>ls a/b/c/d/e_</code> to <code>ls a/b/c/d/_e</code>.</p>
 <p>Shell-kill-word and shell-backward-kill-word can kill 'a/<em>b/c abc' to 'a/</em> abc', kill-word(&lt;M-d&gt;) can only kill to 'a/_/c abc'</p>
 <p>Beginning-of-line and end-of-line make &lt;Home&gt; and &lt;End&gt; work as expected instead of generate ~.</p>
-<h3 id="better-looking" tabindex="-1">better looking</h3>
-<p>Colored-stats enable color for different file types, visible-stats appends a character to denote a file's type.<br>
-Mark-symlinked-directories will add trailing '/' to completed symlinks which link to directories.
+<h3 id="colored-completion" tabindex="-1">Colored Completion</h3>
+<p>Colored-stats enables color for different file types, visible-stats appends a character to denote a file's type.<br>
+Mark-symlinked-directories will add trailing '/' to completed directory symlinks.
 Colored-completion-prefix colors common prefix of completions.</p>
-<h3 id="better-history" tabindex="-1">better history</h3>
+<h3 id="fast-history" tabindex="-1">Fast History</h3>
 <p>Set revert-all-at-newline to on can avoid to modify history list by mistake.<br>
 when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We <code>&lt;C-r&gt;</code> to search history, type <code>ooo</code> to modify history, <code>&lt;M-S-.&gt;</code> to move to end of command history (currently being input command), check history again, we see 4 becomes <code>ooo4</code>.</p>
 <pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">1</span>
