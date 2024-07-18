@@ -118,7 +118,7 @@ bash-5.2<span class="token comment"># ls Xorg.&lt;C-x>&lt;C-o></span>
 Xorg.0.log      Xorg.0.log.old  Xorg.1.log      Xorg.1.log.old  Xorg.2.log      Xorg.2.log.old
 bash-5.2<span class="token comment"># ls Xorg.2.log.old</span></code></pre>
 <p>Show-all-if-unmodified and show-all-if-ambiguous options help to use word completion efficiently.</p>
-<p>When these two options are off, as line 6-7 shows, &lt;C-i&gt; will make &quot;f&quot; partial completes to &quot;file&quot;, and &lt;C-i&gt;&lt;C-i&gt; will list matches.</p>
+<p>When these two options are off, as line 6-7 shows, <code>&lt;C-i&gt;</code> will make &quot;f&quot; partial completes to &quot;file&quot;, and <code>&lt;C-i&gt;&lt;C-i&gt;</code> will list matches.</p>
 <pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> show-all
 <span class="token builtin class-name">set</span> show-all-if-ambiguous off
 <span class="token builtin class-name">set</span> show-all-if-unmodified off
@@ -128,7 +128,7 @@ zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span c
 zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> file<span class="token operator">&lt;</span>C-i<span class="token operator">></span><span class="token operator">&lt;</span>C-i<span class="token operator">></span>
 file1  file2  file3  
 zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span></code></pre>
-<p>When show-all-if-unmodified option is on, only one &lt;C-i&gt; in line 7 is needed to list matches.</p>
+<p>When show-all-if-unmodified option is on, only one <code>&lt;C-i&gt;</code> in line 7 is needed to list matches.</p>
 <pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> show-all
 <span class="token builtin class-name">set</span> show-all-if-ambiguous off
 <span class="token builtin class-name">set</span> show-all-if-unmodified on
@@ -138,7 +138,7 @@ zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span c
 zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> file<span class="token operator">&lt;</span>C-i<span class="token operator">></span>
 file1  file2  file3  
 zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token function">ls</span> <span class="token function">file</span></code></pre>
-<p>When show-all-if-ambiguous option is on, only one &lt;C-i&gt; will perform partial completion and list matches</p>
+<p>When show-all-if-ambiguous option is on, only one <code>&lt;C-i&gt;</code> will perform partial completion and list matches</p>
 <pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token builtin class-name">bind</span> <span class="token parameter variable">-v</span> <span class="token operator">|</span> <span class="token function">grep</span> show-all
 <span class="token builtin class-name">set</span> show-all-if-ambiguous on
 <span class="token builtin class-name">set</span> show-all-if-unmodified off
@@ -179,7 +179,7 @@ Mark-symlinked-directories will add trailing '/' to completed symlinks which lin
 Colored-completion-prefix colors common prefix of completions.</p>
 <h3 id="better-history" tabindex="-1">better history</h3>
 <p>Set revert-all-at-newline to on can avoid to modify history list by mistake.<br>
-when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We <code>&lt;C-r&gt;</code> to search history, type <code>ooo</code> to modify history, <code>&lt;M-S-.&gt;</code> to move to end of command history (currently being input command), check history again, we see 4 becomes ooo4.</p>
+when revert-all-at-newline is off, we can modify history list, and there will be a * sign before command if it was modified, like line 25. To test it, We <code>&lt;C-r&gt;</code> to search history, type <code>ooo</code> to modify history, <code>&lt;M-S-.&gt;</code> to move to end of command history (currently being input command), check history again, we see 4 becomes <code>ooo4</code>.</p>
 <pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">1</span>
 -bash: <span class="token number">1</span>: <span class="token builtin class-name">command</span> not found
 zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/aa<span class="token operator">|</span>$ <span class="token number">2</span>
