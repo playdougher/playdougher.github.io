@@ -5,11 +5,15 @@ tags:       ["bashrc"]
 identifier: "20240718T195719"
 layout: "layouts/post.njk"
 eleventyNavigation:
-  key: "The Use of Bashrc File"
+  key: "LFS project appnote"
   parent: Home
 ---
 
 # The Use of Bashrc File
+
+## Overview
+
+Bashrc file is interactive shell startup file.
 
 ## Terminal Title
 
@@ -45,7 +49,7 @@ shopt -s histappend
 
 ## Shell Notification
 
-Function below will bel for `$1` times, it's useful to bell as remind when there is a ssh session running a long time job. 
+Function below will bell for `$1` times, it's useful to bell as remind when there is a ssh session running a long time job. 
 ``` sh
 function bel {
   for i in $(seq 1 "$1"); do tput bel; done
@@ -210,3 +214,4 @@ Set `MAN_POSIXLY_CORRECT` to show only the first man page when there are multipl
 ```sh
 export MAN_POSIXLY_CORRECT=true
 ```
+
