@@ -64,9 +64,9 @@
       </nav>
     <h1 id="the-use-of-bashrc-file" tabindex="-1">The Use of Bashrc File</h1>
 <h2 id="overview" tabindex="-1">Overview</h2>
-<p>Bashrc file is interactive shell startup file.</p>
+<p>The bashrc file is the startup file for interactive shells.</p>
 <h2 id="terminal-title" tabindex="-1">Terminal Title</h2>
-<p>I'm using Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title to make it easier to identify and swith between them. To achive this, I use <code>trap DEBUG</code> and handle different <code>TERM</code> variables for updating terminal titles.</p>
+<p>I use Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title for easier identification and switching. To achive this, I use <code>trap DEBUG</code> and manage different <code>TERM</code> variables to update terminal titles.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">trap</span> <span class="token string">'commandName=$(history 1| sed "s/^[ ]*[0-9]*[ ]*//g"); backspacedString="${commandName//\\/\\\\}"; echo -ne "\033]0;$HOSTNAME:$PWD \$ $backspacedString\007"'</span> DEBUG
 <span class="token keyword">case</span> <span class="token string">"<span class="token environment constant">$TERM</span>"</span> <span class="token keyword">in</span>
     screen*<span class="token punctuation">)</span>
@@ -78,18 +78,18 @@
     <span class="token punctuation">;</span><span class="token punctuation">;</span>
 <span class="token keyword">esac</span></code></pre>
 <h2 id="history-configuration" tabindex="-1">History Configuration</h2>
-<p>Below ignores duplicated commands in history list, limits commands number to 10000 and limit history file size to 10000 commands.</p>
+<p>Configs below ignores duplicated commands in the history list, limits the number of command to 10000 and restrict the history file size to 10000 commands.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token assign-left variable"><span class="token environment constant">HISTCONTROL</span></span><span class="token operator">=</span>ignoreboth
 <span class="token assign-left variable"><span class="token environment constant">HISTSIZE</span></span><span class="token operator">=</span><span class="token number">10000</span>
 <span class="token assign-left variable"><span class="token environment constant">HISTFILESIZE</span></span><span class="token operator">=</span><span class="token number">10000</span></code></pre>
 <p>Below appends history entries to file instead of overwrits it.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">shopt</span> <span class="token parameter variable">-s</span> histappend</code></pre>
 <h2 id="shell-notification" tabindex="-1">Shell Notification</h2>
-<p>Function below will bell for <code>$1</code> times, it's useful to bell as remind when there is a ssh session running a long time job.</p>
+<p>Function below will ring the bell for <code>$1</code> times, which is useful for notifying you when an SSH session finishes running a long job.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token keyword">function</span> <span class="token function-name function">bel</span> <span class="token punctuation">{</span>
   <span class="token keyword">for</span> <span class="token for-or-select variable">i</span> <span class="token keyword">in</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">seq</span> <span class="token number">1</span> <span class="token string">"<span class="token variable">$1</span>"</span><span class="token variable">)</span></span><span class="token punctuation">;</span> <span class="token keyword">do</span> tput bel<span class="token punctuation">;</span> <span class="token keyword">done</span>
 <span class="token punctuation">}</span></code></pre>
-<p>It's used in combination with Urxvt terminal emulator's bell-command plugin, a bellcatch.sh script and <a href="https://dunst-project.org/">dunst</a> notification daemon. Urxvt can catch every bell and write process parent id to a file. Bellcatch.sh keeps monitoring the file and uses dunst to show a notify when it find 6 continuous bells in 1 second. 6 bells is used to avoid trggering notifications for occasionally bell noise, such as when repeatedly typing <code>&lt;C-u&gt;</code> in Bash when there is no content.</p>
+<p>It's used in combination with Urxvt terminal emulator's bell-command plugin, a <code>bellcatch.sh</code> script and <a href="https://dunst-project.org/">dunst</a> notification daemon. Urxvt captures every bell and writes the parent process id to a file. The <code>bellcatch.sh</code> monitors this file and uses dunst to display a notification when it detects 6 continuous bells within 1 second. 6 bells helps avoid trggering notifications from occasional bell noise, such as when repeatedly typing <code>&lt;C-u&gt;</code> in Bash with no content.</p>
 <pre class="language-sh"><code class="language-sh">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/playdougher.github.io<span class="token operator">|</span>$ <span class="token function">grep</span> bell-co ~/.Xresources <span class="token operator">|</span> <span class="token function">grep</span> <span class="token parameter variable">-v</span> <span class="token string">"^!"</span>
 URxvt.perl-ext-common:          eval,selection,clipboard,bell-command,keyboard-select,-searchable-scrollback,-matcher,-selection-autotransform,-selection-popup,-selection-popup-mod,52-osc,confirm-paste
 URxvt.bell-command: <span class="token builtin class-name">echo</span> <span class="token environment constant">$PPID</span> <span class="token operator">>></span> /tmp/pidddd
@@ -162,7 +162,7 @@ idddd /tmp/pidddd2<span class="token variable">)</span></span>"</span>
 presi
 mon <span class="token string">"<span class="token variable">$@</span>"</span>
 zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token operator">|</span>$</code></pre>
-<p>Cgrep function is similar to <code>bel</code>, which is used to grep process tree and choose one to notify when process finishes running.</p>
+<p>The <code>cgrep</code> function is similar to <code>bel</code>, it is used to grep the process tree and select a process to notify when it finishes running.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token function-name function">cgrep</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment"># Run the command and store the output in an array</span>
     <span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
@@ -200,20 +200,20 @@ zhihao@dust<span class="token operator">|</span>/home/zhihao<span class="token o
     <span class="token keyword">fi</span>
 <span class="token punctuation">}</span></code></pre>
 <h2 id="miscellaneous" tabindex="-1">Miscellaneous</h2>
-<p>Below disables flow control, so <code>&lt;C-s&gt;</code> won't make terminal get stuck.</p>
+<p>Below disables flow control, so <code>&lt;C-s&gt;</code> won't cause the terminal to get stuck.</p>
 <pre class="language-sh"><code class="language-sh">stty <span class="token parameter variable">-ixon</span></code></pre>
 <p>Below resizes window after each command runs.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">shopt</span> <span class="token parameter variable">-s</span> checkwinsize</code></pre>
-<p>Create an Emacs alias that will quickly start a terminal-based Emacs, and it will create Emacs daemon when it's not running. The Emacs daemon can greatly speed up Emacs startup time.</p>
+<p>Create an Emacs alias that quickly starts a terminal-based Emacs and will create an Emacs daemon if it's not already running. The Emacs daemon can significantly speed up Emacs startup time.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">alias</span> <span class="token assign-left variable">emacs</span><span class="token operator">=</span><span class="token string">"emacsclient -ct -a ''"</span></code></pre>
-<p>Set default EDITOR and VISUAL allows to edit or view long or complex commands with Emacs in shell, e.g. use <code>&lt;C-x&gt;&lt;C-e&gt;</code> in Bash.</p>
+<p>Setting default EDITOR and VISUAL allows you to edit or view long or complex commands with Emacs in shell, e.g. use <code>&lt;C-x&gt;&lt;C-e&gt;</code> to open the current command in Emacs.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">export</span> <span class="token assign-left variable">EDITOR</span><span class="token operator">=</span><span class="token string">"emacsclient -ct -a ''"</span>
 <span class="token builtin class-name">export</span> <span class="token assign-left variable">VISUAL</span><span class="token operator">=</span><span class="token string">"emacsclient -ct -a ''"</span></code></pre>
-<p><code>$PROMPT_COMMAND</code> is run each time before a command is executed in shell, I use it to append each command to the history file in case the history is lost when the computer is accidently turned off.</p>
+<p><code>$PROMPT_COMMAND</code> is executed each time before a command is run in the shell, I use it to append each command to the history file, in case the history is lost if the computer is accidently turned off.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">export</span> <span class="token assign-left variable">PROMPT_COMMAND</span><span class="token operator">=</span><span class="token string">"history -a"</span></code></pre>
 <p>I use fasd to quickly switch between directories, initiate <code>fasd</code> with below command.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">eval</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span>fasd <span class="token parameter variable">--init</span> auto<span class="token variable">)</span></span>"</span></code></pre>
-<p>Set <code>MAN_POSIXLY_CORRECT</code> to show only the first man page when there are multiple man pages.</p>
+<p>Set <code>MAN_POSIXLY_CORRECT</code> to show only the first man page when multiple man pages are available.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">export</span> <span class="token assign-left variable">MAN_POSIXLY_CORRECT</span><span class="token operator">=</span>true</code></pre>
 
   </article>
