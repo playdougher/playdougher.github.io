@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- Some html boilerplate omitted -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-light.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-dark.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-material-dark.css" /> -->
+    <link rel="stylesheet" href="/themes/prism-laserwave.css" />
+    <!-- <link rel="stylesheet" href="/themes/new.css" />     -->
+    <title>the use of .screenrc file</title>
+  </head>
+  <body>
+    <button onclick="topFunction()" id="topButton" title="Go to top"><b>^</b></button>    
+    <header>
+      <a href="/">WuZhihao's Blog</a>
+      <nav>
+        <a href="/about">About</a> 
+      </nav>
+    </header>
+    <main>
+      <nav>
+
+
+
+<ul class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li class="my-active-class">
+    <a href="/20240719T110717--the-use-of-screenrc-file__screenrc/">the-use-of-screenrc-file</a>
+  </li>
+</ul>
+</nav>
+
+
+      <!--<header><nav>
+
+
+
+<ul class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li class="my-active-class">
+    <a href="/20240719T110717--the-use-of-screenrc-file__screenrc/">the-use-of-screenrc-file</a>
+  </li>
+</ul>
+</nav>
+
+</header> -->
+      
+<section>
+  <article>
+    <h1>the use of .screenrc file</h1>
+    <p>
+      Published on: 2024-07-19T03:07:17
+    </p>
+    <h2>Table Of Contents</h2>      
+    <nav class="toc" >
+        <ul><li><a href="#overview">Overview</a></li><li><a href="#usages">Usages</a><ul></ul></li></ul>
+      </nav>
+    <h1 id="the-use-of-.screenrc-file" tabindex="-1">The Use of .screenrc File</h1>
+<h2 id="overview" tabindex="-1">Overview</h2>
+<p>We can configure environmental variables and shortcuts, manage windows, window groups and window layouts with .screenrc file.</p>
+<h2 id="usages" tabindex="-1">Usages</h2>
+<p>My daily use conifguration file:</p>
+<pre class="language-sh"><code class="language-sh"><span class="token comment">##resize max</span>
+defutf8 on
+defencoding utf8
+encoding UTF-8 UTF-8
+setenv <span class="token environment constant">DISPLAY</span> :0
+    
+nonblock <span class="token number">1</span>
+escape ^q^q
+shell <span class="token string">"/var/tmp/.scbash"</span>
+
+layout save <span class="token number">0</span>
+
+<span class="token function">screen</span> <span class="token parameter variable">-t</span> <span class="token string">"root"</span> //group
+<span class="token function">screen</span> <span class="token parameter variable">-t</span> <span class="token string">"two"</span> //group
+<span class="token keyword">select</span> <span class="token number">1</span>
+<span class="token function">screen</span> <span class="token parameter variable">-T</span> <span class="token string">"screen-256color"</span>
+<span class="token comment"># screen bash --rcfile $HOME/.sptzh/.ssh-bashrc</span>
+<span class="token comment"># stuff "^j"</span>
+
+vbell off
+<span class="token comment"># layout save def</span>
+<span class="token comment"># setenv BASH_ENV /path/to/custom_bashrc</span>
+<span class="token comment"># verbose on</span>
+attrcolor b <span class="token string">".I"</span> <span class="token comment"># use bright colors for bold</span>
+defdynamictitle on
+startup_message off
+mousetrack off
+defmousetrack off
+hardstatus on
+<span class="token comment"># rendition so =b wk</span>
+rendition so <span class="token operator">=</span>b wk
+<span class="token comment"># caption always "%?%F%{.B.}%? /%H /%S /%n /%t"</span>
+<span class="token comment"># caption always "%?%F%{.B.}%? /%H /%S /%n /%e"</span>
+caption always <span class="token string">"%?%F%{kw}%? /%Y%m%d.%c:%s /%H /%S /%n /%e"</span>
+<span class="token comment"># caption always "%A||%B||%C||%D||%E||%F||%G||%H||%I||%J||%K||%L||%M||%N||%O||%P||%Q||%R||%S||%T||%U||%V||%W||%X||%Y||%Z||%a||%b||%c||%d||%e||%f||%g||%h||%i||%j||%k||%l||%m||%n||%o||%p||%q||%r||%s||%t||%u||%v||%w||%x||%y||%z"</span>
+<span class="token comment">#caption always "%s||%t||%u||%v||%w||%x||%y||%z"</span>
+
+<span class="token comment"># show window list in the buttom</span>
+<span class="token comment"># caption always "%{= kw}%-Lw%{= BW}%50>%n%f* %t%{= kw}%+Lw%&lt; %{= kw}[Load:%{= Y}%D%{= kw}]%{= BW}%=%{= kw}%h/%H"</span>
+<span class="token comment"># caption always "%{= Wk}%-Lw%50>%{= BW}%n%f* %t%{= Wk}%+Lw%&lt;"    </span>
+
+<span class="token comment">#hardstatus alwayslastline</span>
+<span class="token comment">#hardstatus string " %H %S %n %t "</span>
+<span class="token comment">#caption always "%{= kw}%-w%{= gW}%n %t%{-}%+w %-= bigdatums.net - %Y-%m-%d %C:%s"</span>
+altscreen on <span class="token comment">#fix residual editor text</span>
+
+<span class="token comment"># message display time (seconds)</span>
+msgwait <span class="token number">3</span>
+
+deflogin off
+
+<span class="token comment"># enable logging</span>
+<span class="token comment"># deflog on</span>
+<span class="token comment"># set log location</span>
+<span class="token comment"># logfile /root/screen.%n		</span>
+
+<span class="token comment"># nethack off			# nethack like notifications</span>
+
+<span class="token comment"># backtick 0 3600 3600 printf "$USER"</span>
+<span class="token comment"># backtick 1 5 5 /bin/bash -c 'cpuLoad=$(cut -s -d\  -f13 &lt;(uptime)); cpuLoad=${cpuLoad:0:-1}; memLoad=...; echo "CPU load ${cpuLoad} Mem Load ${memLoad}" '</span>
+
+multiuser on 
+<span class="token comment"># addacl test1,test2</span>
+
+<span class="token comment"># huge scrollback buffer</span>
+defscrollback <span class="token number">5000</span>
+
+<span class="token comment"># diable welcome message</span>
+startup_message off
+
+<span class="token comment"># scroll with mouse</span>
+termcapinfo xterm*<span class="token operator">|</span>rxvt*<span class="token operator">|</span>kterm*<span class="token operator">|</span>Eterm* ti@:te@
+
+<span class="token comment"># Change the xterm initialization string from is2=\E[!p\E[?3;4l\E[4l\E></span>
+<span class="token comment"># (This fixes the "Aborted because of window size change" konsole symptoms found</span>
+<span class="token comment">#  in bug #134198)</span>
+<span class="token comment"># termcapinfo xterm* 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'</span>
+terminfo rxvt-* <span class="token string">'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'</span>
+<span class="token comment"># term "rxvt-256color"</span>
+<span class="token comment"># term "xterm-256color"</span>
+term <span class="token string">"screen-256color"</span>
+
+<span class="token comment"># layouts</span>
+layout new two
+<span class="token keyword">select</span> <span class="token number">2</span>
+layout save two
+
+<span class="token builtin class-name">bind</span> <span class="token string">' '</span> layout next <span class="token comment"># &lt;- actually means Ctrl-q + Space</span>
+<span class="token comment"># bind ^o focus next</span>
+<span class="token builtin class-name">bind</span> ^u focus prev
+<span class="token builtin class-name">bind</span> ^g 
+<span class="token builtin class-name">bind</span> <span class="token string">"|"</span> <span class="token builtin class-name">eval</span> <span class="token string">"split -v"</span> <span class="token string">"windowlist -b"</span> <span class="token string">"other"</span> <span class="token string">"focus"</span> <span class="token string">"other"</span> <span class="token string">"screen"</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"S"</span> <span class="token builtin class-name">eval</span> <span class="token string">"split"</span> <span class="token string">"windowlist -b"</span> <span class="token string">"other"</span> <span class="token string">"focus"</span> <span class="token string">"other"</span> <span class="token string">"screen"</span>
+bindkey <span class="token string">"^q^o"</span> <span class="token builtin class-name">eval</span> <span class="token string">"focus next"</span> <span class="token string">"focus next"</span>
+bindkey <span class="token string">"^q^y"</span> <span class="token builtin class-name">eval</span> <span class="token string">"focus prev"</span> <span class="token string">"focus prev"</span>
+<span class="token comment"># bindkey "^q^r" eval "layout save tmp" "only"</span>
+bindkey <span class="token string">"^q^j"</span> other
+<span class="token comment"># bind "r" eval "layout save tmp" "only"</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"r"</span> <span class="token builtin class-name">eval</span> <span class="token string">"resize _"</span> <span class="token string">"fit"</span> <span class="token string">"colon"</span> <span class="token string">"stuff 'resize -b ='"</span>
+<span class="token comment"># bind "3" eval "layout select three"</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"<span class="token entity" title="\&quot;">\"</span>"</span> <span class="token keyword">select</span>
+<span class="token comment"># bind "u" eval "layout show"</span>
+<span class="token builtin class-name">bind</span> s <span class="token builtin class-name">eval</span> <span class="token string">"colon"</span> <span class="token string">"stuff 'layout save '"</span>
+bindkey <span class="token string">"^q^m"</span> layout <span class="token keyword">select</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"m"</span> layout show
+<span class="token comment"># bind \' eval "windowlist -m" "stuff j"</span>
+<span class="token builtin class-name">bind</span> <span class="token punctuation">\</span>' <span class="token builtin class-name">eval</span> <span class="token string">"windowlist -m"</span>
+<span class="token comment"># bind g eval "screen //group" "title" "screeen"</span>
+<span class="token comment"># bind g eval "windowlist -g -m" "stuff ^?" "screen //group" "title" "stuff ^u" </span>
+<span class="token builtin class-name">bind</span> g <span class="token builtin class-name">eval</span> <span class="token string">"windowlist -g -m"</span> <span class="token string">"stuff ^?"</span> <span class="token string">"screen //group"</span> <span class="token string">"colon"</span> <span class="token string">"stuff 'eval <span class="token entity" title="\&quot;">\"</span>title <span class="token entity" title="\&quot;">\"</span> <span class="token entity" title="\&quot;">\"</span>screen<span class="token entity" title="\&quot;">\"</span> <span class="token entity" title="\&quot;">\"</span>only<span class="token entity" title="\&quot;">\"</span> <span class="token entity" title="\&quot;">\"</span>layout save '"</span> <span class="token string">"stuff ^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b"</span>
+<span class="token comment"># bind C stuff "sudo -E bash --rcfile $(getent passwd $(ls /tmp/.scfile/) | cut -d: -f6)/.sptzh/.ssh-bashrc\n"</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"?"</span> <span class="token builtin class-name">eval</span> <span class="token string">"select root"</span> <span class="token string">"windowlist -g -m"</span> <span class="token string">"stuff /"</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"/"</span> <span class="token builtin class-name">eval</span> <span class="token string">"windowlist -g -m"</span> <span class="token string">"stuff j/"</span>
+<span class="token comment"># map to return</span>
+<span class="token comment"># bindkey -m "^[l" eval "stuff \015"</span>
+bindkey <span class="token parameter variable">-m</span> <span class="token string">"^[j"</span> <span class="token builtin class-name">eval</span> <span class="token string">"stuff jjj"</span>
+bindkey <span class="token parameter variable">-m</span> <span class="token string">"^[k"</span> <span class="token builtin class-name">eval</span> <span class="token string">"stuff kkk"</span>
+
+<span class="token comment"># bindkey -m "'" select</span>
+<span class="token comment"># bind "h" at \# stuff ". ~/.sptzh/.ssh-bashrc\n" </span>
+
+<span class="token comment"># sync screen buffer to clipboard</span>
+<span class="token comment"># bindkey -m > eval "stuff ' '" writebuf "exec sh -c 'xsel -ip &lt; /tmp/screen-exchange'"</span>
+<span class="token comment"># bindkey -m > eval "stuff ' '" writebuf "!.. /bin/bash -cx 'printf \"\\033]52;c;\$(printf \"Hello, world\" | base64)\\a\"' | less"</span>
+<span class="token comment"># bindkey -m > eval "stuff ' '" writebuf "exec /bin/bash -c 'printf \"\\033P\\033]52;c;\$(cat /tmp/screen-exchange)\\a\\033\\\\\\\\\"'"</span>
+bindkey <span class="token parameter variable">-m</span> <span class="token operator">></span> <span class="token builtin class-name">eval</span> <span class="token string">"stuff ' '"</span> writebuf <span class="token string">"exec bash -c '<span class="token variable"><span class="token variable">$(</span>getent <span class="token function">passwd</span> <span class="token punctuation">$(</span>cat /var/tmp/.scuser<span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token function">cut</span> -d: <span class="token parameter variable">-f6</span><span class="token variable">)</span></span>/.sptzh/osc52.sh &lt; /tmp/screen-exchange'"</span>
+<span class="token comment"># bindkey -m > eval "stuff ' '" writebuf "exec /bin/bash -cx 'echo xxx$SHELL xx $TERM'"</span>
+
+<span class="token builtin class-name">bind</span> <span class="token string">"j"</span> <span class="token builtin class-name">eval</span> <span class="token string">"copy"</span> <span class="token string">"stuff ' H ' "</span> writebuf <span class="token string">"exec bash -c '<span class="token variable"><span class="token variable">$(</span>getent <span class="token function">passwd</span> <span class="token punctuation">$(</span>cat /var/tmp/.scuser<span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token function">cut</span> -d: <span class="token parameter variable">-f6</span><span class="token variable">)</span></span>/.sptzh/osc52.sh &lt; /tmp/screen-exchange'"</span>
+
+<span class="token comment"># update appearance of horizental or vertical bar</span>
+<span class="token comment"># caption string "%{11} "</span>
+<span class="token comment"># caption string "%{00}%3n %t"</span>
+<span class="token comment"># rendition so =01</span>
+
+<span class="token comment"># make title follow commnad executed</span>
+<span class="token comment"># windowlist string "%4n %h%=%f"</span>
+
+<span class="token comment"># shelltitle '$ |something'</span>
+maptimeout <span class="token number">100</span>
+layout attach :last
+layout autosave on
+</code></pre>
+<h3 id="" tabindex="-1"></h3>
+<p>If you run Screen on a remote server and the TCP connection becomes unstable, Screen may get blocked. To recover from a blocked state after 1 second, set the following option:</p>
+<pre class="language-sh"><code class="language-sh">nonblock <span class="token number">1</span></code></pre>
+<p>Change escape key because the default <code>^a</code> is often used in Bash, <code>^q</code> is quote insertion in Bash and Emacs and is rarely used, so it makes a good choice.</p>
+<pre class="language-sh"><code class="language-sh">escape ^q^q</code></pre>
+<p>Screen has the ability to create window groups, and group groups. It helps to organise windows well.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token function">screen</span> <span class="token parameter variable">-t</span> <span class="token string">"root"</span> //group
+<span class="token function">screen</span> <span class="token parameter variable">-t</span> <span class="token string">"two"</span> //group
+<span class="token keyword">select</span> <span class="token number">1</span>
+<span class="token function">screen</span> <span class="token parameter variable">-T</span> <span class="token string">"screen-256color"</span></code></pre>
+<p>Set below option to name windows, so we can search window easily in window list.</p>
+<pre class="language-sh"><code class="language-sh">defdynamictitle on</code></pre>
+<p>Turn off welcome page because it's useless.</p>
+<pre class="language-sh"><code class="language-sh">startup_message off</code></pre>
+<p>Mouse track is useful when switch between many panes, but it doesn't work well on 2K monitors, so I disable it. I found the left most window is activated when I click the right most one.</p>
+<pre class="language-sh"><code class="language-sh">mousetrack off
+defmousetrack off</code></pre>
+<p>Hardstatus is useful to show window info or denote current active window.</p>
+<pre class="language-sh"><code class="language-sh">hardstatus on
+<span class="token comment"># rendition so =b wk</span>
+rendition so <span class="token operator">=</span>b wk
+<span class="token comment"># caption always "%?%F%{.B.}%? /%H /%S /%n /%t"</span>
+<span class="token comment"># caption always "%?%F%{.B.}%? /%H /%S /%n /%e"</span>
+caption always <span class="token string">"%?%F%{kw}%? /%Y%m%d.%c:%s /%H /%S /%n /%e"</span></code></pre>
+<p>After exit Emacs or Vim, there will be residual content on screen, turn on option to clear them.</p>
+<pre class="language-sh"><code class="language-sh">altscreen on <span class="token comment">#fix residual editor text</span></code></pre>
+<p>Long time message is annoying, I reduce it to 3 seconds.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token comment"># message display time (seconds)</span>
+msgwait <span class="token number">3</span></code></pre>
+<p>diable login makes not show login entry in <code>w</code>, it may look terrible for customers if I create dozens of terminal.</p>
+<pre class="language-sh"><code class="language-sh">deflogin off</code></pre>
+<p>Set long scrollback buffer to contain more history info</p>
+<pre class="language-sh"><code class="language-sh">defscrollback <span class="token number">5000</span></code></pre>
+<p>Make gnu screen support scroll with mouse</p>
+<pre class="language-sh"><code class="language-sh">termcapinfo xterm*<span class="token operator">|</span>rxvt*<span class="token operator">|</span>kterm*<span class="token operator">|</span>Eterm* ti@:te@</code></pre>
+<p>Specify term to enbale 256-color</p>
+<pre class="language-sh"><code class="language-sh">terminfo rxvt-* <span class="token string">'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'</span>
+term <span class="token string">"screen-256color"</span></code></pre>
+
+  </article>
+</section>
+    </main>
+    <script src="/javascript/bundle.js"></script>
+    </script>
+  </body>
+</html>
