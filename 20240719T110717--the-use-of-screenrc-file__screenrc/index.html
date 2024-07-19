@@ -60,7 +60,7 @@
     </p>
     <h2>Table Of Contents</h2>      
     <nav class="toc" >
-        <ul><li><a href="#overview">Overview</a></li><li><a href="#usages">Usages</a><ul></ul></li></ul>
+        <ul><li><a href="#overview">Overview</a></li><li><a href="#usages">Usages</a><ul><li><a href="#layout-and-groups-management">Layout and Groups Management</a></li><li><a href="#window-management">Window Management</a></li><li><a href="#navigation-bar">Navigation Bar</a></li><li><a href="#system-clipboard">System Clipboard</a></li><li><a href="#miscellaneous">Miscellaneous</a></li></ul></li></ul>
       </nav>
     <h1 id="the-use-of-.screenrc-file" tabindex="-1">The Use of .screenrc File</h1>
 <h2 id="overview" tabindex="-1">Overview</h2>
@@ -210,23 +210,50 @@ maptimeout <span class="token number">100</span>
 layout attach :last
 layout autosave on
 </code></pre>
-<h3 id="" tabindex="-1"></h3>
-<p>If you run Screen on a remote server and the TCP connection becomes unstable, Screen may get blocked. To recover from a blocked state after 1 second, set the following option:</p>
-<pre class="language-sh"><code class="language-sh">nonblock <span class="token number">1</span></code></pre>
-<p>Change escape key because the default <code>^a</code> is often used in Bash, <code>^q</code> is quote insertion in Bash and Emacs and is rarely used, so it makes a good choice.</p>
-<pre class="language-sh"><code class="language-sh">escape ^q^q</code></pre>
+<h3 id="layout-and-groups-management" tabindex="-1">Layout and Groups Management</h3>
 <p>Screen has the ability to create window groups, and group groups. It helps to organise windows well.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token function">screen</span> <span class="token parameter variable">-t</span> <span class="token string">"root"</span> //group
 <span class="token function">screen</span> <span class="token parameter variable">-t</span> <span class="token string">"two"</span> //group
 <span class="token keyword">select</span> <span class="token number">1</span>
 <span class="token function">screen</span> <span class="token parameter variable">-T</span> <span class="token string">"screen-256color"</span></code></pre>
+<p>I find Screen doesn't have command to switch window groups, but there is <code>layout</code> to switch indirectly. I initiate a layout named &quot;two&quot; below, layout contains window group &quot;two&quot; because I configure <code>screen -t &quot;two&quot; //group</code> before. So no matter what window group I am in, I can switch to group &quot;two&quot; by switch layout with <code>layout select two</code>.</p>
+<pre><code>layout new two
+select 2
+layout save two
+</code></pre>
+<p>We can create a new layout, select and show layouts.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> s <span class="token builtin class-name">eval</span> <span class="token string">"colon"</span> <span class="token string">"stuff 'layout save '"</span>
+bindkey <span class="token string">"^q^m"</span> layout <span class="token keyword">select</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"m"</span> layout show</code></pre>
+<p>We can create a new window group, type group name in the two &quot;_&quot; cursor position and add a <code>&quot;</code> in the end of the command: <code>:eval &quot;title _&quot; &quot;screen&quot; &quot;only&quot; &quot;layout save _&quot;</code>.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> g <span class="token builtin class-name">eval</span> <span class="token string">"windowlist -g -m"</span> <span class="token string">"stuff ^?"</span> <span class="token string">"screen //group"</span> <span class="token string">"colon"</span> <span class="token string">"stuff 'eval <span class="token entity" title="\&quot;">\"</span>title <span class="token entity" title="\&quot;">\"</span> <span class="token entity" title="\&quot;">\"</span>screen<span class="token entity" title="\&quot;">\"</span> <span class="token entity" title="\&quot;">\"</span>only<span class="token entity" title="\&quot;">\"</span> <span class="token entity" title="\&quot;">\"</span>layout save '"</span> <span class="token string">"stuff ^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b"</span></code></pre>
+<p>Save layout when detach Screen, so can recover previous when reattach to it.</p>
+<pre class="language-sh"><code class="language-sh">layout attach :last
+layout autosave on</code></pre>
+<h3 id="window-management" tabindex="-1">Window Management</h3>
 <p>Set below option to name windows, so we can search window easily in window list.</p>
 <pre class="language-sh"><code class="language-sh">defdynamictitle on</code></pre>
-<p>Turn off welcome page because it's useless.</p>
-<pre class="language-sh"><code class="language-sh">startup_message off</code></pre>
-<p>Mouse track is useful when switch between many panes, but it doesn't work well on 2K monitors, so I disable it. I found the left most window is activated when I click the right most one.</p>
-<pre class="language-sh"><code class="language-sh">mousetrack off
-defmousetrack off</code></pre>
+<p>Using one region in Screen window is a waste of screen space, usually I create at least 3 regions, or even 6 regions, to switch between them fluently, including select previous or next region, I add shortcuts in conf file. So I can use <code>&lt;C-q&gt;&lt;C-u&gt;</code> and <code>&lt;C-q&gt;&lt;C-i&gt;</code> to navigate between regions. I also create shortcuts to move two times because it's efficient when it's 6 regions.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> ^u focus prev
+bindkey <span class="token string">"^q^o"</span> <span class="token builtin class-name">eval</span> <span class="token string">"focus next"</span> <span class="token string">"focus next"</span>
+bindkey <span class="token string">"^q^y"</span> <span class="token builtin class-name">eval</span> <span class="token string">"focus prev"</span> <span class="token string">"focus prev"</span></code></pre>
+<p>Use two different characters to trigger a commmand is quicker</p>
+<pre class="language-sh"><code class="language-sh">bindkey <span class="token string">"^q^j"</span> other</code></pre>
+<p>Regions are split with blank content, but usualy we will create a window in it, update shortcuts to replace default one.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> <span class="token string">"|"</span> <span class="token builtin class-name">eval</span> <span class="token string">"split -v"</span> <span class="token string">"windowlist -b"</span> <span class="token string">"other"</span> <span class="token string">"focus"</span> <span class="token string">"other"</span> <span class="token string">"screen"</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"S"</span> <span class="token builtin class-name">eval</span> <span class="token string">"split"</span> <span class="token string">"windowlist -b"</span> <span class="token string">"other"</span> <span class="token string">"focus"</span> <span class="token string">"other"</span> <span class="token string">"screen"</span></code></pre>
+<p>Sometimes a region is too small, to maximise it temporarily, use shortcut below then <code>&lt;C-M&gt;</code> to recover.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> <span class="token string">"r"</span> <span class="token builtin class-name">eval</span> <span class="token string">"resize _"</span> <span class="token string">"fit"</span> <span class="token string">"colon"</span> <span class="token string">"stuff 'resize -b ='"</span></code></pre>
+<p>We can show window list of current window group by recently used order.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> <span class="token string">"<span class="token entity" title="\&quot;">\"</span>"</span> <span class="token keyword">select</span>
+<span class="token builtin class-name">bind</span> <span class="token punctuation">\</span>' <span class="token builtin class-name">eval</span> <span class="token string">"windowlist -m"</span></code></pre>
+<p>We can search windows by name. The first one is search windows in the same group, the other one is all groups.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> <span class="token string">"/"</span> <span class="token builtin class-name">eval</span> <span class="token string">"windowlist -g -m"</span> <span class="token string">"stuff j/"</span>
+<span class="token builtin class-name">bind</span> <span class="token string">"?"</span> <span class="token builtin class-name">eval</span> <span class="token string">"select root"</span> <span class="token string">"windowlist -g -m"</span> <span class="token string">"stuff /"</span></code></pre>
+<p>We can use <code>&lt;M-j&gt;</code> and <code>&lt;M-k&gt;</code> to move quickly in window group list.</p>
+<pre class="language-sh"><code class="language-sh">bindkey <span class="token parameter variable">-m</span> <span class="token string">"^[j"</span> <span class="token builtin class-name">eval</span> <span class="token string">"stuff jjj"</span>
+bindkey <span class="token parameter variable">-m</span> <span class="token string">"^[k"</span> <span class="token builtin class-name">eval</span> <span class="token string">"stuff kkk"</span></code></pre>
+<h3 id="navigation-bar" tabindex="-1">Navigation Bar</h3>
 <p>Hardstatus is useful to show window info or denote current active window.</p>
 <pre class="language-sh"><code class="language-sh">hardstatus on
 <span class="token comment"># rendition so =b wk</span>
@@ -236,11 +263,176 @@ rendition so <span class="token operator">=</span>b wk
 caption always <span class="token string">"%?%F%{kw}%? /%Y%m%d.%c:%s /%H /%S /%n /%e"</span></code></pre>
 <p>After exit Emacs or Vim, there will be residual content on screen, turn on option to clear them.</p>
 <pre class="language-sh"><code class="language-sh">altscreen on <span class="token comment">#fix residual editor text</span></code></pre>
-<p>Long time message is annoying, I reduce it to 3 seconds.</p>
-<pre class="language-sh"><code class="language-sh"><span class="token comment"># message display time (seconds)</span>
-msgwait <span class="token number">3</span></code></pre>
-<p>diable login makes not show login entry in <code>w</code>, it may look terrible for customers if I create dozens of terminal.</p>
-<pre class="language-sh"><code class="language-sh">deflogin off</code></pre>
+<h3 id="system-clipboard" tabindex="-1">System Clipboard</h3>
+<p>We can copy highlighted content to clipboard even it's in a remote ssh connection.</p>
+<pre class="language-sh"><code class="language-sh">bindkey <span class="token parameter variable">-m</span> <span class="token operator">></span> <span class="token builtin class-name">eval</span> <span class="token string">"stuff ' '"</span> writebuf <span class="token string">"exec bash -c '<span class="token variable"><span class="token variable">$(</span>getent <span class="token function">passwd</span> <span class="token punctuation">$(</span>cat /var/tmp/.scuser<span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token function">cut</span> -d: <span class="token parameter variable">-f6</span><span class="token variable">)</span></span>/.sptzh/osc52.sh &lt; /tmp/screen-exchange'"</span></code></pre>
+<p>osc52.sh:</p>
+<pre class="language-sh"><code class="language-sh"><span class="token shebang important">#!/bin/sh</span>
+<span class="token comment"># Copyright (c) 2012 The Chromium OS Authors. All rights reserved.</span>
+<span class="token comment"># Use of this source code is governed by a BSD-style license that can be</span>
+<span class="token comment"># found in the LICENSE file.</span>
+
+<span class="token comment"># Max length of the OSC 52 sequence.  Sequences longer than this will not be</span>
+<span class="token comment"># sent to the terminal.</span>
+<span class="token assign-left variable">OSC_52_MAX_SEQUENCE</span><span class="token operator">=</span><span class="token string">"100000"</span>
+
+<span class="token comment"># Write an error message and exit.</span>
+<span class="token comment"># Usage: &lt;message></span>
+<span class="token function-name function">die</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"ERROR: <span class="token variable">$*</span>"</span>
+  <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># Send a DCS sequence through tmux.</span>
+<span class="token comment"># Usage: &lt;sequence></span>
+<span class="token function-name function">tmux_dcs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token builtin class-name">printf</span> <span class="token string">'\033Ptmux;\033%s\033\\'</span> <span class="token string">"<span class="token variable">$1</span>"</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># Send a DCS sequence through screen.</span>
+<span class="token comment"># Usage: &lt;sequence></span>
+<span class="token function-name function">screen_dcs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment"># Screen limits the length of string sequences, so we have to break it up.</span>
+  <span class="token comment"># Going by the screen history:</span>
+  <span class="token comment">#   (v4.2.1) Apr 2014 - today: 768 bytes</span>
+  <span class="token comment">#   Aug 2008 - Apr 2014 (v4.2.0): 512 bytes</span>
+  <span class="token comment">#   ??? - Aug 2008 (v4.0.3): 256 bytes</span>
+  <span class="token comment"># Since v4.2.0 is only ~4 years old, we'll use the 256 limit.</span>
+  <span class="token comment"># We can probably switch to the 768 limit in 2022.</span>
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">limit</span><span class="token operator">=</span><span class="token number">256</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$2</span>"</span> <span class="token parameter variable">-eq</span> <span class="token string">"1"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token comment"># We go 4 bytes under the limit because we're going to insert 2 bytes</span>
+    <span class="token comment"># before (\eP) and 2 bytes after (\e\) each string.</span>
+    <span class="token builtin class-name">echo</span> <span class="token parameter variable">-n</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
+      <span class="token function">sed</span> <span class="token parameter variable">-E</span> <span class="token string">"s:.{<span class="token variable"><span class="token variable">$((</span> limit <span class="token operator">-</span> <span class="token number">4</span> <span class="token variable">))</span></span>}:&amp;<span class="token entity" title="\n">\n</span>:g"</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
+      <span class="token function">sed</span> <span class="token parameter variable">-E</span> <span class="token parameter variable">-e</span> <span class="token string">'s:^:\x1bP:'</span> <span class="token parameter variable">-e</span> <span class="token string">'s:$:\x1b\\:'</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
+      <span class="token function">tr</span> <span class="token parameter variable">-d</span> <span class="token string">'\n'</span>
+  <span class="token keyword">elif</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$2</span>"</span> <span class="token parameter variable">-eq</span> <span class="token string">"2"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token comment"># We go 10 bytes under the limit because we're going to insert 4 bytes</span>
+    <span class="token comment"># before (\eP\eP) and 6 bytes after (\e\) each string.</span>
+    <span class="token builtin class-name">echo</span> <span class="token parameter variable">-n</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
+      <span class="token function">sed</span> <span class="token parameter variable">-E</span> <span class="token string">"s:.{<span class="token variable"><span class="token variable">$((</span> limit <span class="token operator">-</span> <span class="token number">10</span> <span class="token variable">))</span></span>}:&amp;<span class="token entity" title="\n">\n</span>:g"</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
+      <span class="token function">sed</span> <span class="token parameter variable">-E</span> <span class="token parameter variable">-e</span> <span class="token string">'s:^:\x1bP\x1bP:'</span> <span class="token parameter variable">-e</span> <span class="token string">'s:$:\x1b\x1b\\\x1b\\\\:'</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
+      <span class="token function">tr</span> <span class="token parameter variable">-d</span> <span class="token string">'\n'</span>
+  <span class="token keyword">fi</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># Send an escape sequence to hterm.</span>
+<span class="token comment"># Usage: &lt;sequence></span>
+<span class="token function-name function">print_seq</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$1</span>"</span>
+
+  <span class="token keyword">case</span> <span class="token variable">${<span class="token environment constant">TERM</span>-}</span> <span class="token keyword">in</span>
+  screen*<span class="token punctuation">)</span>
+    <span class="token comment"># Since tmux defaults to setting TERM=screen (ugh), we need to detect</span>
+    <span class="token comment"># it here specially.</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-n</span> <span class="token string">"<span class="token variable">${TMUX-}</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+      tmux_dcs <span class="token string">"<span class="token variable">${seq}</span>"</span>
+    <span class="token keyword">else</span>
+      screen_dcs <span class="token string">"<span class="token variable">${seq}</span>"</span> <span class="token string">"<span class="token variable">${SCREEN_LEVEL<span class="token operator">:-</span>1}</span>"</span>
+    <span class="token keyword">fi</span>
+    <span class="token punctuation">;</span><span class="token punctuation">;</span>
+  tmux*<span class="token punctuation">)</span>
+    tmux_dcs <span class="token string">"<span class="token variable">${seq}</span>"</span>
+    <span class="token punctuation">;</span><span class="token punctuation">;</span>
+  *<span class="token punctuation">)</span>
+    <span class="token builtin class-name">echo</span> <span class="token parameter variable">-n</span> <span class="token string">"<span class="token variable">${seq}</span>"</span>
+    <span class="token punctuation">;</span><span class="token punctuation">;</span>
+  <span class="token keyword">esac</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># Base64 encode stdin.</span>
+<span class="token function-name function">b64enc</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  base64 <span class="token operator">|</span> <span class="token function">tr</span> <span class="token parameter variable">-d</span> <span class="token string">'\n'</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># Send the OSC 52 sequence to copy the content.</span>
+<span class="token comment"># Usage: [string]</span>
+<span class="token function-name function">copy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token builtin class-name">local</span> str
+
+  <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$#</span> <span class="token parameter variable">-eq</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token assign-left variable">str</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>b64enc<span class="token variable">)</span></span>"</span>
+  <span class="token keyword">else</span>
+    <span class="token assign-left variable">str</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">$@</span>"</span> <span class="token operator">|</span> b64enc<span class="token variable">)</span></span>"</span>
+  <span class="token keyword">fi</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">${OSC_52_MAX_SEQUENCE}</span> <span class="token parameter variable">-gt</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">local</span> <span class="token assign-left variable">len</span><span class="token operator">=</span><span class="token variable">${<span class="token operator">#</span>str}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">${len}</span> <span class="token parameter variable">-gt</span> <span class="token variable">${OSC_52_MAX_SEQUENCE}</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+      die <span class="token string">"selection too long to send to terminal:"</span> <span class="token punctuation">\</span>
+        <span class="token string">"<span class="token variable">${OSC_52_MAX_SEQUENCE}</span> limit, <span class="token variable">${len}</span> attempted"</span>
+    <span class="token keyword">fi</span>
+  <span class="token keyword">fi</span>
+
+  print_seq <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">printf</span> <span class="token string">'\033]52;c;%s\a'</span> <span class="token string">"<span class="token variable">${str}</span>"</span><span class="token variable">)</span></span>"</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># Write tool usage and exit.</span>
+<span class="token comment"># Usage: [error message]</span>
+<span class="token function-name function">usage</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$#</span> <span class="token parameter variable">-gt</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">exec</span> <span class="token operator"><span class="token file-descriptor important">1</span>></span><span class="token file-descriptor important">&amp;2</span>
+  <span class="token keyword">fi</span>
+  <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOF
+Usage: osc52 [options] [string]
+
+Send an arbitrary string to the terminal clipboard using the OSC 52 escape
+sequence as specified in xterm:
+  https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+  Section "Operating System Controls", Ps => 52.
+
+The data can either be read from stdin:
+  $ echo "hello world" | osc52.sh
+
+Or specified on the command line:
+  $ osc52.sh "hello world"
+
+Options:
+  -h, --help    This screen.
+  -f, --force   Ignore max byte limit (<span class="token variable">${OSC_52_MAX_SEQUENCE}</span>)
+EOF</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token variable">$#</span> <span class="token parameter variable">-gt</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span>
+    die <span class="token string">"<span class="token variable">$@</span>"</span>
+  <span class="token keyword">else</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">0</span>
+  <span class="token keyword">fi</span>
+<span class="token punctuation">}</span>
+
+<span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token builtin class-name">set</span> <span class="token parameter variable">-e</span>
+
+  <span class="token keyword">while</span> <span class="token punctuation">[</span> <span class="token variable">$#</span> <span class="token parameter variable">-gt</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token keyword">case</span> <span class="token variable">$1</span> <span class="token keyword">in</span>
+    -h<span class="token operator">|</span>--help<span class="token punctuation">)</span>
+      usage
+      <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    -f<span class="token operator">|</span>--force<span class="token punctuation">)</span>
+      <span class="token assign-left variable">OSC_52_MAX_SEQUENCE</span><span class="token operator">=</span><span class="token number">0</span>
+      <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    -*<span class="token punctuation">)</span>
+      usage <span class="token string">"Unknown option: <span class="token variable">$1</span>"</span>
+      <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    *<span class="token punctuation">)</span>
+      <span class="token builtin class-name">break</span>
+      <span class="token punctuation">;</span><span class="token punctuation">;</span>
+    <span class="token keyword">esac</span>
+    <span class="token builtin class-name">shift</span>
+  <span class="token keyword">done</span>
+
+  copy <span class="token string">"<span class="token variable">$@</span>"</span>
+<span class="token punctuation">}</span>
+main <span class="token string">"<span class="token variable">$@</span>"</span></code></pre>
+<p>We can copy content from cursor position to head of a terminal quickly to clipboard.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> <span class="token string">"j"</span> <span class="token builtin class-name">eval</span> <span class="token string">"copy"</span> <span class="token string">"stuff ' H ' "</span> writebuf <span class="token string">"exec bash -c '<span class="token variable"><span class="token variable">$(</span>getent <span class="token function">passwd</span> <span class="token punctuation">$(</span>cat /var/tmp/.scuser<span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token function">cut</span> -d: <span class="token parameter variable">-f6</span><span class="token variable">)</span></span>/.sptzh/osc52.sh &lt; /tmp/screen-exchange'"</span></code></pre>
+<h3 id="miscellaneous" tabindex="-1">Miscellaneous</h3>
+<p>Change escape key because the default <code>^a</code> is often used in Bash, <code>^q</code> is quote insertion in Bash and Emacs and is rarely used, so it makes a good choice.</p>
+<pre class="language-sh"><code class="language-sh">escape ^q^q</code></pre>
+<p>If you run Screen on a remote server and the TCP connection becomes unstable, Screen may get blocked. To recover from a blocked state after 1 second, set the following option:</p>
+<pre class="language-sh"><code class="language-sh">nonblock <span class="token number">1</span></code></pre>
 <p>Set long scrollback buffer to contain more history info</p>
 <pre class="language-sh"><code class="language-sh">defscrollback <span class="token number">5000</span></code></pre>
 <p>Make gnu screen support scroll with mouse</p>
@@ -248,6 +440,20 @@ msgwait <span class="token number">3</span></code></pre>
 <p>Specify term to enbale 256-color</p>
 <pre class="language-sh"><code class="language-sh">terminfo rxvt-* <span class="token string">'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'</span>
 term <span class="token string">"screen-256color"</span></code></pre>
+<p>Turn off welcome page because it's useless.</p>
+<pre class="language-sh"><code class="language-sh">startup_message off</code></pre>
+<p>Mouse track is useful when switch between many regions, but it doesn't work well on 2K monitors, so I disable it. I found the left most window is activated when I click the right most one.</p>
+<pre class="language-sh"><code class="language-sh">mousetrack off
+defmousetrack off</code></pre>
+<p>Long time message is annoying, I reduce it to 3 seconds.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token comment"># message display time (seconds)</span>
+msgwait <span class="token number">3</span></code></pre>
+<p>diable login makes not show login entry in <code>w</code>, it may look terrible for customers if I create dozens of terminal.</p>
+<pre class="language-sh"><code class="language-sh">deflogin off</code></pre>
+<p>I unbind ^g to avoid accidently switch vbell mode when using Emacs.</p>
+<pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">bind</span> ^g </code></pre>
+<p>Shorten delay between input when using escape sequence.</p>
+<pre class="language-sh"><code class="language-sh">maptimeout <span class="token number">100</span></code></pre>
 
   </article>
 </section>
