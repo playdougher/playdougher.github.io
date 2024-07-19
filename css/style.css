@@ -155,6 +155,7 @@ li code {
     border: 1px solid hsl(0,0%,65%);
     /* background: #415C76; */
     color: hsl(322, 100%, 68%);
+    padding: 0em 0.2em;        
     /* color: hsl(187, 90%, 70%); */
 }
 p code {
@@ -162,6 +163,7 @@ p code {
     border: 1px solid hsl(0,0%,65%);
     /* background: #415C76; */
     color: hsl(322, 100%, 68%);
+    padding: 0em 0.2em;        
     /* color: hsl(187, 90%, 70%); */
 }
 
