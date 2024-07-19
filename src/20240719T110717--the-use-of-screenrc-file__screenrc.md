@@ -165,17 +165,7 @@ layout autosave on
 
 ```
 
-### 
-
-If you run Screen on a remote server and the TCP connection becomes unstable, Screen may get blocked. To recover from a blocked state after 1 second, set the following option:
-```sh
-nonblock 1
-```
-
-Change escape key because the default `^a` is often used in Bash, `^q` is quote insertion in Bash and Emacs and is rarely used, so it makes a good choice.
-``` sh
-escape ^q^q
-```
+### Layout and Groups Management
 
 Screen has the ability to create window groups, and group groups. It helps to organise windows well.
 ```sh
@@ -185,21 +175,80 @@ select 1
 screen -T "screen-256color"
 ```
 
+I find Screen doesn't have command to switch window groups, but there is `layout` to switch indirectly. I initiate a layout named "two" below, layout contains window group "two" because I configure `screen -t "two" //group` before. So no matter what window group I am in, I can switch to group "two" by switch layout with `layout select two`.
+```
+layout new two
+select 2
+layout save two
+```
+
+We can create a new layout, select and show layouts.
+```sh
+bind s eval "colon" "stuff 'layout save '"
+bindkey "^q^m" layout select
+bind "m" layout show
+```
+
+We can create a new window group, type group name in the two "_" cursor position and add a `"` in the end of the command: `:eval "title _" "screen" "only" "layout save _"`.
+```sh
+bind g eval "windowlist -g -m" "stuff ^?" "screen //group" "colon" "stuff 'eval \"title \" \"screen\" \"only\" \"layout save '" "stuff ^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b"
+```
+
+Save layout when detach Screen, so can recover previous when reattach to it.
+```sh
+layout attach :last
+layout autosave on
+```
+
+### Window Management
+
 Set below option to name windows, so we can search window easily in window list.
 ```sh
 defdynamictitle on
 ```
 
-Turn off welcome page because it's useless.
+Using one region in Screen window is a waste of screen space, usually I create at least 3 regions, or even 6 regions, to switch between them fluently, including select previous or next region, I add shortcuts in conf file. So I can use `<C-q><C-u>` and `<C-q><C-i>` to navigate between regions. I also create shortcuts to move two times because it's efficient when it's 6 regions.
 ```sh
-startup_message off
+bind ^u focus prev
+bindkey "^q^o" eval "focus next" "focus next"
+bindkey "^q^y" eval "focus prev" "focus prev"
 ```
 
-Mouse track is useful when switch between many panes, but it doesn't work well on 2K monitors, so I disable it. I found the left most window is activated when I click the right most one.
+Use two different characters to trigger a commmand is quicker
 ```sh
-mousetrack off
-defmousetrack off
+bindkey "^q^j" other
 ```
+
+Regions are split with blank content, but usualy we will create a window in it, update shortcuts to replace default one.
+```sh
+bind "|" eval "split -v" "windowlist -b" "other" "focus" "other" "screen"
+bind "S" eval "split" "windowlist -b" "other" "focus" "other" "screen"
+```
+
+Sometimes a region is too small, to maximise it temporarily, use shortcut below then `<C-M>` to recover.
+```sh
+bind "r" eval "resize _" "fit" "colon" "stuff 'resize -b ='"
+```
+
+We can show window list of current window group by recently used order.
+```sh
+bind "\"" select
+bind \' eval "windowlist -m"
+```
+
+We can search windows by name. The first one is search windows in the same group, the other one is all groups.
+```sh
+bind "/" eval "windowlist -g -m" "stuff j/"
+bind "?" eval "select root" "windowlist -g -m" "stuff /"
+```
+
+We can use `<M-j>` and `<M-k>` to move quickly in window group list.
+```sh
+bindkey -m "^[j" eval "stuff jjj"
+bindkey -m "^[k" eval "stuff kkk"
+```
+
+### Navigation Bar
 
 Hardstatus is useful to show window info or denote current active window.
 ```sh
@@ -216,15 +265,191 @@ After exit Emacs or Vim, there will be residual content on screen, turn on optio
 altscreen on #fix residual editor text
 ```
 
-Long time message is annoying, I reduce it to 3 seconds.
+### System Clipboard
+
+We can copy highlighted content to clipboard even it's in a remote ssh connection.
 ```sh
-# message display time (seconds)
-msgwait 3
+bindkey -m > eval "stuff ' '" writebuf "exec bash -c '$(getent passwd $(cat /var/tmp/.scuser) | cut -d: -f6)/.sptzh/osc52.sh < /tmp/screen-exchange'"
 ```
 
-diable login makes not show login entry in `w`, it may look terrible for customers if I create dozens of terminal.
+osc52.sh:
 ```sh
-deflogin off
+#!/bin/sh
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Max length of the OSC 52 sequence.  Sequences longer than this will not be
+# sent to the terminal.
+OSC_52_MAX_SEQUENCE="100000"
+
+# Write an error message and exit.
+# Usage: <message>
+die() {
+  echo "ERROR: $*"
+  exit 1
+}
+
+# Send a DCS sequence through tmux.
+# Usage: <sequence>
+tmux_dcs() {
+  printf '\033Ptmux;\033%s\033\\' "$1"
+}
+
+# Send a DCS sequence through screen.
+# Usage: <sequence>
+screen_dcs() {
+  # Screen limits the length of string sequences, so we have to break it up.
+  # Going by the screen history:
+  #   (v4.2.1) Apr 2014 - today: 768 bytes
+  #   Aug 2008 - Apr 2014 (v4.2.0): 512 bytes
+  #   ??? - Aug 2008 (v4.0.3): 256 bytes
+  # Since v4.2.0 is only ~4 years old, we'll use the 256 limit.
+  # We can probably switch to the 768 limit in 2022.
+  local limit=256
+
+  if [ "$2" -eq "1" ]; then
+    # We go 4 bytes under the limit because we're going to insert 2 bytes
+    # before (\eP) and 2 bytes after (\e\) each string.
+    echo -n "$1" | \
+      sed -E "s:.{$(( limit - 4 ))}:&\n:g" | \
+      sed -E -e 's:^:\x1bP:' -e 's:$:\x1b\\:' | \
+      tr -d '\n'
+  elif [ "$2" -eq "2" ]; then
+    # We go 10 bytes under the limit because we're going to insert 4 bytes
+    # before (\eP\eP) and 6 bytes after (\e\) each string.
+    echo -n "$1" | \
+      sed -E "s:.{$(( limit - 10 ))}:&\n:g" | \
+      sed -E -e 's:^:\x1bP\x1bP:' -e 's:$:\x1b\x1b\\\x1b\\\\:' | \
+      tr -d '\n'
+  fi
+}
+
+# Send an escape sequence to hterm.
+# Usage: <sequence>
+print_seq() {
+  local seq="$1"
+
+  case ${TERM-} in
+  screen*)
+    # Since tmux defaults to setting TERM=screen (ugh), we need to detect
+    # it here specially.
+    if [ -n "${TMUX-}" ]; then
+      tmux_dcs "${seq}"
+    else
+      screen_dcs "${seq}" "${SCREEN_LEVEL:-1}"
+    fi
+    ;;
+  tmux*)
+    tmux_dcs "${seq}"
+    ;;
+  *)
+    echo -n "${seq}"
+    ;;
+  esac
+}
+
+# Base64 encode stdin.
+b64enc() {
+  base64 | tr -d '\n'
+}
+
+# Send the OSC 52 sequence to copy the content.
+# Usage: [string]
+copy() {
+  local str
+
+  if [ $# -eq 0 ]; then
+    str="$(b64enc)"
+  else
+    str="$(echo "$@" | b64enc)"
+  fi
+
+  if [ ${OSC_52_MAX_SEQUENCE} -gt 0 ]; then
+    local len=${#str}
+    if [ ${len} -gt ${OSC_52_MAX_SEQUENCE} ]; then
+      die "selection too long to send to terminal:" \
+        "${OSC_52_MAX_SEQUENCE} limit, ${len} attempted"
+    fi
+  fi
+
+  print_seq "$(printf '\033]52;c;%s\a' "${str}")"
+}
+
+# Write tool usage and exit.
+# Usage: [error message]
+usage() {
+  if [ $# -gt 0 ]; then
+    exec 1>&2
+  fi
+  cat <<EOF
+Usage: osc52 [options] [string]
+
+Send an arbitrary string to the terminal clipboard using the OSC 52 escape
+sequence as specified in xterm:
+  https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+  Section "Operating System Controls", Ps => 52.
+
+The data can either be read from stdin:
+  $ echo "hello world" | osc52.sh
+
+Or specified on the command line:
+  $ osc52.sh "hello world"
+
+Options:
+  -h, --help    This screen.
+  -f, --force   Ignore max byte limit (${OSC_52_MAX_SEQUENCE})
+EOF
+
+  if [ $# -gt 0 ]; then
+    echo
+    die "$@"
+  else
+    exit 0
+  fi
+}
+
+main() {
+  set -e
+
+  while [ $# -gt 0 ]; do
+    case $1 in
+    -h|--help)
+      usage
+      ;;
+    -f|--force)
+      OSC_52_MAX_SEQUENCE=0
+      ;;
+    -*)
+      usage "Unknown option: $1"
+      ;;
+    *)
+      break
+      ;;
+    esac
+    shift
+  done
+
+  copy "$@"
+}
+main "$@"
+```
+
+We can copy content from cursor position to head of a terminal quickly to clipboard.
+```sh
+bind "j" eval "copy" "stuff ' H ' " writebuf "exec bash -c '$(getent passwd $(cat /var/tmp/.scuser) | cut -d: -f6)/.sptzh/osc52.sh < /tmp/screen-exchange'"
+```
+
+### Miscellaneous
+
+Change escape key because the default `^a` is often used in Bash, `^q` is quote insertion in Bash and Emacs and is rarely used, so it makes a good choice.
+``` sh
+escape ^q^q
+```
+
+If you run Screen on a remote server and the TCP connection becomes unstable, Screen may get blocked. To recover from a blocked state after 1 second, set the following option:
+```sh
+nonblock 1
 ```
 
 Set long scrollback buffer to contain more history info
@@ -243,3 +468,34 @@ terminfo rxvt-* 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
 term "screen-256color"
 ```
 
+Turn off welcome page because it's useless.
+```sh
+startup_message off
+```
+
+Mouse track is useful when switch between many regions, but it doesn't work well on 2K monitors, so I disable it. I found the left most window is activated when I click the right most one.
+```sh
+mousetrack off
+defmousetrack off
+```
+
+Long time message is annoying, I reduce it to 3 seconds.
+```sh
+# message display time (seconds)
+msgwait 3
+```
+
+diable login makes not show login entry in `w`, it may look terrible for customers if I create dozens of terminal.
+```sh
+deflogin off
+```
+
+I unbind ^g to avoid accidently switch vbell mode when using Emacs.
+```sh
+bind ^g 
+```
+
+Shorten delay between input when using escape sequence.
+```sh
+maptimeout 100
+```
