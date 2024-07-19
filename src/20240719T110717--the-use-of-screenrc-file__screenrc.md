@@ -499,3 +499,7 @@ Shorten delay between input when using escape sequence.
 ```sh
 maptimeout 100
 ```
+
+## Other Resources
+
+I get osc52.sh from [https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md#Is-OSC-52-aka-clipboard-operations_supported](https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md#Is-OSC-52-aka-clipboard-operations_supported)
