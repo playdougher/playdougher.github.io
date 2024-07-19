@@ -13,11 +13,11 @@ eleventyNavigation:
 
 ## Overview
 
-Bashrc file is interactive shell startup file.
+The bashrc file is the startup file for interactive shells.
 
 ## Terminal Title
 
-I'm using Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title to make it easier to identify and swith between them. To achive this, I use `trap DEBUG` and handle different `TERM` variables for updating terminal titles.
+I use Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title for easier identification and switching. To achive this, I use `trap DEBUG` and manage different `TERM` variables to update terminal titles.
 ```sh
 trap 'commandName=$(history 1| sed "s/^[ ]*[0-9]*[ ]*//g"); backspacedString="${commandName//\\/\\\\}"; echo -ne "\033]0;$HOSTNAME:$PWD \$ $backspacedString\007"' DEBUG
 case "$TERM" in
@@ -33,7 +33,7 @@ esac
 
 ## History Configuration
 
-Below ignores duplicated commands in history list, limits commands number to 10000 and limit history file size to 10000 commands.
+Configs below ignores duplicated commands in the history list, limits the number of command to 10000 and restrict the history file size to 10000 commands.
 ``` sh
 HISTCONTROL=ignoreboth
 HISTSIZE=10000
@@ -41,22 +41,20 @@ HISTFILESIZE=10000
 ```
 
 Below appends history entries to file instead of overwrits it.
-
 ``` sh
 shopt -s histappend
 ```
 
-
 ## Shell Notification
 
-Function below will bell for `$1` times, it's useful to bell as remind when there is a ssh session running a long time job. 
+Function below will ring the bell for `$1` times, which is useful for notifying you when an SSH session finishes running a long job. 
 ``` sh
 function bel {
   for i in $(seq 1 "$1"); do tput bel; done
 }
 ```
 
-It's used in combination with Urxvt terminal emulator's bell-command plugin, a bellcatch.sh script and [dunst](https://dunst-project.org/) notification daemon. Urxvt can catch every bell and write process parent id to a file. Bellcatch.sh keeps monitoring the file and uses dunst to show a notify when it find 6 continuous bells in 1 second. 6 bells is used to avoid trggering notifications for occasionally bell noise, such as when repeatedly typing `<C-u>` in Bash when there is no content.
+It's used in combination with Urxvt terminal emulator's bell-command plugin, a `bellcatch.sh` script and [dunst](https://dunst-project.org/) notification daemon. Urxvt captures every bell and writes the parent process id to a file. The `bellcatch.sh` monitors this file and uses dunst to display a notification when it detects 6 continuous bells within 1 second. 6 bells helps avoid trggering notifications from occasional bell noise, such as when repeatedly typing `<C-u>` in Bash with no content.
 ``` sh
 zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$ grep bell-co ~/.Xresources | grep -v "^!"
 URxvt.perl-ext-common:          eval,selection,clipboard,bell-command,keyboard-select,-searchable-scrollback,-matcher,-selection-autotransform,-selection-popup,-selection-popup-mod,52-osc,confirm-paste
@@ -65,7 +63,6 @@ zhihao@dust|/home/zhihao/Downloads/playdougher.github.io|$
 ```
 
 The bellcatch.sh script:
-
 ``` sh
 zhihao@dust|/home/zhihao|$ cat bin/bellcatch.sh
 #!/bin/bash
@@ -136,8 +133,7 @@ mon "$@"
 zhihao@dust|/home/zhihao|$
 ```
 
-Cgrep function is similar to `bel`, which is used to grep process tree and choose one to notify when process finishes running.
-
+The `cgrep` function is similar to `bel`, it is used to grep the process tree and select a process to notify when it finishes running.
 ``` sh
 cgrep() {
     # Run the command and store the output in an array
@@ -179,7 +175,7 @@ cgrep() {
 
 ## Miscellaneous
 
-Below disables flow control, so `<C-s>` won't make terminal get stuck.
+Below disables flow control, so `<C-s>` won't cause the terminal to get stuck.
 ```sh
 stty -ixon
 ```
@@ -189,18 +185,18 @@ Below resizes window after each command runs.
 shopt -s checkwinsize
 ```
 
-Create an Emacs alias that will quickly start a terminal-based Emacs, and it will create Emacs daemon when it's not running. The Emacs daemon can greatly speed up Emacs startup time.
+Create an Emacs alias that quickly starts a terminal-based Emacs and will create an Emacs daemon if it's not already running. The Emacs daemon can significantly speed up Emacs startup time.
 ``` sh
 alias emacs="emacsclient -ct -a ''"
 ```
 
-Set default EDITOR and VISUAL allows to edit or view long or complex commands with Emacs in shell, e.g. use `<C-x><C-e>` in Bash.
+Setting default EDITOR and VISUAL allows you to edit or view long or complex commands with Emacs in shell, e.g. use `<C-x><C-e>` to open the current command in Emacs.
 ```sh
 export EDITOR="emacsclient -ct -a ''"
 export VISUAL="emacsclient -ct -a ''"
 ```
 
-`$PROMPT_COMMAND` is run each time before a command is executed in shell, I use it to append each command to the history file in case the history is lost when the computer is accidently turned off.
+`$PROMPT_COMMAND` is executed each time before a command is run in the shell, I use it to append each command to the history file, in case the history is lost if the computer is accidently turned off.
 ``` sh
 export PROMPT_COMMAND="history -a"
 ```
@@ -210,7 +206,7 @@ I use fasd to quickly switch between directories, initiate `fasd` with below com
 eval "$(fasd --init auto)"
 ```
 
-Set `MAN_POSIXLY_CORRECT` to show only the first man page when there are multiple man pages.
+Set `MAN_POSIXLY_CORRECT` to show only the first man page when multiple man pages are available.
 ```sh
 export MAN_POSIXLY_CORRECT=true
 ```
