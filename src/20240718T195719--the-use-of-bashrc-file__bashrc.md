@@ -5,7 +5,7 @@ tags:       ["bashrc"]
 identifier: "20240718T195719"
 layout: "layouts/post.njk"
 eleventyNavigation:
-  key: "LFS project appnote"
+  key: "the-use-of-bashrc-file"
   parent: Home
 ---
 
