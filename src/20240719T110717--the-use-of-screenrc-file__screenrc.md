@@ -13,11 +13,11 @@ eleventyNavigation:
 
 ## Overview 
 
-We can configure environmental variables and shortcuts, manage windows, window groups and window layouts with .screenrc file.
+We can use the .screenrc file to configure environmental variables and shortcuts, manage windows, window groups and window layouts.
 
 ## Usages
 
-My daily use conifguration file:
+My daily conifguration file:
 
 ``` sh
 ##resize max
@@ -167,7 +167,7 @@ layout autosave on
 
 ### Layout and Groups Management
 
-Screen has the ability to create window groups, and group groups. It helps to organise windows well.
+Screen has the ability to create window groups, and nested groups, helping to organise windows efficiently.
 ```sh
 screen -t "root" //group
 screen -t "two" //group
@@ -175,26 +175,26 @@ select 1
 screen -T "screen-256color"
 ```
 
-I find Screen doesn't have command to switch window groups, but there is `layout` to switch indirectly. I initiate a layout named "two" below, layout contains window group "two" because I configure `screen -t "two" //group` before. So no matter what window group I am in, I can switch to group "two" by switch layout with `layout select two`.
+Screen doesn't have command to switch window groups directly, but it can be done indirectly using layout. If you create a layout named "two" and configure it with `screen -t "two" //group`, you can switch to group "two" using the layout command `layout select two`.
 ```
 layout new two
 select 2
 layout save two
 ```
 
-We can create a new layout, select and show layouts.
+You can create a new layout, select and display layouts.
 ```sh
 bind s eval "colon" "stuff 'layout save '"
 bindkey "^q^m" layout select
 bind "m" layout show
 ```
 
-We can create a new window group, type group name in the two "_" cursor position and add a `"` in the end of the command: `:eval "title _" "screen" "only" "layout save _"`.
+To create a new window group, type the group name in palce of the two "_" cursor positions and add a `"` in the end of the command: `:eval "title _" "screen" "only" "layout save _"`.
 ```sh
 bind g eval "windowlist -g -m" "stuff ^?" "screen //group" "colon" "stuff 'eval \"title \" \"screen\" \"only\" \"layout save '" "stuff ^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b^b"
 ```
 
-Save layout when detach Screen, so can recover previous when reattach to it.
+Save the layout when detaching Screen to recover the previous layout when reattaching.
 ```sh
 layout attach :last
 layout autosave on
@@ -202,47 +202,47 @@ layout autosave on
 
 ### Window Management
 
-Set below option to name windows, so we can search window easily in window list.
+Set the following option to name windows dynamically, making it easier to search for them easily in the window list.
 ```sh
 defdynamictitle on
 ```
 
-Using one region in Screen window is a waste of screen space, usually I create at least 3 regions, or even 6 regions, to switch between them fluently, including select previous or next region, I add shortcuts in conf file. So I can use `<C-q><C-u>` and `<C-q><C-i>` to navigate between regions. I also create shortcuts to move two times because it's efficient when it's 6 regions.
+Using only one region in a Screen window wastes space. Typically I create at least 3 regions, sometimes even 6. To switch between them fluently, I use `<C-q><C-u>` and `<C-q><C-i>` to select previous and next region. I also create shortcuts to move two region at a time which is efficient when working with 6 regions.
 ```sh
 bind ^u focus prev
 bindkey "^q^o" eval "focus next" "focus next"
 bindkey "^q^y" eval "focus prev" "focus prev"
 ```
 
-Use two different characters to trigger a commmand is quicker
+Using two different characters to trigger a command is quicker.
 ```sh
 bindkey "^q^j" other
 ```
 
-Regions are split with blank content, but usualy we will create a window in it, update shortcuts to replace default one.
+Regions are initially split with blank content, but we usually create a window in it. Use shortcuts to replace the default ones.
 ```sh
 bind "|" eval "split -v" "windowlist -b" "other" "focus" "other" "screen"
 bind "S" eval "split" "windowlist -b" "other" "focus" "other" "screen"
 ```
 
-Sometimes a region is too small, to maximise it temporarily, use shortcut below then `<C-M>` to recover.
+Sometimes a region is too small, to temporarily maximise it, use the shortcut below, then `<C-M>` to restore.
 ```sh
 bind "r" eval "resize _" "fit" "colon" "stuff 'resize -b ='"
 ```
 
-We can show window list of current window group by recently used order.
+You can display window list of current window group in the order of most recently used.
 ```sh
 bind "\"" select
 bind \' eval "windowlist -m"
 ```
 
-We can search windows by name. The first one is search windows in the same group, the other one is all groups.
+You can search windows by name. The first line searches within the current group, while the second searches across all groups.
 ```sh
 bind "/" eval "windowlist -g -m" "stuff j/"
 bind "?" eval "select root" "windowlist -g -m" "stuff /"
 ```
 
-We can use `<M-j>` and `<M-k>` to move quickly in window group list.
+You can use `<M-j>` and `<M-k>` to move quickly through the window group list.
 ```sh
 bindkey -m "^[j" eval "stuff jjj"
 bindkey -m "^[k" eval "stuff kkk"
@@ -250,7 +250,7 @@ bindkey -m "^[k" eval "stuff kkk"
 
 ### Navigation Bar
 
-Hardstatus is useful to show window info or denote current active window.
+Hardstatus is useful for displaying the window infomation or indicating the currently active window.
 ```sh
 hardstatus on
 # rendition so =b wk
@@ -260,14 +260,14 @@ rendition so =b wk
 caption always "%?%F%{kw}%? /%Y%m%d.%c:%s /%H /%S /%n /%e"
 ```
 
-After exit Emacs or Vim, there will be residual content on screen, turn on option to clear them.
+After exiting Emacs or Vim, Residual content may remain on the screen, enable the option to clear them.
 ```sh
 altscreen on #fix residual editor text
 ```
 
 ### System Clipboard
 
-We can copy highlighted content to clipboard even it's in a remote ssh connection.
+You can copy highlighted content to clipboard, even it's in a remote SSH connection.
 ```sh
 bindkey -m > eval "stuff ' '" writebuf "exec bash -c '$(getent passwd $(cat /var/tmp/.scuser) | cut -d: -f6)/.sptzh/osc52.sh < /tmp/screen-exchange'"
 ```
@@ -435,14 +435,14 @@ main() {
 main "$@"
 ```
 
-We can copy content from cursor position to head of a terminal quickly to clipboard.
+You can copy content from cursor position to the top of a terminal quickly to clipboard using the following shortcuts.
 ```sh
 bind "j" eval "copy" "stuff ' H ' " writebuf "exec bash -c '$(getent passwd $(cat /var/tmp/.scuser) | cut -d: -f6)/.sptzh/osc52.sh < /tmp/screen-exchange'"
 ```
 
 ### Miscellaneous
 
-Change escape key because the default `^a` is often used in Bash, `^q` is quote insertion in Bash and Emacs and is rarely used, so it makes a good choice.
+Change the escape key because the default `^a` is often used in Bash, while `^q` is used for quote insertion in Bash and Emacs and is rarely needed, so it's a good choice to use `^q`.
 ``` sh
 escape ^q^q
 ```
@@ -452,54 +452,54 @@ If you run Screen on a remote server and the TCP connection becomes unstable, Sc
 nonblock 1
 ```
 
-Set long scrollback buffer to contain more history info
+Set long scrollback buffer to retain more history information.
 ```sh
 defscrollback 5000
 ```
 
-Make gnu screen support scroll with mouse
+Enable mouse support in GNU Screen.
 ```sh
 termcapinfo xterm*|rxvt*|kterm*|Eterm* ti@:te@
 ```
 
-Specify term to enbale 256-color
+Specify the terminal type to enbale the 256-color support.
 ```sh
 terminfo rxvt-* 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
 term "screen-256color"
 ```
 
-Turn off welcome page because it's useless.
+Turn off the welcome page.
 ```sh
 startup_message off
 ```
 
-Mouse track is useful when switch between many regions, but it doesn't work well on 2K monitors, so I disable it. I found the left most window is activated when I click the right most one.
+Mouse track is useful when switching between many regions, but it doesn't work well on 2K monitors, so I disable it. I found that clicking the right-most window activates the left most one, which is incorrect.
 ```sh
 mousetrack off
 defmousetrack off
 ```
 
-Long time message is annoying, I reduce it to 3 seconds.
+Showing message for long time is annoying, so I reduce it to 3 seconds.
 ```sh
 # message display time (seconds)
 msgwait 3
 ```
 
-diable login makes not show login entry in `w`, it may look terrible for customers if I create dozens of terminal.
+Diable login to prevent entries from appearing in the `w` command output. This can avoid causing concern for customers if there are many login terminals.
 ```sh
 deflogin off
 ```
 
-I unbind ^g to avoid accidently switch vbell mode when using Emacs.
+I unbind ^g to avoid accidentally switching to vbell mode when using Emacs.
 ```sh
 bind ^g 
 ```
 
-Shorten delay between input when using escape sequence.
+Shorten the delay between inputs when using escape sequence.
 ```sh
 maptimeout 100
 ```
 
 ## Other Resources
 
-I get osc52.sh from [https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md#Is-OSC-52-aka-clipboard-operations_supported](https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md#Is-OSC-52-aka-clipboard-operations_supported)
+I get osc52.sh from [https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md#Is-OSC-52-aka-clipboard-operations_supported](https://chromium.googlesource.com/apps/libapps/+/master/nassh/doc/FAQ.md#Is-OSC-52-aka-clipboard-operations_supported).
