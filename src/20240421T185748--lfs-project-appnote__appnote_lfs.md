@@ -949,6 +949,9 @@ Update owner
     dust:/home/zhihao # chown root:root $LFS/sources/*
     dust:/home/zhihao #
 ```
+
+## 4. Final Preparations
+
 ### 4.2 Create Limited Directory Layout
 ```bash
 dust:/home/zhihao/Downloads # mkdir -pv $LFS/{etc,var} $LFS/usr/{bin,lib,sbin}
