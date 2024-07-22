@@ -626,7 +626,7 @@ bash-5.2#
 >                     /usr/share/doc/cpio-2.15
 ...
 ```
-Generate initramfs
+Generate initramfs, but don't use it because I 
 ```bash
 (lfs chroot) root:/tmp# mkinitramfs 6.7.4
 Creating initrd.img-6.7.4... done.
@@ -635,6 +635,7 @@ initrd.img-6.7.4
 (lfs chroot) root:/tmp# cp initrd.img-6.7.4 /boot/
 (lfs chroot) root:/tmp#
 ```
+
 ### 2.5 Creating Filesystems
 
 Make all patitions ext4 filesystem
@@ -1054,6 +1055,9 @@ dust:/mnt/lfs # su - lfs
 lfs:~$ echo $LFS
 /mnt/lfs
 ```
+
+## 5. Compiling a Cross-Toolchain
+
 ### 5.2 Compile Binutils
 
 Decompress binutils shows file group error, but file is extracted successfully
@@ -5089,3 +5093,4 @@ bash-5.2#
 After boot, I can see the login prompt
 
 The final VM image is in D:\documents\box_vms\suse\suse\{9a9650c5-ba71-4f5d-b0ee-588decbc3fde}.vdi
+
