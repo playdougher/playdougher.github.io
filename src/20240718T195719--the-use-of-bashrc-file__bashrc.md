@@ -17,7 +17,7 @@ The bashrc file is the startup file for interactive shells.
 
 ## Terminal Title
 
-I use Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title for easier identification and switching. To achive this, I use `trap DEBUG` and manage different `TERM` variables to update terminal titles.
+I use Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title for easier identification and switching. To achive this, I use `trap DEBUG` and manage different `TERM` variables to update terminal titles. More info refers to `man console_codes`.
 ```sh
 trap 'commandName=$(history 1| sed "s/^[ ]*[0-9]*[ ]*//g"); backspacedString="${commandName//\\/\\\\}"; echo -ne "\033]0;$HOSTNAME:$PWD \$ $backspacedString\007"' DEBUG
 case "$TERM" in
