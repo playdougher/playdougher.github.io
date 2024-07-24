@@ -66,7 +66,7 @@
 <h2 id="overview" tabindex="-1">Overview</h2>
 <p>The bashrc file is the startup file for interactive shells.</p>
 <h2 id="terminal-title" tabindex="-1">Terminal Title</h2>
-<p>I use Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title for easier identification and switching. To achive this, I use <code>trap DEBUG</code> and manage different <code>TERM</code> variables to update terminal titles.</p>
+<p>I use Xmonad as my tiling X11 window manager, and Rofi as window switcher, It's important to ensure each terminal has a different title for easier identification and switching. To achive this, I use <code>trap DEBUG</code> and manage different <code>TERM</code> variables to update terminal titles. More info refers to <code>man console_codes</code>.</p>
 <pre class="language-sh"><code class="language-sh"><span class="token builtin class-name">trap</span> <span class="token string">'commandName=$(history 1| sed "s/^[ ]*[0-9]*[ ]*//g"); backspacedString="${commandName//\\/\\\\}"; echo -ne "\033]0;$HOSTNAME:$PWD \$ $backspacedString\007"'</span> DEBUG
 <span class="token keyword">case</span> <span class="token string">"<span class="token environment constant">$TERM</span>"</span> <span class="token keyword">in</span>
     screen*<span class="token punctuation">)</span>
