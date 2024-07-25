@@ -13,5 +13,5 @@ WuZhihao is a computer operator.
 
 ## Contacts
 
-- [952331408@qq.com](mailto:952331408@qq.com)
-- [https://github.com/playdougher](https://github.com/playdougher)
+- [952331408@qq.com](mailto:952331408@qq.com).
+- [https://github.com/playdougher](https://github.com/playdougher)[.](/files/zhihao-curriculum-vitae.pdf)

@@ -19,6 +19,7 @@ module.exports = function (eleventyConfig) {
     eleventyConfig.addPassthroughCopy('css');
     // Watch the `css` directory for changes
     eleventyConfig.addWatchTarget('css');
+    eleventyConfig.addPassthroughCopy('./src/files/');
     
     // Set directories to pass through to the dist folder
     eleventyConfig.addPassthroughCopy('./src/images/');
