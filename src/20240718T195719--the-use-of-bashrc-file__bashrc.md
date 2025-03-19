@@ -40,7 +40,7 @@ HISTSIZE=10000
 HISTFILESIZE=10000
 ```
 
-Below appends history entries to file instead of overwrits it.
+Below appends history entries to file instead of overwriting it.
 ``` sh
 shopt -s histappend
 ```
