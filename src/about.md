@@ -9,7 +9,7 @@ eleventyNavigation:
 ---
 # About
 
-WuZhihao is a computer operator.
+Wuzhihao is a computer operator and can skillfully turn the machine on and off.
 
 ## Contacts
 
