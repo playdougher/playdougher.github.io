@@ -15,5 +15,4 @@ Wuzhihao is a computer operator and can skillfully turn the machine on and off.
 
 - [952331408@qq.com](mailto:952331408@qq.com).
 - [https://github.com/playdougher](https://github.com/playdougher)[.](/files/zhihao-curriculum-vitae.pdf)[.](/files/zhihao-cv-20250407.pdf)
-
-
+- [https://github.com/playdougher](https://github.com/playdougher)[.](/files/zhihao-curriculum-vitae.pdf)[.](/files/zhihao-cv-20250424.pdf)
