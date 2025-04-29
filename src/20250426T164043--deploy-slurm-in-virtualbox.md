@@ -565,8 +565,8 @@ ls: cannot access '*.mol2': No such file or directory
 ```
 [root@slurm-controller Test]# cat vina.sh
 # This is the serial script
-export PATH=/home/yanyuna/Programs/autodock/autodock_vina_1_1_2_linux_x86/bin/:$PATH
-export PATH=/home/yanyuna/Programs/autodock/MGLTools-1.5.6/MGLToolsPckgs/AutoDockTools/Utilities24/:$PATH
+export PATH=/home/user/Programs/autodock/autodock_vina_1_1_2_linux_x86/bin/:$PATH
+export PATH=/home/user/Programs/autodock/MGLTools-1.5.6/MGLToolsPckgs/AutoDockTools/Utilities24/:$PATH
 if [ -d "mols" ]; then
 rm -rf mols
 fi
