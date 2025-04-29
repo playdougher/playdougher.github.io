@@ -1246,8 +1246,9 @@ out100.pdbqt
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 </code></pre>
 <h2 id="%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5" tabindex="-1">问题排查</h2>
-<p>Q: firewalld 导致 srun 超时<br>
+<p>Q: srun 运行超时<br>
 A:</p>
+<p>排查后为firewalld 导致，分析思路为：</p>
 <p>tcpdump 看 slurm-controller 节点拒绝 35683 端口连接</p>
 <pre><code>[root@slurm-controller log]# tcpdump -n -i enp0s8 not port 22 -c 40 |&amp; less
 ...
@@ -1279,8 +1280,9 @@ public
 [Sun Apr 27 05:21:55 2025] FINAL_REJECT: IN=enp0s8 OUT= MAC=08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 SRC=192.168.1.101 DST=192.168.1.100 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=62684 DF PROTO=TCP SPT=50968 DPT=35683 WINDOW=29200 RES=0x00 SYN URGP=0
 </code></pre>
 <p>ansible 内允许32768-60999/tcp 高端口通过后解决</p>
-<p>Q: srun -o 参数位置写错，无报错，可能为bug<br>
-A:</p>
+<p>Q: srun -o 参数位置写在执行文件后面导致没有重定向输出且无报错
+A:
+复现</p>
 <pre><code>zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch /mnt/slurm_shared/test.sh -o ./alog
 Submitted batch job 11140
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ echo $?
@@ -1293,6 +1295,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ ls ./alog
 ./alog
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 </code></pre>
+<p>因为 -o 参数被认为是执行文件的参数了，逻辑上也合理，注意即可</p>
 <p>Q: sbatch 脚本无任何输出，squeue 内任务显示状态PD，NODELIST 为 none<br>
 A:<br>
 该问题比较麻烦，没有输出可以排查，只能注释文本内容测试。排查后发现原因为脚本内标准输入输出重定向路径写错，logs 文件夹不存在，创建文件夹后正常运行。</p>
