@@ -550,16 +550,6 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 ## 运行 vina demo
 
-尝试运行脚本失败
-```
-[root@slurm-controller Test]# ./vina.sh
-./vina.sh: line 8: prepare_receptor4.py: command not found
-./vina.sh: line 9: obabel: command not found
-./vina.sh: line 11: obabel: command not found
-ls: cannot access '*.mol2': No such file or directory
-[root@slurm-controller Test]#
-```
-
 检查脚本内容
 
 ```
@@ -584,6 +574,27 @@ do
         rm log.txt ligand.pdbqt out.pdbqt temp.sdf
 done
 cd ../
+[root@slurm-controller Test]#
+```
+
+脚本结构为：
+
+- 受体蛋白文件为 pdb, 转换为 pdbqt 格式供 vina 使用
+- 小分子结构文件 testset.sdf 转换成 testset.mol2 格式
+- testset.mol2 多分子拆分为 vs<id>.mol2 单分子文件
+- 循环
+    - mol2 转为 pdbqt
+    - vina 对配体、受体 pdbqt 文件对接，输出 pdbqt 对接结果
+    - pdbqt 对接结果转回 sdf
+- 收集 sdf 结果文件    
+
+尝试运行脚本失败
+```
+[root@slurm-controller Test]# ./vina.sh
+./vina.sh: line 8: prepare_receptor4.py: command not found
+./vina.sh: line 9: obabel: command not found
+./vina.sh: line 11: obabel: command not found
+ls: cannot access '*.mol2': No such file or directory
 [root@slurm-controller Test]#
 ```
 
@@ -1270,6 +1281,10 @@ out100.pdbqt
    -0.0180   26.3120   10.6830 N   0  0  0  0  0  2  0  0  0  0  0  0
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 ```
+
+## 千万分子对接架构思考
+
+将大分子文件拆分为较小的分子文件，存储到分布式存储，slurm 计算集群主节点运行 slurm 控制器和数据库，计算节点运行 slurmd 服务，配置自动伸缩组动态扩展资源。计算结果写入分布式存储。
 
 ## 问题排查
 
