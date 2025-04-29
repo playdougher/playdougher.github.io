@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- Some html boilerplate omitted -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-light.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-dark.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-material-dark.css" /> -->
+    <link rel="stylesheet" href="/themes/prism-laserwave.css" />
+    <!-- <link rel="stylesheet" href="/themes/new.css" />     -->
+    <title>accelerate the molecular docking process with slurm</title>
+  </head>
+  <body>
+    <button onclick="topFunction()" id="topButton" title="Go to top"><b>^</b></button>    
+    <header>
+      <a href="/">WuZhihao's Blog</a>
+      <nav>
+        <a href="/about">About</a> 
+      </nav>
+    </header>
+    <main>
+      <nav>
+
+
+
+<ul class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li>
+    <a href="/20250426T164043--accelerate-the-molecular-docking-process-with-slurm/">accelerate the molecular docking process with slurm</a>
+  </li>
+</ul>
+</nav>
+
+
+      <!--<header><nav>
+
+
+
+<ul class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li>
+    <a href="/20250426T164043--accelerate-the-molecular-docking-process-with-slurm/">accelerate the molecular docking process with slurm</a>
+  </li>
+</ul>
+</nav>
+
+</header> -->
+      
+<section>
+  <article>
+    <h1>accelerate the molecular docking process with slurm</h1>
+    <p>
+      Published on: 2025-04-26T08:40:43
+    </p>
+    <h2>Table Of Contents</h2>      
+    <nav class="toc" >
+        <ul><li><a href="#%E6%A6%82%E8%A7%88">概览</a></li><li><a href="#ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-slurm-%E9%9B%86%E7%BE%A4">ansible 自动部署 slurm 集群</a></li><li><a href="#%E8%BF%90%E8%A1%8C-vina-demo">运行 vina demo</a></li><li><a href="#vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96">vina.sh 脚本并行化</a></li><li><a href="#%E5%8D%83%E4%B8%87%E5%88%86%E5%AD%90%E5%AF%B9%E6%8E%A5%E6%9E%B6%E6%9E%84%E6%80%9D%E8%80%83">千万分子对接架构思考</a></li><li><a href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5">问题排查</a><ul><li><a href="#srun-%E8%BF%90%E8%A1%8C%E8%B6%85%E6%97%B6">srun 运行超时</a></li><li><a href="#srun--o-%E5%8F%82%E6%95%B0%E4%BD%8D%E7%BD%AE%E9%97%AE%E9%A2%98">srun -o 参数位置问题</a></li><li><a href="#sbatch-%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91%E9%97%AE%E9%A2%98">sbatch 输出重定向问题</a></li></ul></li></ul>
+      </nav>
+    <h2 id="%E6%A6%82%E8%A7%88" tabindex="-1">概览</h2>
+<p>尝试将一个分子对接流程并行化</p>
+<pre class="language-bash"><code class="language-bash">zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/mol-docking/Test<span class="token operator">|</span>$ <span class="token function">ls</span>
+2w17.pdb  conf.txt  pro.pdb  receptor.pdbqt  testset200.sdf  vina.sh
+zhihao@dust<span class="token operator">|</span>/home/zhihao/Downloads/mol-docking/Test<span class="token operator">|</span>$</code></pre>
+<p>集群搭建使用 virtualbox, 镜像为 Rocky-8.10-x86_64-dvd1.iso。共构建 3 节点，包含一个控制节点（ 主机名 slurm-controller ），两个计算节点（ 主机名 slurm-compute[1,2] ），配置均为 4 cpu, 3G mem, 50G ssd。slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ nfs 共享文件夹。</p>
+<h2 id="ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-slurm-%E9%9B%86%E7%BE%A4" tabindex="-1">ansible 自动部署 slurm 集群</h2>
+<p>集群安装ansible</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/.ssh<span class="token operator">|</span>$ <span class="token function">sudo</span> yum <span class="token function">install</span> ansible <span class="token parameter variable">-y</span>
+<span class="token punctuation">[</span>sudo<span class="token punctuation">]</span> password <span class="token keyword">for</span> zhihao:
+Last metadata expiration check: <span class="token number">1</span>:15:45 ago on Sat <span class="token number">26</span> Apr <span class="token number">2025</span> 04:30:06 AM EDT.
+Dependencies resolved.
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+ Package                                 Architecture           Version                          Repository                 Size
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+Installing:
+ ansible                                 noarch                 <span class="token number">9.2</span>.0-1.el8                      epel                       <span class="token number">46</span> M
+Installing dependencies:
+ ansible-core                            x86_64                 <span class="token number">2.16</span>.3-2.el8                     appstream                 <span class="token number">3.6</span> M
+ git-core                                x86_64                 <span class="token number">2.43</span>.5-2.el8_10                  appstream                  <span class="token number">11</span> M
+ mpdecimal                               x86_64                 <span class="token number">2.5</span>.1-3.el8                      appstream                  <span class="token number">92</span> k
+ python3.12                              x86_64                 <span class="token number">3.12</span>.8-1.el8_10                  appstream                  <span class="token number">29</span> k
+ python3.12-cffi                         x86_64                 <span class="token number">1.16</span>.0-2.el8                     appstream                 <span class="token number">298</span> k
+ python3.12-cryptography                 x86_64                 <span class="token number">41.0</span>.7-1.el8                     appstream                 <span class="token number">1.2</span> M
+ python3.12-libs                         x86_64                 <span class="token number">3.12</span>.8-1.el8_10                  appstream                  <span class="token number">10</span> M
+ python3.12-pip-wheel                    noarch                 <span class="token number">23.2</span>.1-4.el8                     appstream                 <span class="token number">1.5</span> M
+ python3.12-ply                          noarch                 <span class="token number">3.11</span>-2.el8                       appstream                 <span class="token number">133</span> k
+ python3.12-pycparser                    noarch                 <span class="token number">2.20</span>-2.el8                       appstream                 <span class="token number">144</span> k
+ python3.12-pyyaml                       x86_64                 <span class="token number">6.0</span>.1-2.el8                      appstream                 <span class="token number">202</span> k
+ sshpass                                 x86_64                 <span class="token number">1.09</span>-4.el8                       appstream                  <span class="token number">29</span> k
+Installing weak dependencies:
+ python3-jmespath                        noarch                 <span class="token number">0.9</span>.0-11.el8                     appstream                  <span class="token number">44</span> k
+
+Transaction Summary
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+Install  <span class="token number">14</span> Packages
+
+Total download size: <span class="token number">75</span> M
+Installed size: <span class="token number">560</span> M
+Downloading Packages:
+<span class="token punctuation">..</span>.
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/.ssh<span class="token operator">|</span>$ <span class="token function">ssh</span> <span class="token parameter variable">-t</span> slurm-compute1 <span class="token function">sudo</span> yum <span class="token function">install</span> ansible <span class="token parameter variable">-y</span>
+<span class="token punctuation">..</span>.
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/.ssh<span class="token operator">|</span>$ <span class="token function">ssh</span> <span class="token parameter variable">-t</span> slurm-compute2 <span class="token function">sudo</span> yum <span class="token function">install</span> ansible <span class="token parameter variable">-y</span>
+<span class="token punctuation">..</span>.</code></pre>
+<p>创建 ansible 目录，创建主机清单</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> slurm-cluster
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token builtin class-name">cd</span> slurm-cluster/
+/home/zhihao/Downloads/slurm-cluster
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">cat</span> inventory.ini
+<span class="token punctuation">[</span>slurm_controllers<span class="token punctuation">]</span>
+slurm-controller <span class="token assign-left variable">ansible_host</span><span class="token operator">=</span><span class="token number">192.168</span>.1.100
+
+<span class="token punctuation">[</span>slurm_database<span class="token punctuation">]</span>
+slurm-controller <span class="token assign-left variable">ansible_host</span><span class="token operator">=</span><span class="token number">192.168</span>.1.100
+
+<span class="token punctuation">[</span>slurm_compute_nodes<span class="token punctuation">]</span>
+slurm-compute1 <span class="token assign-left variable">ansible_host</span><span class="token operator">=</span><span class="token number">192.168</span>.1.101
+slurm-compute2 <span class="token assign-left variable">ansible_host</span><span class="token operator">=</span><span class="token number">192.168</span>.1.102
+
+<span class="token punctuation">[</span>slurm:children<span class="token punctuation">]</span>
+slurm_controllers
+slurm_compute_nodes
+
+<span class="token punctuation">[</span>all:vars<span class="token punctuation">]</span>
+<span class="token assign-left variable">ansible_user</span><span class="token operator">=</span>root
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$</code></pre>
+<p>创建集群 playbook</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">cat</span> slurm-cluster.yml
+- name: configure common roles
+  hosts: slurm
+  become: <span class="token function">yes</span>
+  roles:
+    - common
+- name: configure slurm controller
+  hosts: slurm_controllers
+  become: <span class="token function">yes</span>
+  roles:
+    - slurm-controller
+- name: configure slurm compute nodes
+  hosts: slurm_compute_nodes
+  become: <span class="token function">yes</span>
+  roles:
+    - slurm-compute-node
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$</code></pre>
+<p>创建角色目录</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> roles/common/<span class="token punctuation">{</span>tasks,templates<span class="token punctuation">}</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> roles/slurm-controller/<span class="token punctuation">{</span>tasks,templates<span class="token punctuation">}</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> roles/slurm-compute-node/<span class="token punctuation">{</span>tasks,templates<span class="token punctuation">}</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$</code></pre>
+<p>编写 common 角色，添加 epel、powertools 仓库，创建 slurm 用户</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">cat</span> roles/common/tasks/main.yml
+- name: <span class="token function">install</span> epel repository
+  dnf:
+    name: epel-release
+    state: present
+- name: <span class="token builtin class-name">enable</span> powertools repository
+  ansible.builtin.command: <span class="token operator">></span>
+    dnf config-manager --set-enabled powertools
+- name: create slurm group
+  group:
+    name: <span class="token string">"slurm"</span>
+    gid: <span class="token string">"1001"</span>
+- name: create slurm user
+  user:
+    name: <span class="token string">"slurm"</span>
+    uid: <span class="token string">"1001"</span>
+    group: <span class="token string">"slurm"</span>
+    shell: /bin/false
+    home: /nonexistent
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$</code></pre>
+<p>编写 slurm-controller 角色</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">cat</span> roles/slurm-controller/tasks/main.yml
+- name: <span class="token function">install</span> slurm packages
+  dnf:
+    name:
+      - slurm
+      - slurm-slurmd
+      - slurm-slurmdbd
+      - slurm-slurmctld
+      - mariadb
+      - mariadb-server
+      - python3-mysqlclient
+      - munge
+    state: present
+
+- name: change owner and group of slurm <span class="token function">dirs</span>
+  file:
+    path: <span class="token string">"{{ item }}"</span>
+    owner: slurm
+    group: slurm
+    recurse: <span class="token function">yes</span>
+  loop:
+    - /var/log/slurm
+    - /var/spool/slurm/d
+    - /var/spool/slurm/ctld
+
+- name: generate munge key
+  command: create-munge-key
+  args:
+    creates: /etc/munge/munge.key
+
+- name: start and <span class="token builtin class-name">enable</span> services
+  systemd:
+    name: <span class="token string">"{{ item }}"</span>
+    state: started
+    enabled: <span class="token function">yes</span>
+  loop:
+    - munge
+    - mariadb
+
+- name: create slurm accounting database
+  mysql_db:
+    name: <span class="token string">"slurm_acct_db"</span>
+    state: present
+  become: <span class="token boolean">true</span>
+
+- name: create slurm database user and grant privileges
+  mysql_user:
+    name: <span class="token string">"slurm"</span>
+    password: <span class="token string">"123456"</span>
+    priv: <span class="token string">"slurm_acct_db.*:ALL"</span>
+    host: <span class="token string">"slurm-controller"</span>
+    state: present
+  become: <span class="token boolean">true</span>
+
+- name: configure slurmdbd.conf
+  template:
+    src: slurmdbd.conf.j2
+    dest: /etc/slurm/slurmdbd.conf
+    owner: slurm
+    group: slurm
+    mode: <span class="token string">'0600'</span>
+    backup: <span class="token function">yes</span>
+
+- name: start and <span class="token builtin class-name">enable</span> slurmdbd <span class="token function">service</span>
+  systemd:
+    name: slurmdbd
+    state: restarted
+    enabled: <span class="token function">yes</span>
+  become: <span class="token boolean">true</span>
+
+- name: configure slurm
+  template:
+    src: slurm.conf.j2
+    dest: /etc/slurm/slurm.conf
+    owner: slurm
+    group: slurm
+    mode: <span class="token string">'0644'</span>
+    backup: <span class="token function">yes</span>
+
+- name: start and <span class="token builtin class-name">enable</span> slurmdbd <span class="token function">service</span>
+  systemd:
+    name: slurmctld
+    state: restarted
+    enabled: <span class="token function">yes</span>
+  become: <span class="token boolean">true</span>
+
+- name: configure firewall
+  firewalld:
+    port: <span class="token string">"{{ item }}"</span>
+    state: enabled
+    permanent: <span class="token function">yes</span>
+    immediate: <span class="token function">yes</span>
+  loop:
+    - <span class="token number">6817</span>/tcp
+    - <span class="token number">32768</span>-60999/tcp
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$</code></pre>
+<p>编写 slurm-compute-node 角色</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">cat</span> roles/slurm-compute-node/tasks/main.yml
+- name: copy munge key from slurm-controller
+  become: <span class="token function">yes</span>
+  synchronize:
+    src: /etc/munge/munge.key
+    dest: /etc/munge/munge.key
+  delegate_to: slurm-controller
+
+- name: <span class="token function">install</span> slurm packages
+  dnf:
+    name:
+      - slurm
+      - slurm-slurmd
+      - munge
+    state: present
+- name: copy slurm from slurm controller
+  synchronize:
+    src: /etc/slurm/slurm.conf
+    dest: /etc/slurm/slurm.conf
+  delegate_to: slurm-controller
+- name: start and <span class="token builtin class-name">enable</span> services
+  systemd:
+    name: <span class="token string">"{{ item }}"</span>
+    state: restarted
+    enabled: <span class="token function">yes</span>
+  loop:
+    - slurmd
+    - munge
+
+- name: change owner and group of slurm <span class="token function">dirs</span>
+  file:
+    path: <span class="token string">"{{ item }}"</span>
+    owner: slurm
+    group: slurm
+    recurse: <span class="token function">yes</span>
+  loop:
+    - /var/log/slurm
+    - /var/spool/slurm/d
+    - /var/spool/slurm/ctld
+
+- name: configure firewall
+  firewalld:
+    port: <span class="token string">"{{ item }}"</span>
+    state: enabled
+    permanent: <span class="token function">yes</span>
+    immediate: <span class="token function">yes</span>
+  loop:
+    - <span class="token number">6818</span>/tcp
+    - <span class="token number">32768</span>-60999/tcp
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$</code></pre>
+<p>创建 slurm controller 模板</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>zhihao@slurm-controller slurm-cluster<span class="token punctuation">]</span>$ <span class="token function">cat</span> roles/slurm-controller/templates/slurm.conf.j2 
+<span class="token assign-left variable">ControlMachine</span><span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> inventory_hostname <span class="token punctuation">}</span><span class="token punctuation">}</span>
+<span class="token assign-left variable">AuthType</span><span class="token operator">=</span>auth/munge
+<span class="token assign-left variable">CryptoType</span><span class="token operator">=</span>crypto/munge
+<span class="token assign-left variable">MpiDefault</span><span class="token operator">=</span>pmix
+<span class="token assign-left variable">ProctrackType</span><span class="token operator">=</span>proctrack/cgroup
+<span class="token assign-left variable">ReturnToService</span><span class="token operator">=</span><span class="token number">1</span>
+<span class="token assign-left variable">SlurmctldPidFile</span><span class="token operator">=</span>/var/run/slurm/slurmctld.pid
+<span class="token assign-left variable">SlurmctldPort</span><span class="token operator">=</span><span class="token number">6817</span>
+<span class="token assign-left variable">SlurmdPidFile</span><span class="token operator">=</span>/var/run/slurm/slurmd.pid
+<span class="token assign-left variable">SlurmdPort</span><span class="token operator">=</span><span class="token number">6818</span>
+<span class="token assign-left variable">SlurmdSpoolDir</span><span class="token operator">=</span>/var/spool/slurm/d
+<span class="token assign-left variable">SlurmUser</span><span class="token operator">=</span>slurm
+<span class="token assign-left variable">StateSaveLocation</span><span class="token operator">=</span>/var/spool/slurm/ctld
+<span class="token assign-left variable">SwitchType</span><span class="token operator">=</span>switch/none
+<span class="token assign-left variable">TaskPlugin</span><span class="token operator">=</span>task/none
+<span class="token assign-left variable">InactiveLimit</span><span class="token operator">=</span><span class="token number">0</span>
+<span class="token assign-left variable">KillWait</span><span class="token operator">=</span><span class="token number">30</span>
+<span class="token assign-left variable">MinJobAge</span><span class="token operator">=</span><span class="token number">300</span>
+<span class="token assign-left variable">SlurmctldTimeout</span><span class="token operator">=</span><span class="token number">120</span>
+<span class="token assign-left variable">SlurmdTimeout</span><span class="token operator">=</span><span class="token number">300</span>
+<span class="token assign-left variable">Waittime</span><span class="token operator">=</span><span class="token number">0</span>
+<span class="token assign-left variable">SchedulerType</span><span class="token operator">=</span>sched/backfill
+<span class="token assign-left variable">SelectType</span><span class="token operator">=</span>select/cons_res
+<span class="token assign-left variable">SelectTypeParameters</span><span class="token operator">=</span>CR_CPU
+
+<span class="token assign-left variable">AccountingStorageEnforce</span><span class="token operator">=</span>limits
+<span class="token assign-left variable">AccountingStorageHost</span><span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> inventory_hostname <span class="token punctuation">}</span><span class="token punctuation">}</span>
+<span class="token assign-left variable">AccountingStorageType</span><span class="token operator">=</span>accounting_storage/slurmdbd
+<span class="token assign-left variable">AccountingStorageUser</span><span class="token operator">=</span>slurm
+<span class="token assign-left variable">AccountingStoreJobComment</span><span class="token operator">=</span>YES
+
+<span class="token assign-left variable">ClusterName</span><span class="token operator">=</span>rocky_cluster
+<span class="token assign-left variable">JobCompType</span><span class="token operator">=</span>jobcomp/none
+<span class="token assign-left variable">JobAcctGatherFrequency</span><span class="token operator">=</span><span class="token number">30</span>
+<span class="token assign-left variable">JobAcctGatherType</span><span class="token operator">=</span>jobacct_gather/none
+<span class="token assign-left variable">SlurmctldDebug</span><span class="token operator">=</span><span class="token number">3</span>
+<span class="token assign-left variable">SlurmctldLogFile</span><span class="token operator">=</span>/var/log/slurm/slurmctld.log
+<span class="token assign-left variable">SlurmdDebug</span><span class="token operator">=</span><span class="token number">3</span>
+<span class="token assign-left variable">SlurmdLogFile</span><span class="token operator">=</span>/var/log/slurm/slurmd.log
+
+<span class="token comment"># Nodes Configuration</span>
+<span class="token assign-left variable">NodeName</span><span class="token operator">=</span>slurm-compute1 <span class="token assign-left variable">CPUs</span><span class="token operator">=</span><span class="token number">4</span> <span class="token assign-left variable">Boards</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">SocketsPerBoard</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">CoresPerSocket</span><span class="token operator">=</span><span class="token number">4</span> <span class="token assign-left variable">ThreadsPerCore</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">RealMemory</span><span class="token operator">=</span><span class="token number">2786</span>
+<span class="token assign-left variable">NodeName</span><span class="token operator">=</span>slurm-compute2 <span class="token assign-left variable">CPUs</span><span class="token operator">=</span><span class="token number">4</span> <span class="token assign-left variable">Boards</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">SocketsPerBoard</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">CoresPerSocket</span><span class="token operator">=</span><span class="token number">4</span> <span class="token assign-left variable">ThreadsPerCore</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">RealMemory</span><span class="token operator">=</span><span class="token number">2786</span>
+<span class="token assign-left variable">PartitionName</span><span class="token operator">=</span>debug <span class="token assign-left variable">Nodes</span><span class="token operator">=</span>slurm-compute<span class="token punctuation">[</span><span class="token number">1</span>-2<span class="token punctuation">]</span> <span class="token assign-left variable">Default</span><span class="token operator">=</span>YES <span class="token assign-left variable">MaxTime</span><span class="token operator">=</span>INFINITE <span class="token assign-left variable">State</span><span class="token operator">=</span>UP
+
+<span class="token punctuation">[</span>zhihao@slurm-controller slurm-cluster<span class="token punctuation">]</span>$ </code></pre>
+<p>创建 slurm database 模板</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">cat</span> roles/slurm-controller/templates/slurmdbd.conf.j2
+<span class="token assign-left variable">AuthType</span><span class="token operator">=</span>auth/munge
+<span class="token assign-left variable">DebugLevel</span><span class="token operator">=</span><span class="token number">4</span>
+<span class="token assign-left variable">DbdHost</span><span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> inventory_hostname <span class="token punctuation">}</span><span class="token punctuation">}</span>
+<span class="token assign-left variable">LogFile</span><span class="token operator">=</span>/var/log/slurm/slurmdbd.log
+<span class="token assign-left variable">PidFile</span><span class="token operator">=</span>/var/run/slurm/slurmdbd.pid
+<span class="token assign-left variable">PurgeEventAfter</span><span class="token operator">=</span>1month
+<span class="token assign-left variable">PurgeJobAfter</span><span class="token operator">=</span>1month
+<span class="token assign-left variable">PurgeResvAfter</span><span class="token operator">=</span>1month
+<span class="token assign-left variable">PurgeStepAfter</span><span class="token operator">=</span>1month
+<span class="token assign-left variable">PurgeSuspendAfter</span><span class="token operator">=</span>1month
+<span class="token assign-left variable">PurgeTXNAfter</span><span class="token operator">=</span>1month
+<span class="token assign-left variable">PurgeUsageAfter</span><span class="token operator">=</span>1month
+<span class="token assign-left variable">SlurmUser</span><span class="token operator">=</span>slurm
+<span class="token assign-left variable">StorageType</span><span class="token operator">=</span>accounting_storage/mysql
+<span class="token assign-left variable">StorageHost</span><span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> inventory_hostname <span class="token punctuation">}</span><span class="token punctuation">}</span>
+<span class="token assign-left variable">StoragePass</span><span class="token operator">=</span><span class="token number">123456</span>
+<span class="token assign-left variable">StorageUser</span><span class="token operator">=</span>slurm
+<span class="token assign-left variable">StorageLoc</span><span class="token operator">=</span>slurm_acct_db
+<span class="token assign-left variable">Parameters</span><span class="token operator">=</span>PreserveCaseUser
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$</code></pre>
+<p>运行 slurm playbook</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># ansible-playbook -i inventory.ini slurm-cluster.yml</span>
+
+PLAY <span class="token punctuation">[</span>configure common roles<span class="token punctuation">]</span> ********************************************************
+
+TASK <span class="token punctuation">[</span>Gathering Facts<span class="token punctuation">]</span> ***************************************************************
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>common <span class="token builtin class-name">:</span> <span class="token function">install</span> epel repository<span class="token punctuation">]</span> **********************************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>common <span class="token builtin class-name">:</span> <span class="token builtin class-name">enable</span> powertools repository<span class="token punctuation">]</span> *****************************************
+changed: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span>
+changed: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+changed: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>common <span class="token builtin class-name">:</span> create slurm group<span class="token punctuation">]</span> ***************************************************
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>common <span class="token builtin class-name">:</span> create slurm user<span class="token punctuation">]</span> ****************************************************
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span>
+
+PLAY <span class="token punctuation">[</span>configure slurm controller<span class="token punctuation">]</span> ****************************************************
+
+TASK <span class="token punctuation">[</span>Gathering Facts<span class="token punctuation">]</span> ***************************************************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> <span class="token function">install</span> slurm packages<span class="token punctuation">]</span> *************************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> change owner and group of slurm dirs<span class="token punctuation">]</span> ***********************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/log/slurm<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/spool/slurm/d<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/spool/slurm/ctld<span class="token punctuation">)</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> generate munge key<span class="token punctuation">]</span> *****************************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> start and <span class="token builtin class-name">enable</span> services<span class="token punctuation">]</span> **********************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>munge<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>mariadb<span class="token punctuation">)</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> create slurm accounting database<span class="token punctuation">]</span> ***************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> create slurm database user and grant privileges<span class="token punctuation">]</span> ************
+<span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Option column_case_sensitive is not provided. The default is now false, so
+the column's name will be uppercased. The default will be changed to <span class="token boolean">true</span> <span class="token keyword">in</span>
+community.mysql <span class="token number">4.0</span>.0.
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> configure slurmdbd.conf<span class="token punctuation">]</span> ************************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> start and <span class="token builtin class-name">enable</span> slurmdbd service<span class="token punctuation">]</span> **************************
+changed: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> configure slurm<span class="token punctuation">]</span> ********************************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> start and <span class="token builtin class-name">enable</span> slurmdbd service<span class="token punctuation">]</span> **************************
+changed: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-controller <span class="token builtin class-name">:</span> configure firewall<span class="token punctuation">]</span> *****************************************
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span><span class="token number">6817</span>/tcp<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-controller<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span><span class="token number">32768</span>-60999/tcp<span class="token punctuation">)</span>
+
+PLAY <span class="token punctuation">[</span>configure slurm compute nodes<span class="token punctuation">]</span> *************************************************
+
+TASK <span class="token punctuation">[</span>Gathering Facts<span class="token punctuation">]</span> ***************************************************************
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-compute-node <span class="token builtin class-name">:</span> copy munge key from slurm-controller<span class="token punctuation">]</span> *********************
+ok: <span class="token punctuation">[</span>slurm-compute1 -<span class="token operator">></span> slurm-controller<span class="token punctuation">(</span><span class="token number">192.168</span>.1.100<span class="token punctuation">)</span><span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2 -<span class="token operator">></span> slurm-controller<span class="token punctuation">(</span><span class="token number">192.168</span>.1.100<span class="token punctuation">)</span><span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-compute-node <span class="token builtin class-name">:</span> <span class="token function">install</span> slurm packages<span class="token punctuation">]</span> ***********************************
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-compute-node <span class="token builtin class-name">:</span> copy slurm from slurm controller<span class="token punctuation">]</span> *************************
+ok: <span class="token punctuation">[</span>slurm-compute1 -<span class="token operator">></span> slurm-controller<span class="token punctuation">(</span><span class="token number">192.168</span>.1.100<span class="token punctuation">)</span><span class="token punctuation">]</span>
+ok: <span class="token punctuation">[</span>slurm-compute2 -<span class="token operator">></span> slurm-controller<span class="token punctuation">(</span><span class="token number">192.168</span>.1.100<span class="token punctuation">)</span><span class="token punctuation">]</span>
+
+TASK <span class="token punctuation">[</span>slurm-compute-node <span class="token builtin class-name">:</span> start and <span class="token builtin class-name">enable</span> services<span class="token punctuation">]</span> ********************************
+changed: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>slurmd<span class="token punctuation">)</span>
+changed: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>slurmd<span class="token punctuation">)</span>
+changed: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>munge<span class="token punctuation">)</span>
+changed: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>munge<span class="token punctuation">)</span>
+
+TASK <span class="token punctuation">[</span>slurm-compute-node <span class="token builtin class-name">:</span> change owner and group of slurm dirs<span class="token punctuation">]</span> *********************
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/log/slurm<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/log/slurm<span class="token punctuation">)</span>
+changed: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/spool/slurm/d<span class="token punctuation">)</span>
+changed: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/spool/slurm/d<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/spool/slurm/ctld<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span>/var/spool/slurm/ctld<span class="token punctuation">)</span>
+
+TASK <span class="token punctuation">[</span>slurm-compute-node <span class="token builtin class-name">:</span> configure firewall<span class="token punctuation">]</span> ***************************************
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span><span class="token number">6818</span>/tcp<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span><span class="token number">6818</span>/tcp<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-compute1<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span><span class="token number">32768</span>-60999/tcp<span class="token punctuation">)</span>
+ok: <span class="token punctuation">[</span>slurm-compute2<span class="token punctuation">]</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>item<span class="token operator">=</span><span class="token number">32768</span>-60999/tcp<span class="token punctuation">)</span>
+
+PLAY RECAP ***************************************************************************
+slurm-compute1             <span class="token builtin class-name">:</span> <span class="token assign-left variable">ok</span><span class="token operator">=</span><span class="token number">12</span>   <span class="token assign-left variable">changed</span><span class="token operator">=</span><span class="token number">3</span>    <span class="token assign-left variable">unreachable</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">failed</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">skipped</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">rescued</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">ignored</span><span class="token operator">=</span><span class="token number">0</span>
+slurm-compute2             <span class="token builtin class-name">:</span> <span class="token assign-left variable">ok</span><span class="token operator">=</span><span class="token number">12</span>   <span class="token assign-left variable">changed</span><span class="token operator">=</span><span class="token number">3</span>    <span class="token assign-left variable">unreachable</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">failed</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">skipped</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">rescued</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">ignored</span><span class="token operator">=</span><span class="token number">0</span>
+slurm-controller           <span class="token builtin class-name">:</span> <span class="token assign-left variable">ok</span><span class="token operator">=</span><span class="token number">17</span>   <span class="token assign-left variable">changed</span><span class="token operator">=</span><span class="token number">3</span>    <span class="token assign-left variable">unreachable</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">failed</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">skipped</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">rescued</span><span class="token operator">=</span><span class="token number">0</span>    <span class="token assign-left variable">ignored</span><span class="token operator">=</span><span class="token number">0</span>
+
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment">#</span></code></pre>
+<p>检查集群状态</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># sinfo</span>
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+debug*       up   infinite      <span class="token number">2</span>   idle slurm-compute<span class="token punctuation">[</span><span class="token number">1</span>-2<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># sacct</span>
+       JobID    JobName  Partition    Account  AllocCPUS      State ExitCode
+------------ ---------- ---------- ---------- ---------- ---------- --------
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># squeue</span>
+             JOBID PARTITION     NAME     <span class="token environment constant">USER</span> ST       TIME  NODES NODELIST<span class="token punctuation">(</span>REASON<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment">#</span>
+<span class="token punctuation">[</span>root@slurm-controller log<span class="token punctuation">]</span><span class="token comment"># srun sleep 8</span>
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># squeue</span>
+             JOBID PARTITION     NAME     <span class="token environment constant">USER</span> ST       TIME  NODES NODELIST<span class="token punctuation">(</span>REASON<span class="token punctuation">)</span>
+                <span class="token number">44</span>     debug    <span class="token function">sleep</span>     root  R       <span class="token number">0</span>:03      <span class="token number">1</span> slurm-compute1
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># squeue</span>
+             JOBID PARTITION     NAME     <span class="token environment constant">USER</span> ST       TIME  NODES NODELIST<span class="token punctuation">(</span>REASON<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment">#</span></code></pre>
+<p>添加zhihao为管理员</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">sudo</span> sacctmgr <span class="token function">add</span> account <span class="token assign-left variable">name</span><span class="token operator">=</span>zhihao
+ Adding Account<span class="token punctuation">(</span>s<span class="token punctuation">)</span>
+  zhihao
+ Settings
+  Description     <span class="token operator">=</span> Account Name
+  Organization    <span class="token operator">=</span> Parent/Account Name
+ Associations
+  A <span class="token operator">=</span> zhihao     C <span class="token operator">=</span> rocky_clus
+Would you like to commit changes? <span class="token punctuation">(</span>You have <span class="token number">30</span> seconds to decide<span class="token punctuation">)</span>
+<span class="token punctuation">(</span>N/y<span class="token punctuation">)</span>: y
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ <span class="token function">sudo</span> sacctmgr <span class="token function">add</span> user <span class="token assign-left variable">name</span><span class="token operator">=</span>zhihao <span class="token assign-left variable">account</span><span class="token operator">=</span>zhihao <span class="token assign-left variable">AdminLevel</span><span class="token operator">=</span>Admin
+ Adding User<span class="token punctuation">(</span>s<span class="token punctuation">)</span>
+  zhihao
+ Settings <span class="token operator">=</span>
+  Admin Level     <span class="token operator">=</span> Administrator
+ Associations <span class="token operator">=</span>
+  U <span class="token operator">=</span> zhihao    A <span class="token operator">=</span> zhihao     C <span class="token operator">=</span> rocky_clus
+ Non Default Settings
+Would you like to commit changes? <span class="token punctuation">(</span>You have <span class="token number">30</span> seconds to decide<span class="token punctuation">)</span>
+<span class="token punctuation">(</span>N/y<span class="token punctuation">)</span>: y
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$ sacctmgr show user           User   Def Acct     Admin
+---------- ---------- ---------
+      root       root Administ+
+    zhihao     zhihao Administ+
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-cluster<span class="token operator">|</span>$
+</code></pre>
+<h2 id="%E8%BF%90%E8%A1%8C-vina-demo" tabindex="-1">运行 vina demo</h2>
+<p>检查脚本内容</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller Test<span class="token punctuation">]</span><span class="token comment"># cat vina.sh</span>
+<span class="token comment"># This is the serial script</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/home/user/Programs/autodock/autodock_vina_1_1_2_linux_x86/bin/:<span class="token environment constant">$PATH</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/home/user/Programs/autodock/MGLTools-1.5.6/MGLToolsPckgs/AutoDockTools/Utilities24/:<span class="token environment constant">$PATH</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-d</span> <span class="token string">"mols"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+<span class="token function">rm</span> <span class="token parameter variable">-rf</span> mols
+<span class="token keyword">fi</span>
+<span class="token function">mkdir</span> mols
+prepare_receptor4.py <span class="token parameter variable">-r</span> pro.pdb  <span class="token parameter variable">-e</span> <span class="token parameter variable">-o</span> receptor.pdbqt <span class="token comment">########## prepare only once</span>
+obabel <span class="token parameter variable">-isd</span> testset.sdf <span class="token parameter variable">-omol2</span> <span class="token parameter variable">-O</span> testset.mol2
+<span class="token builtin class-name">cd</span> mols
+obabel <span class="token punctuation">..</span>/testset.mol2 <span class="token parameter variable">-O</span> vs.mol2 <span class="token parameter variable">-m</span>
+<span class="token keyword">for</span> <span class="token for-or-select variable">mol2</span> <span class="token keyword">in</span> <span class="token variable"><span class="token variable">`</span><span class="token function">ls</span> *.mol2<span class="token variable">`</span></span>    <span class="token comment">############# loop by every small molecules</span>
+<span class="token keyword">do</span>
+        prepare_ligand4.py <span class="token parameter variable">-l</span> <span class="token variable">$mol2</span> <span class="token parameter variable">-o</span> ligand.pdbqt
+        vina <span class="token parameter variable">--config</span> <span class="token punctuation">..</span>/conf.txt <span class="token parameter variable">--cpu</span> <span class="token number">1</span>  <span class="token parameter variable">--out</span> out.pdbqt <span class="token parameter variable">--log</span> log.txt
+        obabel <span class="token parameter variable">-ipdbqt</span> out.pdbqt <span class="token parameter variable">-osd</span> <span class="token parameter variable">-O</span> temp.sdf
+        <span class="token function">cat</span> temp.sdf <span class="token operator">>></span> output.sdf
+        <span class="token function">rm</span> log.txt ligand.pdbqt out.pdbqt temp.sdf
+<span class="token keyword">done</span>
+<span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>/
+<span class="token punctuation">[</span>root@slurm-controller Test<span class="token punctuation">]</span><span class="token comment">#</span></code></pre>
+<p>脚本结构为：</p>
+<ul>
+<li>受体蛋白文件为 pdb, 转换为 pdbqt 格式供 vina 使用</li>
+<li>小分子结构文件 testset.sdf 转换成 testset.mol2 格式</li>
+<li>testset.mol2 多分子拆分为 vs&lt;id&gt;.mol2 单分子文件</li>
+<li>循环
+<ul>
+<li>mol2 转为 pdbqt</li>
+<li>vina 对配体、受体 pdbqt 文件对接，输出 pdbqt 对接结果</li>
+<li>pdbqt 对接结果转回 sdf</li>
+</ul>
+</li>
+<li>收集 sdf 结果文件</li>
+</ul>
+<p>尝试运行脚本失败</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller Test<span class="token punctuation">]</span><span class="token comment"># ./vina.sh</span>
+./vina.sh: line <span class="token number">8</span>: prepare_receptor4.py: <span class="token builtin class-name">command</span> not found
+./vina.sh: line <span class="token number">9</span>: obabel: <span class="token builtin class-name">command</span> not found
+./vina.sh: line <span class="token number">11</span>: obabel: <span class="token builtin class-name">command</span> not found
+ls: cannot access <span class="token string">'*.mol2'</span><span class="token builtin class-name">:</span> No such <span class="token function">file</span> or directory
+<span class="token punctuation">[</span>root@slurm-controller Test<span class="token punctuation">]</span><span class="token comment">#</span></code></pre>
+<p>下载解压 autodock_vina_1_1_2_linux_x86.tgz, mgltools_x86_64Linux2_1.5.6.tar_.gz</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller ~<span class="token punctuation">]</span><span class="token comment"># wget "https://vina.scripps.edu/wp-content/uploads/sites/55/2020/12/autodock_vina_1_1_2_linux_x86.tgz"</span>
+--2025-04-27 09:11:13--  https://vina.scripps.edu/wp-content/uploads/sites/55/2020/12/autodock_vina_1_1_2_linux_x86.tgz
+Resolving vina.scripps.edu <span class="token punctuation">(</span>vina.scripps.edu<span class="token punctuation">)</span><span class="token punctuation">..</span>. <span class="token number">192.26</span>.252.19
+Connecting to vina.scripps.edu <span class="token punctuation">(</span>vina.scripps.edu<span class="token punctuation">)</span><span class="token operator">|</span><span class="token number">192.26</span>.252.19<span class="token operator">|</span>:443<span class="token punctuation">..</span>. connected.
+HTTP request sent, awaiting response<span class="token punctuation">..</span>. <span class="token number">200</span> OK
+Length: <span class="token number">1238242</span> <span class="token punctuation">(</span><span class="token number">1</span>.2M<span class="token punctuation">)</span> <span class="token punctuation">[</span>application/x-gzip<span class="token punctuation">]</span>
+Saving to: ‘autodock_vina_1_1_2_linux_x86.tgz’
+
+autodock_vina_1_1_2_l <span class="token number">100</span>%<span class="token punctuation">[</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span><span class="token operator">></span><span class="token punctuation">]</span>   <span class="token number">1</span>.18M  <span class="token number">23</span>.4KB/s    <span class="token keyword">in</span> 51s      
+<span class="token number">2025</span>-04-27 09:12:05 <span class="token punctuation">(</span><span class="token number">23.7</span> KB/s<span class="token punctuation">)</span> - ‘autodock_vina_1_1_2_linux_x86.tgz’ saved <span class="token punctuation">[</span><span class="token number">1238242</span>/1238242<span class="token punctuation">]</span>
+
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">tar</span> <span class="token parameter variable">-zxvf</span> autodock_vina_1_1_2_linux_x86.tgz
+autodock_vina_1_1_2_linux_x86/
+autodock_vina_1_1_2_linux_x86/LICENSE
+autodock_vina_1_1_2_linux_x86/bin/
+autodock_vina_1_1_2_linux_x86/bin/vina
+autodock_vina_1_1_2_linux_x86/bin/vina_split
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">ls</span> auto
+autodock_vina_1_1_2_linux_x86/     autodock_vina_1_1_2_linux_x86.tgz
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">ls</span> autodock_vina_1_1_2_linux_x86/
+bin  LICENSE
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">tar</span> <span class="token parameter variable">-zxf</span> mgltools_x86_64Linux2_1.5.6.tar_.gz
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">ls</span> mgl
+mgltools_x86_64Linux2_1.5.6/         mgltools_x86_64Linux2_1.5.6.tar_.gz*
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">ls</span> mgltools_x86_64Linux2_1.5.6
+Data.tar.gz  LICENSES              Python2.5_x86_64Linux2.tar.gz  Tools
+install.sh   MGLToolsPckgs.tar.gz  README
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$</code></pre>
+<p>安装 mgltools</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6<span class="token operator">|</span>$ ./install.sh
+<span class="token punctuation">..</span>.
+tk8.4/safetk.tcl
+tk8.4/mkpsenc.tcl
+tk8.4/xmfbox.tcl
+Python installed, please <span class="token function">wait</span> <span class="token keyword">for</span> the rest of MGLTools to be installed
+Running /home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/python Tools/install.py
+Installing  MGLPackages
+Installing files from MGLToolsPckgs .tar.gz
+eInstalling files from Data .tar.gz
+Creating the pmv, adt, vision and tester scripts
+current directory: /home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6
+setting PYTHONHOME environment
+Traceback <span class="token punctuation">(</span>most recent call last<span class="token punctuation">)</span>:
+  File <span class="token string">"/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/MGLToolsPckgs/mglutil/splashregister/license.py"</span>, line <span class="token number">7</span>, <span class="token keyword">in</span> <span class="token operator">&lt;</span>module<span class="token operator">></span>
+    tk_root <span class="token operator">=</span> Tkinter.Tk<span class="token punctuation">(</span><span class="token punctuation">)</span>
+  File <span class="token string">"/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/lib/python2.5/lib-tk/Tkinter.py"</span>, line <span class="token number">1647</span>, <span class="token keyword">in</span> __init__
+    self.tk <span class="token operator">=</span> _tkinter.create<span class="token punctuation">(</span>screenName, baseName, className, interactive, wantobjects, useTk, sync, use<span class="token punctuation">)</span>
+_tkinter.TclError: couldn<span class="token string">'t connect to display ":0"
+
+ MGLTools installation complete.
+To run pmv, adt, vision or pythonsh scripts located at:
+/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin
+you will need to do ONE of the following:
+
+-- add the /home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin to the path environment variable in .cshrc or .bashrc:
+.cshrc:
+set path = (/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin $path)
+
+.bashrc
+export PATH=/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin:$PATH
+
+-- create aliases in your .cshrc or .bashrc
+.cshrc:
+alias pmv /home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/pmv
+alias adt /home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/adt
+alias vision /home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/vision
+alias pythonsh /home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/pythonsh
+
+.bashrc
+alias pmv='</span>/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/pmv<span class="token string">'
+alias adt='</span>/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/adt<span class="token string">'
+alias vision='</span>/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/vision<span class="token string">'
+alias pythonsh='</span>/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin/pythonsh'
+
+-- <span class="token builtin class-name">source</span> ./initMGLtools.sh <span class="token punctuation">(</span>bash<span class="token punctuation">)</span> or ./initMGLtools.csh <span class="token punctuation">(</span>c-shell<span class="token punctuation">)</span>
+
+Please have a <span class="token function">look</span> at README <span class="token function">file</span> <span class="token keyword">for</span> <span class="token function">more</span> information about
+licenses, tutorials, documentations and mailing lists <span class="token keyword">for</span> the different
+packages enclosed <span class="token keyword">in</span> this distribution
+If you have any problems please visit our FAQ page <span class="token punctuation">(</span>http://mgltools.scripps.edu/documentation/faq<span class="token punctuation">)</span>.
+
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6<span class="token operator">|</span>$ </code></pre>
+<p>更新 vina.sh 环境变量</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">head</span> <span class="token parameter variable">-3</span> vina.sh
+<span class="token comment"># This is the serial script</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/home/zhihao/Downloads/autodock_vina_1_1_2_linux_x86/bin:<span class="token environment constant">$PATH</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6/bin:<span class="token environment constant">$PATH</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$</code></pre>
+<p>安装 openbabel-3.1.1-18.el8.x86_64</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">sudo</span> dnf <span class="token function">install</span> openbabel
+<span class="token punctuation">..</span>.</code></pre>
+<p>环境基本准备好，再次运行报错</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$ ./vina.sh
+<span class="token string">'Deleting non-standard residues:AACE0_AACT1299_AI191300_ from pro
+==============================
+*** Open Babel Error  in OpenAndSetFormat
+  Cannot open testset.sdf
+0 molecules converted
+/home/zhihao/Downloads/slurm-lab/Test/mols
+0 molecules converted
+ls: cannot access '</span>*.mol2': No such <span class="token function">file</span> or directory
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$</code></pre>
+<p>重命名 testset200.sdf 为 testset.sdf 后 vina.sh 可运行</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$ ./vina.sh
+'Deleting non-standard residues:AACE0_AACT1299_AI191300_ from pro
+<span class="token number">201</span> molecules converted
+/home/zhihao/Downloads/slurm-lab/Test/mols
+<span class="token number">201</span> molecules converted
+<span class="token number">201</span> files output. The first is vs1.mol2
+<span class="token comment">#################################################################</span>
+<span class="token comment"># If you used AutoDock Vina in your work, please cite:          #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># O. Trott, A. J. Olson,                                        #</span>
+<span class="token comment"># AutoDock Vina: improving the speed and accuracy of docking    #</span>
+<span class="token comment"># with a new scoring function, efficient optimization and       #</span>
+<span class="token comment"># multithreading, Journal of Computational Chemistry 31 (2010)  #</span>
+<span class="token comment"># 455-461                                                       #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># DOI 10.1002/jcc.21334                                         #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># Please see http://vina.scripps.edu for more information.      #</span>
+<span class="token comment">#################################################################</span>
+
+Reading input <span class="token punctuation">..</span>. done.
+Setting up the scoring <span class="token keyword">function</span> <span class="token punctuation">..</span>. done.
+Analyzing the binding site <span class="token punctuation">..</span>. done.
+Using random seed: <span class="token number">1931149362</span>
+Performing search <span class="token punctuation">..</span>.
+<span class="token number">0</span>%   <span class="token number">10</span>   <span class="token number">20</span>   <span class="token number">30</span>   <span class="token number">40</span>   <span class="token number">50</span>   <span class="token number">60</span>   <span class="token number">70</span>   <span class="token number">80</span>   <span class="token number">90</span>   <span class="token number">100</span>%
+<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>
+***************************************************
+done.
+Refining results <span class="token punctuation">..</span>. done.
+
+mode <span class="token operator">|</span>   affinity <span class="token operator">|</span> dist from best mode
+     <span class="token operator">|</span> <span class="token punctuation">(</span>kcal/mol<span class="token punctuation">)</span> <span class="token operator">|</span> rmsd l.b.<span class="token operator">|</span> rmsd u.b.
+-----+------------+----------+----------
+   <span class="token number">1</span>         <span class="token parameter variable">-9.1</span>      <span class="token number">0.000</span>      <span class="token number">0.000</span>
+   <span class="token number">2</span>         <span class="token parameter variable">-8.1</span>      <span class="token number">3.635</span>      <span class="token number">8.475</span>
+   <span class="token number">3</span>         <span class="token parameter variable">-8.0</span>      <span class="token number">5.082</span>      <span class="token number">7.895</span>
+   <span class="token number">4</span>         <span class="token parameter variable">-8.0</span>      <span class="token number">5.733</span>      <span class="token number">8.730</span>
+   <span class="token number">5</span>         <span class="token parameter variable">-8.0</span>      <span class="token number">8.292</span>     <span class="token number">11.400</span>
+   <span class="token number">6</span>         <span class="token parameter variable">-8.0</span>      <span class="token number">3.347</span>      <span class="token number">7.427</span>
+   <span class="token number">7</span>         <span class="token parameter variable">-7.9</span>      <span class="token number">5.242</span>      <span class="token number">9.106</span>
+   <span class="token number">8</span>         <span class="token parameter variable">-7.9</span>      <span class="token number">5.712</span>      <span class="token number">8.642</span>
+   <span class="token number">9</span>         <span class="token parameter variable">-7.8</span>      <span class="token number">3.966</span>      <span class="token number">5.124</span>
+  <span class="token number">10</span>         <span class="token parameter variable">-7.7</span>      <span class="token number">5.592</span>      <span class="token number">8.513</span>
+Writing output <span class="token punctuation">..</span>. done.
+<span class="token number">10</span> molecules converted
+<span class="token comment">#################################################################</span>
+<span class="token comment"># If you used AutoDock Vina in your work, please cite:          #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># O. Trott, A. J. Olson,                                        #</span>
+<span class="token comment"># AutoDock Vina: improving the speed and accuracy of docking    #</span>
+<span class="token comment"># with a new scoring function, efficient optimization and       #</span>
+<span class="token comment"># multithreading, Journal of Computational Chemistry 31 (2010)  #</span>
+<span class="token comment"># 455-461                                                       #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># DOI 10.1002/jcc.21334                                         #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># Please see http://vina.scripps.edu for more information.      #</span>
+<span class="token comment">#################################################################</span>
+
+Reading input <span class="token punctuation">..</span>. done.
+Setting up the scoring <span class="token keyword">function</span> <span class="token punctuation">..</span>. done.
+Analyzing the binding site <span class="token punctuation">..</span>. done.
+Using random seed: <span class="token parameter variable">-29891784</span>
+Performing search <span class="token punctuation">..</span>.
+<span class="token number">0</span>%   <span class="token number">10</span>   <span class="token number">20</span>   <span class="token number">30</span>   <span class="token number">40</span>   <span class="token number">50</span>   <span class="token number">60</span>   <span class="token number">70</span>   <span class="token number">80</span>   <span class="token number">90</span>   <span class="token number">100</span>%
+<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>
+***************************************************
+done.
+Refining results <span class="token punctuation">..</span>. done.
+
+mode <span class="token operator">|</span>   affinity <span class="token operator">|</span> dist from best mode
+     <span class="token operator">|</span> <span class="token punctuation">(</span>kcal/mol<span class="token punctuation">)</span> <span class="token operator">|</span> rmsd l.b.<span class="token operator">|</span> rmsd u.b.
+-----+------------+----------+----------
+   <span class="token number">1</span>        <span class="token parameter variable">-10.9</span>      <span class="token number">0.000</span>      <span class="token number">0.000</span>
+   <span class="token number">2</span>        <span class="token parameter variable">-10.9</span>      <span class="token number">0.026</span>      <span class="token number">1.961</span>
+   <span class="token number">3</span>        <span class="token parameter variable">-10.2</span>      <span class="token number">5.412</span>      <span class="token number">8.221</span>
+   <span class="token number">4</span>        <span class="token parameter variable">-10.2</span>      <span class="token number">5.414</span>      <span class="token number">8.148</span>
+   <span class="token number">5</span>         <span class="token parameter variable">-9.9</span>      <span class="token number">1.571</span>      <span class="token number">3.055</span>
+   <span class="token number">6</span>         <span class="token parameter variable">-9.8</span>      <span class="token number">4.895</span>      <span class="token number">8.583</span>
+   <span class="token number">7</span>         <span class="token parameter variable">-9.7</span>      <span class="token number">5.319</span>      <span class="token number">8.305</span>
+   <span class="token number">8</span>         <span class="token parameter variable">-9.6</span>      <span class="token number">4.863</span>      <span class="token number">6.782</span>
+   <span class="token number">9</span>         <span class="token parameter variable">-9.4</span>      <span class="token number">1.866</span>      <span class="token number">8.184</span>
+  <span class="token number">10</span>         <span class="token parameter variable">-8.9</span>      <span class="token number">4.055</span>      <span class="token number">5.777</span>
+Writing output <span class="token punctuation">..</span>. done.
+<span class="token number">10</span> molecules converted
+<span class="token comment">#################################################################</span>
+<span class="token comment"># If you used AutoDock Vina in your work, please cite:          #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># O. Trott, A. J. Olson,                                        #</span>
+<span class="token comment"># AutoDock Vina: improving the speed and accuracy of docking    #</span>
+<span class="token comment"># with a new scoring function, efficient optimization and       #</span>
+<span class="token comment"># multithreading, Journal of Computational Chemistry 31 (2010)  #</span>
+<span class="token comment"># 455-461                                                       #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># DOI 10.1002/jcc.21334                                         #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># Please see http://vina.scripps.edu for more information.      #</span>
+<span class="token comment">#################################################################</span>
+
+Reading input <span class="token punctuation">..</span>. done.
+Setting up the scoring <span class="token keyword">function</span> <span class="token punctuation">..</span>. done.
+Analyzing the binding site <span class="token punctuation">..</span>. done.
+Using random seed: <span class="token parameter variable">-1740369596</span>
+Performing search <span class="token punctuation">..</span>.
+<span class="token number">0</span>%   <span class="token number">10</span>   <span class="token number">20</span>   <span class="token number">30</span>   <span class="token number">40</span>   <span class="token number">50</span>   <span class="token number">60</span>   <span class="token number">70</span>   <span class="token number">80</span>   <span class="token number">90</span>   <span class="token number">100</span>%
+<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>
+***************************************************
+done.
+Refining results <span class="token punctuation">..</span>. done.
+
+mode <span class="token operator">|</span>   affinity <span class="token operator">|</span> dist from best mode
+     <span class="token operator">|</span> <span class="token punctuation">(</span>kcal/mol<span class="token punctuation">)</span> <span class="token operator">|</span> rmsd l.b.<span class="token operator">|</span> rmsd u.b.
+-----+------------+----------+----------
+   <span class="token number">1</span>         <span class="token parameter variable">-7.7</span>      <span class="token number">0.000</span>      <span class="token number">0.000</span>
+   <span class="token number">2</span>         <span class="token parameter variable">-7.3</span>      <span class="token number">2.941</span>      <span class="token number">8.248</span>
+   <span class="token number">3</span>         <span class="token parameter variable">-7.3</span>      <span class="token number">2.000</span>      <span class="token number">7.731</span>
+   <span class="token number">4</span>         <span class="token parameter variable">-7.2</span>      <span class="token number">2.511</span>      <span class="token number">5.326</span>
+   <span class="token number">5</span>         <span class="token parameter variable">-7.0</span>      <span class="token number">2.891</span>      <span class="token number">5.561</span>
+   <span class="token number">6</span>         <span class="token parameter variable">-7.0</span>      <span class="token number">2.057</span>      <span class="token number">7.131</span>
+   <span class="token number">7</span>         <span class="token parameter variable">-6.8</span>      <span class="token number">3.090</span>      <span class="token number">8.148</span>
+   <span class="token number">8</span>         <span class="token parameter variable">-6.8</span>      <span class="token number">4.068</span>      <span class="token number">7.826</span>
+   <span class="token number">9</span>         <span class="token parameter variable">-6.7</span>      <span class="token number">1.553</span>      <span class="token number">2.107</span>
+  <span class="token number">10</span>         <span class="token parameter variable">-6.7</span>      <span class="token number">2.871</span>      <span class="token number">6.717</span>
+Writing output <span class="token punctuation">..</span>. done.
+<span class="token number">10</span> molecules converted
+<span class="token comment">#################################################################</span>
+<span class="token comment"># If you used AutoDock Vina in your work, please cite:          #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># O. Trott, A. J. Olson,                                        #</span>
+<span class="token comment"># AutoDock Vina: improving the speed and accuracy of docking    #</span>
+<span class="token comment"># with a new scoring function, efficient optimization and       #</span>
+<span class="token comment"># multithreading, Journal of Computational Chemistry 31 (2010)  #</span>
+<span class="token comment"># 455-461                                                       #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># DOI 10.1002/jcc.21334                                         #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># Please see http://vina.scripps.edu for more information.      #</span>
+<span class="token comment">#################################################################</span>
+
+Reading input <span class="token punctuation">..</span>. done.
+Setting up the scoring <span class="token keyword">function</span> <span class="token punctuation">..</span>. done.
+Analyzing the binding site <span class="token punctuation">..</span>. done.
+Using random seed: <span class="token parameter variable">-832291788</span>
+Performing search <span class="token punctuation">..</span>.
+<span class="token number">0</span>%   <span class="token number">10</span>   <span class="token number">20</span>   <span class="token number">30</span>   <span class="token number">40</span>   <span class="token number">50</span>   <span class="token number">60</span>   <span class="token number">70</span>   <span class="token number">80</span>   <span class="token number">90</span>   <span class="token number">100</span>%
+<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>
+***************************************************
+done.
+Refining results <span class="token punctuation">..</span>. done.
+
+mode <span class="token operator">|</span>   affinity <span class="token operator">|</span> dist from best mode
+     <span class="token operator">|</span> <span class="token punctuation">(</span>kcal/mol<span class="token punctuation">)</span> <span class="token operator">|</span> rmsd l.b.<span class="token operator">|</span> rmsd u.b.
+-----+------------+----------+----------
+   <span class="token number">1</span>         <span class="token parameter variable">-7.8</span>      <span class="token number">0.000</span>      <span class="token number">0.000</span>
+   <span class="token number">2</span>         <span class="token parameter variable">-7.5</span>      <span class="token number">2.556</span>      <span class="token number">5.568</span>
+   <span class="token number">3</span>         <span class="token parameter variable">-7.2</span>      <span class="token number">3.261</span>      <span class="token number">7.045</span>
+   <span class="token number">4</span>         <span class="token parameter variable">-7.1</span>      <span class="token number">1.552</span>      <span class="token number">3.516</span>
+   <span class="token number">5</span>         <span class="token parameter variable">-7.1</span>      <span class="token number">3.531</span>      <span class="token number">8.237</span>
+   <span class="token number">6</span>         <span class="token parameter variable">-7.1</span>      <span class="token number">3.034</span>      <span class="token number">7.416</span>
+   <span class="token number">7</span>         <span class="token parameter variable">-7.1</span>      <span class="token number">3.005</span>      <span class="token number">5.912</span>
+   <span class="token number">8</span>         <span class="token parameter variable">-7.1</span>      <span class="token number">2.290</span>      <span class="token number">5.425</span>
+   <span class="token number">9</span>         <span class="token parameter variable">-7.0</span>      <span class="token number">2.334</span>      <span class="token number">7.098</span>
+  <span class="token number">10</span>         <span class="token parameter variable">-6.8</span>      <span class="token number">2.803</span>      <span class="token number">5.541</span>
+Writing output <span class="token punctuation">..</span>. done.
+<span class="token number">10</span> molecules converted
+<span class="token comment">#################################################################</span>
+<span class="token comment"># If you used AutoDock Vina in your work, please cite:          #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># O. Trott, A. J. Olson,                                        #</span>
+<span class="token comment"># AutoDock Vina: improving the speed and accuracy of docking    #</span>
+<span class="token comment"># with a new scoring function, efficient optimization and       #</span>
+<span class="token comment"># multithreading, Journal of Computational Chemistry 31 (2010)  #</span>
+<span class="token comment"># 455-461                                                       #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># DOI 10.1002/jcc.21334                                         #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># Please see http://vina.scripps.edu for more information.      #</span>
+<span class="token comment">#################################################################</span>
+
+Reading input <span class="token punctuation">..</span>. done.
+Setting up the scoring <span class="token keyword">function</span> <span class="token punctuation">..</span>. done.
+Analyzing the binding site <span class="token punctuation">..</span>. done.
+Using random seed: <span class="token parameter variable">-1005170334</span>
+Performing search <span class="token punctuation">..</span>.
+<span class="token number">0</span>%   <span class="token number">10</span>   <span class="token number">20</span>   <span class="token number">30</span>   <span class="token number">40</span>   <span class="token number">50</span>   <span class="token number">60</span>   <span class="token number">70</span>   <span class="token number">80</span>   <span class="token number">90</span>   <span class="token number">100</span>%
+<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>
+***************************************************
+done.
+Refining results <span class="token punctuation">..</span>. done.
+
+mode <span class="token operator">|</span>   affinity <span class="token operator">|</span> dist from best mode
+     <span class="token operator">|</span> <span class="token punctuation">(</span>kcal/mol<span class="token punctuation">)</span> <span class="token operator">|</span> rmsd l.b.<span class="token operator">|</span> rmsd u.b.
+-----+------------+----------+----------
+   <span class="token number">1</span>         <span class="token parameter variable">-8.4</span>      <span class="token number">0.000</span>      <span class="token number">0.000</span>
+   <span class="token number">2</span>         <span class="token parameter variable">-8.4</span>      <span class="token number">8.694</span>     <span class="token number">13.384</span>
+   <span class="token number">3</span>         <span class="token parameter variable">-8.3</span>      <span class="token number">2.793</span>      <span class="token number">4.213</span>
+   <span class="token number">4</span>         <span class="token parameter variable">-8.0</span>      <span class="token number">8.455</span>     <span class="token number">13.245</span>
+   <span class="token number">5</span>         <span class="token parameter variable">-7.9</span>      <span class="token number">2.876</span>     <span class="token number">12.058</span>
+   <span class="token number">6</span>         <span class="token parameter variable">-7.7</span>      <span class="token number">2.990</span>     <span class="token number">12.238</span>
+   <span class="token number">7</span>         <span class="token parameter variable">-7.7</span>      <span class="token number">9.146</span>     <span class="token number">13.795</span>
+   <span class="token number">8</span>         <span class="token parameter variable">-7.7</span>     <span class="token number">10.056</span>     <span class="token number">14.591</span>
+   <span class="token number">9</span>         <span class="token parameter variable">-7.5</span>      <span class="token number">8.024</span>     <span class="token number">12.610</span>
+  <span class="token number">10</span>         <span class="token parameter variable">-7.5</span>      <span class="token number">7.944</span>      <span class="token number">9.897</span>
+Writing output <span class="token punctuation">..</span>. done.
+<span class="token number">10</span> molecules converted
+<span class="token comment">#################################################################</span>
+<span class="token comment"># If you used AutoDock Vina in your work, please cite:          #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># O. Trott, A. J. Olson,                                        #</span>
+<span class="token comment"># AutoDock Vina: improving the speed and accuracy of docking    #</span>
+<span class="token comment"># with a new scoring function, efficient optimization and       #</span>
+<span class="token comment"># multithreading, Journal of Computational Chemistry 31 (2010)  #</span>
+<span class="token comment"># 455-461                                                       #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># DOI 10.1002/jcc.21334                                         #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># Please see http://vina.scripps.edu for more information.      #</span>
+<span class="token comment">#################################################################</span>
+
+Reading input <span class="token punctuation">..</span>. done.
+Setting up the scoring <span class="token keyword">function</span> <span class="token punctuation">..</span>. done.
+Analyzing the binding site <span class="token punctuation">..</span>. done.
+Using random seed: <span class="token number">1161529493</span>
+Performing search <span class="token punctuation">..</span>.
+<span class="token number">0</span>%   <span class="token number">10</span>   <span class="token number">20</span>   <span class="token number">30</span>   <span class="token number">40</span>   <span class="token number">50</span>   <span class="token number">60</span>   <span class="token number">70</span>   <span class="token number">80</span>   <span class="token number">90</span>   <span class="token number">100</span>%
+<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>
+*******************????????</code></pre>
+<p>观察进程负载，vina 仅使用一个核</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/autodock_vina_1_1_2_linux_x86/bin<span class="token operator">|</span>$ pidstat <span class="token number">1</span>
+Linux <span class="token number">4.18</span>.0-553.el8_10.x86_64 <span class="token punctuation">(</span>slurm-controller<span class="token punctuation">)</span>       04/27/2025      _x86_64_     <span class="token punctuation">(</span><span class="token number">4</span> CPU<span class="token punctuation">)</span>
+
+<span class="token number">10</span>:30:57 AM   <span class="token environment constant">UID</span>       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+<span class="token number">10</span>:30:58 AM  <span class="token number">1000</span>    <span class="token number">245427</span>   <span class="token number">91.18</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>   <span class="token number">91.18</span>     <span class="token number">3</span>  vina
+<span class="token number">10</span>:30:58 AM  <span class="token number">1000</span>    <span class="token number">245523</span>    <span class="token number">0.00</span>    <span class="token number">0.98</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>    <span class="token number">0.98</span>     <span class="token number">1</span>  pidstat
+
+<span class="token number">10</span>:30:58 AM   <span class="token environment constant">UID</span>       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+<span class="token number">10</span>:30:59 AM  <span class="token number">1000</span>    <span class="token number">245427</span>   <span class="token number">92.08</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>   <span class="token number">92.08</span>     <span class="token number">3</span>  vina
+
+<span class="token number">10</span>:30:59 AM   <span class="token environment constant">UID</span>       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+<span class="token number">10</span>:31:00 AM  <span class="token number">1000</span>    <span class="token number">245427</span>   <span class="token number">91.00</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>   <span class="token number">91.00</span>     <span class="token number">3</span>  vina
+<span class="token number">10</span>:31:00 AM  <span class="token number">1000</span>    <span class="token number">245523</span>    <span class="token number">0.00</span>    <span class="token number">1.00</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>    <span class="token number">1.00</span>     <span class="token number">1</span>  pidstat
+^C
+
+Average:      <span class="token environment constant">UID</span>       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+Average:     <span class="token number">1000</span>    <span class="token number">245427</span>   <span class="token number">91.42</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>   <span class="token number">91.42</span>     -  vina
+Average:     <span class="token number">1000</span>    <span class="token number">245523</span>    <span class="token number">0.00</span>    <span class="token number">0.66</span>    <span class="token number">0.00</span>    <span class="token number">0.00</span>    <span class="token number">0.66</span>     -  pidstat
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/autodock_vina_1_1_2_linux_x86/bin<span class="token operator">|</span>$
+</code></pre>
+<p>修改 vina --cpu 参数为 3，重新运行 vina.sh</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$ ./vina.sh
+<span class="token punctuation">..</span>.
+Writing output <span class="token punctuation">..</span>. done.
+<span class="token number">10</span> molecules converted
+<span class="token comment">#################################################################</span>
+<span class="token comment"># If you used AutoDock Vina in your work, please cite:          #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># O. Trott, A. J. Olson,                                        #</span>
+<span class="token comment"># AutoDock Vina: improving the speed and accuracy of docking    #</span>
+<span class="token comment"># with a new scoring function, efficient optimization and       #</span>
+<span class="token comment"># multithreading, Journal of Computational Chemistry 31 (2010)  #</span>
+<span class="token comment"># 455-461                                                       #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># DOI 10.1002/jcc.21334                                         #</span>
+<span class="token comment">#                                                               #</span>
+<span class="token comment"># Please see http://vina.scripps.edu for more information.      #</span>
+<span class="token comment">#################################################################</span>
+
+Reading input <span class="token punctuation">..</span>. done.
+Setting up the scoring <span class="token keyword">function</span> <span class="token punctuation">..</span>. done.
+Analyzing the binding site <span class="token punctuation">..</span>. done.
+Using random seed: <span class="token number">1922223658</span>
+Performing search <span class="token punctuation">..</span>.
+<span class="token number">0</span>%   <span class="token number">10</span>   <span class="token number">20</span>   <span class="token number">30</span>   <span class="token number">40</span>   <span class="token number">50</span>   <span class="token number">60</span>   <span class="token number">70</span>   <span class="token number">80</span>   <span class="token number">90</span>   <span class="token number">100</span>%
+<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>----<span class="token operator">|</span>
+***************************************************
+done.
+Refining results <span class="token punctuation">..</span>. done.
+
+mode <span class="token operator">|</span>   affinity <span class="token operator">|</span> dist from best mode
+     <span class="token operator">|</span> <span class="token punctuation">(</span>kcal/mol<span class="token punctuation">)</span> <span class="token operator">|</span> rmsd l.b.<span class="token operator">|</span> rmsd u.b.
+-----+------------+----------+----------
+   <span class="token number">1</span>        <span class="token parameter variable">-10.3</span>      <span class="token number">0.000</span>      <span class="token number">0.000</span>
+   <span class="token number">2</span>        <span class="token parameter variable">-10.2</span>      <span class="token number">5.951</span>      <span class="token number">9.637</span>
+   <span class="token number">3</span>         <span class="token parameter variable">-9.8</span>      <span class="token number">3.881</span>      <span class="token number">9.708</span>
+   <span class="token number">4</span>         <span class="token parameter variable">-9.6</span>      <span class="token number">2.802</span>      <span class="token number">3.936</span>
+   <span class="token number">5</span>         <span class="token parameter variable">-9.5</span>      <span class="token number">5.175</span>      <span class="token number">7.909</span>
+   <span class="token number">6</span>         <span class="token parameter variable">-9.5</span>      <span class="token number">6.486</span>     <span class="token number">10.253</span>
+   <span class="token number">7</span>         <span class="token parameter variable">-9.5</span>      <span class="token number">3.979</span>      <span class="token number">9.961</span>
+   <span class="token number">8</span>         <span class="token parameter variable">-9.4</span>      <span class="token number">4.542</span>      <span class="token number">8.731</span>
+   <span class="token number">9</span>         <span class="token parameter variable">-9.4</span>      <span class="token number">4.472</span>      <span class="token number">6.863</span>
+  <span class="token number">10</span>         <span class="token parameter variable">-9.4</span>      <span class="token number">3.443</span>      <span class="token number">5.373</span>
+Writing output <span class="token punctuation">..</span>. done.
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+*** Open Babel Warning  <span class="token keyword">in</span> PerceiveBondOrders
+  Failed to kekulize aromatic bonds <span class="token keyword">in</span> OBMol::PerceiveBondOrders <span class="token punctuation">(</span>title is out.pdbqt<span class="token punctuation">)</span>
+
+<span class="token number">10</span> molecules converted
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$</code></pre>
+<p>output.sdf 输出看起来正常</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">grep</span> <span class="token parameter variable">-c</span> out.pdbqt output.sdf
+<span class="token number">1990</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">ls</span> *.mol2 <span class="token operator">|</span> <span class="token function">wc</span> <span class="token parameter variable">-l</span>
+<span class="token number">201</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">ls</span> mols/
+output.sdf  vs126.mol2  vs152.mol2  vs179.mol2  vs22.mol2  vs49.mol2  vs75.mol2
+vs100.mol2  vs127.mol2  vs153.mol2  vs17.mol2   vs23.mol2  vs4.mol2   vs76.mol2
+vs101.mol2  vs128.mol2  vs154.mol2  vs180.mol2  vs24.mol2  vs50.mol2  vs77.mol2
+vs102.mol2  vs129.mol2  vs155.mol2  vs181.mol2  vs25.mol2  vs51.mol2  vs78.mol2
+vs103.mol2  vs12.mol2   vs156.mol2  vs182.mol2  vs26.mol2  vs52.mol2  vs79.mol2
+vs104.mol2  vs130.mol2  vs157.mol2  vs183.mol2  vs27.mol2  vs53.mol2  vs7.mol2
+vs105.mol2  vs131.mol2  vs158.mol2  vs184.mol2  vs28.mol2  vs54.mol2  vs80.mol2
+vs106.mol2  vs132.mol2  vs159.mol2  vs185.mol2  vs29.mol2  vs55.mol2  vs81.mol2
+vs107.mol2  vs133.mol2  vs15.mol2   vs186.mol2  vs2.mol2   vs56.mol2  vs82.mol2
+vs108.mol2  vs134.mol2  vs160.mol2  vs187.mol2  vs30.mol2  vs57.mol2  vs83.mol2
+vs109.mol2  vs135.mol2  vs161.mol2  vs188.mol2  vs31.mol2  vs58.mol2  vs84.mol2
+vs10.mol2   vs136.mol2  vs162.mol2  vs189.mol2  vs32.mol2  vs59.mol2  vs85.mol2
+vs110.mol2  vs137.mol2  vs163.mol2  vs18.mol2   vs33.mol2  vs5.mol2   vs86.mol2
+vs111.mol2  vs138.mol2  vs164.mol2  vs190.mol2  vs34.mol2  vs60.mol2  vs87.mol2
+vs112.mol2  vs139.mol2  vs165.mol2  vs191.mol2  vs35.mol2  vs61.mol2  vs88.mol2
+vs113.mol2  vs13.mol2   vs166.mol2  vs192.mol2  vs36.mol2  vs62.mol2  vs89.mol2
+vs114.mol2  vs140.mol2  vs167.mol2  vs193.mol2  vs37.mol2  vs63.mol2  vs8.mol2
+vs115.mol2  vs141.mol2  vs168.mol2  vs194.mol2  vs38.mol2  vs64.mol2  vs90.mol2
+vs116.mol2  vs142.mol2  vs169.mol2  vs195.mol2  vs39.mol2  vs65.mol2  vs91.mol2
+vs117.mol2  vs143.mol2  vs16.mol2   vs196.mol2  vs3.mol2   vs66.mol2  vs92.mol2
+vs118.mol2  vs144.mol2  vs170.mol2  vs197.mol2  vs40.mol2  vs67.mol2  vs93.mol2
+vs119.mol2  vs145.mol2  vs171.mol2  vs198.mol2  vs41.mol2  vs68.mol2  vs94.mol2
+vs11.mol2   vs146.mol2  vs172.mol2  vs199.mol2  vs42.mol2  vs69.mol2  vs95.mol2
+vs120.mol2  vs147.mol2  vs173.mol2  vs19.mol2   vs43.mol2  vs6.mol2   vs96.mol2
+vs121.mol2  vs148.mol2  vs174.mol2  vs1.mol2    vs44.mol2  vs70.mol2  vs97.mol2
+vs122.mol2  vs149.mol2  vs175.mol2  vs200.mol2  vs45.mol2  vs71.mol2  vs98.mol2
+vs123.mol2  vs14.mol2   vs176.mol2  vs201.mol2  vs46.mol2  vs72.mol2  vs99.mol2
+vs124.mol2  vs150.mol2  vs177.mol2  vs20.mol2   vs47.mol2  vs73.mol2  vs9.mol2
+vs125.mol2  vs151.mol2  vs178.mol2  vs21.mol2   vs48.mol2  vs74.mol2
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">ls</span>
+2w17.pdb  mols     receptor.pdbqt  testset.sdf  vina-slurm.sh
+conf.txt  pro.pdb  testset.mol2    vina.sh
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test<span class="token operator">|</span>$
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">stat</span> output.sdf
+  File: output.sdf
+  Size: <span class="token number">7159169</span>         Blocks: <span class="token number">13984</span>      IO Block: <span class="token number">4096</span>   regular <span class="token function">file</span>
+Device: fd00h/64768d    Inode: <span class="token number">38064062</span>    Links: <span class="token number">1</span>
+Access: <span class="token punctuation">(</span>0664/-rw-rw-r--<span class="token punctuation">)</span>  Uid: <span class="token punctuation">(</span> <span class="token number">1000</span>/  zhihao<span class="token punctuation">)</span>   Gid: <span class="token punctuation">(</span> <span class="token number">1000</span>/  zhihao<span class="token punctuation">)</span>
+Context: unconfined_u:object_r:user_home_t:s0
+Access: <span class="token number">2025</span>-04-27 <span class="token number">20</span>:59:31.902990351 <span class="token parameter variable">-0400</span>
+Modify: <span class="token number">2025</span>-04-27 <span class="token number">13</span>:12:11.517281587 <span class="token parameter variable">-0400</span>
+Change: <span class="token number">2025</span>-04-27 <span class="token number">13</span>:12:11.517281587 <span class="token parameter variable">-0400</span>
+ Birth: <span class="token number">2025</span>-04-27 <span class="token number">10</span>:59:01.029139138 <span class="token parameter variable">-0400</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads/slurm-lab/Test/mols<span class="token operator">|</span>$</code></pre>
+<h2 id="vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96" tabindex="-1">vina.sh 脚本并行化</h2>
+<p>分析知 for 循环内过程为分子匹配过程，相互独立，可以改为并行逻辑</p>
+<p>移动 vina 项目到 /mnt/slurm_shared/ 共享文件夹</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">rsync</span> <span class="token parameter variable">-auv</span> slurm-lab /mnt/slurm_shared/
+sending incremental <span class="token function">file</span> list
+slurm-lab/
+slurm-lab/Test/
+slurm-lab/Test/2w17.pdb
+slurm-lab/Test/conf.txt
+slurm-lab/Test/pro.pdb
+slurm-lab/Test/receptor.pdbqt
+slurm-lab/Test/testset.sdf
+slurm-lab/Test/vina-slurm.sh
+slurm-lab/Test/vina.sh
+
+sent <span class="token number">1,881</span>,539 bytes  received <span class="token number">161</span> bytes  <span class="token number">3,763</span>,400.00 bytes/sec
+total size is <span class="token number">1,880</span>,537  speedup is <span class="token number">1.00</span>
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$ <span class="token function">mv</span> autodock_vina_1_1_2_linux_x86 mgltools_x86_64Linux2_1.5.6 /mnt/slurm_shared/
+zhihao@slurm-controller<span class="token operator">|</span>/home/zhihao/Downloads<span class="token operator">|</span>$</code></pre>
+<p>vina.sh 改写为三个脚本，vina-start.sh, vina-mol.sh, vina-post.sh，其中 vina-mol.sh 可并行化。</p>
+<p>vina-start.sh</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">cat</span> vina-start.sh
+<span class="token comment">#!/bin/bash</span>
+<span class="token comment">#SBATCH --job-name=vina_docking</span>
+<span class="token comment">#SBATCH --output=logs/vina_start_%j.out</span>
+<span class="token comment">#SBATCH --error=logs/vina_start_%j.err</span>
+<span class="token builtin class-name">set</span> <span class="token parameter variable">-e</span>
+
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/mnt/slurm_shared/autodock_vina_1_1_2_linux_x86/bin:<span class="token environment constant">$PATH</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/mnt/slurm_shared/mgltools_x86_64Linux2_1.5.6//bin:<span class="token environment constant">$PATH</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/mnt/slurm_shared/mgltools_x86_64Linux2_1.5.6//MGLToolsPckgs/AutoDockTools/Utilities24:<span class="token environment constant">$PATH</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-d</span> <span class="token string">"mols"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token function">rm</span> <span class="token parameter variable">-rf</span> mols
+<span class="token keyword">fi</span>
+<span class="token function">mkdir</span> mols
+prepare_receptor4.py <span class="token parameter variable">-r</span> pro.pdb  <span class="token parameter variable">-e</span> <span class="token parameter variable">-o</span> receptor.pdbqt <span class="token comment">########## prepare only once</span>
+obabel <span class="token parameter variable">-isd</span> testset.sdf <span class="token parameter variable">-omol2</span> <span class="token parameter variable">-O</span> testset.mol2
+<span class="token builtin class-name">cd</span> mols
+obabel <span class="token punctuation">..</span>/testset.mol2 <span class="token parameter variable">-O</span> vs.mol2 <span class="token parameter variable">-m</span>
+
+<span class="token assign-left variable">jobid</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>sbatch <span class="token parameter variable">--parsable</span> /mnt/slurm_shared/slurm-lab/Test/vina-mol.sh <span class="token variable">)</span></span>
+
+sbatch <span class="token parameter variable">--dependency</span><span class="token operator">=</span>afterok:<span class="token variable">$jobid</span> <span class="token punctuation">..</span>/vina-post.sh
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$</code></pre>
+<p>vina-mol.sh</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">cat</span> vina-mol.sh
+<span class="token comment">#!/bin/bash</span>
+<span class="token comment">#SBATCH --array=1-201</span>
+<span class="token comment">#SBATCH --output=../logs/vina_mol_%j.out</span>
+<span class="token comment">#SBATCH --error=../logs/vina_mol_%j.err</span>
+
+<span class="token comment">#SBATCH --ntasks=1</span>
+<span class="token comment">#SBATCH --cpus-per-task=1</span>
+<span class="token comment">#SBATCH --ntasks-per-node=1</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"Slurm Array Task ID: <span class="token variable">$SLURM_ARRAY_TASK_ID</span>"</span>
+
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/mnt/slurm_shared/autodock_vina_1_1_2_linux_x86/bin:<span class="token environment constant">$PATH</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/mnt/slurm_shared/mgltools_x86_64Linux2_1.5.6//bin:<span class="token environment constant">$PATH</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span>/mnt/slurm_shared/mgltools_x86_64Linux2_1.5.6//MGLToolsPckgs/AutoDockTools/Utilities24:<span class="token environment constant">$PATH</span>
+
+<span class="token assign-left variable">task_id</span><span class="token operator">=</span><span class="token variable">$SLURM_ARRAY_TASK_ID</span>
+<span class="token assign-left variable">mol2_num</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token function">ls</span> vs*.mol2 <span class="token operator">|</span> <span class="token function">wc</span> <span class="token parameter variable">-l</span><span class="token variable">)</span></span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"now in <span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">pwd</span><span class="token variable">)</span></span>"</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$task_id</span> <span class="token parameter variable">-gt</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$task_id</span> <span class="token parameter variable">-le</span> <span class="token variable">$mol2_num</span> <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        prepare_ligand4.py <span class="token parameter variable">-l</span> vs<span class="token variable">${task_id}</span>.mol2 <span class="token parameter variable">-o</span> ligand<span class="token variable">${task_id}</span>.pdbqt
+        srun vina <span class="token parameter variable">--config</span> <span class="token punctuation">..</span>/conf.txt <span class="token parameter variable">--cpu</span> <span class="token number">1</span> <span class="token parameter variable">--ligand</span> ligand<span class="token variable">${task_id}</span>.pdbqt <span class="token parameter variable">--out</span> out<span class="token variable">${task_id}</span>.pdbqt <span class="token parameter variable">--log</span> log.txt
+        obabel <span class="token parameter variable">-ipdbqt</span> out<span class="token variable">${task_id}</span>.pdbqt <span class="token parameter variable">-osd</span> <span class="token parameter variable">-O</span> temp<span class="token variable">${task_id}</span>.sdf
+        <span class="token function">rm</span> <span class="token parameter variable">-f</span> log.txt ligand<span class="token variable">${task_id}</span>.pdbqt out<span class="token variable">${task_id}</span>.pdbqt
+<span class="token keyword">else</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"SLURM_ARRAY_TASK_ID (<span class="token variable">$SLURM_ARRAY_TASK_ID</span>) is out of range."</span>
+<span class="token keyword">fi</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$</code></pre>
+<p>vina-post.sh</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">cat</span> vina-post.sh
+<span class="token comment">#!/bin/bash</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"now in <span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">pwd</span><span class="token variable">)</span></span>"</span>
+<span class="token function">cat</span> temp*.sdf <span class="token operator">></span> output.sdf
+<span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$</code></pre>
+<p>sbatch 提交 vina-start.sh，双节点八核都在工作。 检查 tempxx.sdf 正常生成，结束后会产生 output.sdf 结果文件，测试结束。</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ sbatch vina-start.sh
+Submitted batch job <span class="token number">11419</span>
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># squeue</span>
+             JOBID PARTITION     NAME     <span class="token environment constant">USER</span> ST       TIME  NODES NODELIST<span class="token punctuation">(</span>REASON<span class="token punctuation">)</span>
+    11420_<span class="token punctuation">[</span><span class="token number">86</span>-201<span class="token punctuation">]</span>     debug vina-mol   zhihao PD       <span class="token number">0</span>:00      <span class="token number">1</span> <span class="token punctuation">(</span>Resources<span class="token punctuation">)</span>
+             <span class="token number">11421</span>     debug vina-pos   zhihao PD       <span class="token number">0</span>:00      <span class="token number">1</span> <span class="token punctuation">(</span>Dependency<span class="token punctuation">)</span>
+          11420_85     debug vina-mol   zhihao  R       <span class="token number">0</span>:01      <span class="token number">1</span> slurm-compute2
+          11420_84     debug vina-mol   zhihao  R       <span class="token number">0</span>:35      <span class="token number">1</span> slurm-compute1
+          11420_83     debug vina-mol   zhihao  R       <span class="token number">0</span>:38      <span class="token number">1</span> slurm-compute1
+          11420_82     debug vina-mol   zhihao  R       <span class="token number">0</span>:40      <span class="token number">1</span> slurm-compute1
+          11420_81     debug vina-mol   zhihao  R       <span class="token number">0</span>:46      <span class="token number">1</span> slurm-compute1
+          11420_79     debug vina-mol   zhihao  R       <span class="token number">1</span>:57      <span class="token number">1</span> slurm-compute2
+          11420_78     debug vina-mol   zhihao  R       <span class="token number">2</span>:09      <span class="token number">1</span> slurm-compute2
+          11420_77     debug vina-mol   zhihao  R       <span class="token number">2</span>:23      <span class="token number">1</span> slurm-compute2
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment">#</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">ls</span> temp*
+temp10.sdf  temp22.sdf  temp34.sdf  temp46.sdf  temp58.sdf  temp6.sdf   temp81.sdf
+temp11.sdf  temp23.sdf  temp35.sdf  temp47.sdf  temp59.sdf  temp70.sdf  temp85.sdf
+temp12.sdf  temp24.sdf  temp36.sdf  temp48.sdf  temp5.sdf   temp71.sdf  temp86.sdf
+temp13.sdf  temp25.sdf  temp37.sdf  temp49.sdf  temp60.sdf  temp72.sdf  temp87.sdf
+temp14.sdf  temp26.sdf  temp38.sdf  temp4.sdf   temp61.sdf  temp73.sdf  temp88.sdf
+temp15.sdf  temp27.sdf  temp39.sdf  temp50.sdf  temp62.sdf  temp74.sdf  temp89.sdf
+temp16.sdf  temp28.sdf  temp3.sdf   temp51.sdf  temp63.sdf  temp75.sdf  temp8.sdf
+temp17.sdf  temp29.sdf  temp40.sdf  temp52.sdf  temp64.sdf  temp76.sdf  temp90.sdf
+temp18.sdf  temp2.sdf   temp41.sdf  temp53.sdf  temp65.sdf  temp77.sdf  temp91.sdf
+temp19.sdf  temp30.sdf  temp42.sdf  temp54.sdf  temp66.sdf  temp78.sdf  temp92.sdf
+temp1.sdf   temp31.sdf  temp43.sdf  temp55.sdf  temp67.sdf  temp79.sdf  temp9.sdf
+temp20.sdf  temp32.sdf  temp44.sdf  temp56.sdf  temp68.sdf  temp7.sdf
+temp21.sdf  temp33.sdf  temp45.sdf  temp57.sdf  temp69.sdf  temp80.sdf
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">head</span> temp7.sdf
+out7.pdbqt
+ OpenBabel04282512433D
+
+ <span class="token number">28</span> <span class="token number">29</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">1</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  0999 V2000
+    <span class="token number">4.0900</span>   <span class="token number">27.5220</span>    <span class="token number">6.3970</span> C   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">2</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">3</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">5.1170</span>   <span class="token number">26.8390</span>    <span class="token number">7.3330</span> C   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">2</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">3</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">5.5320</span>   <span class="token number">25.4610</span>    <span class="token number">6.7550</span> C   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">2</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">3</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">4.6310</span>   <span class="token number">27.6260</span>    <span class="token number">5.1030</span> O   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">5.9580</span>   <span class="token number">25.5860</span>    <span class="token number">5.2770</span> C   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">1</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">3</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">4.8790</span>   <span class="token number">26.3600</span>    <span class="token number">4.4770</span> C   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">2</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">3</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$</code></pre>
+<p>output.sdf 已生成</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">du</span> <span class="token parameter variable">-sh</span> output.sdf
+<span class="token number">6</span>.9M    output.sdf
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">grep</span> pdbqt output.sdf <span class="token operator">|</span> <span class="token function">uniq</span> <span class="token parameter variable">-c</span> <span class="token operator">|</span> <span class="token function">wc</span> <span class="token parameter variable">-l</span>
+<span class="token number">199</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$ <span class="token function">head</span> output.sdf
+out100.pdbqt
+ OpenBabel04282513053D
+
+ <span class="token number">31</span> <span class="token number">32</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  0999 V2000
+    <span class="token number">1.5130</span>   <span class="token number">23.3700</span>   <span class="token number">12.3830</span> C   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">2</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">1.0140</span>   <span class="token number">24.2610</span>   <span class="token number">11.2350</span> C   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">0.4640</span>   <span class="token number">25.4400</span>   <span class="token number">11.5890</span> N   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">0.3830</span>   <span class="token number">25.7230</span>   <span class="token number">12.5560</span> H   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+    <span class="token number">1.1200</span>   <span class="token number">23.8700</span>   <span class="token number">10.0690</span> O   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+   <span class="token parameter variable">-0.0180</span>   <span class="token number">26.3120</span>   <span class="token number">10.6830</span> N   <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">2</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>  <span class="token number">0</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test/mols<span class="token operator">|</span>$</code></pre>
+<h2 id="%E5%8D%83%E4%B8%87%E5%88%86%E5%AD%90%E5%AF%B9%E6%8E%A5%E6%9E%B6%E6%9E%84%E6%80%9D%E8%80%83" tabindex="-1">千万分子对接架构思考</h2>
+<p>将大分子文件拆分为较小的分子文件，存储到分布式存储，slurm 计算集群主节点运行 slurm 控制器和数据库，计算节点运行 slurmd 服务，配置自动伸缩组动态扩展资源。计算结果写入分布式存储。</p>
+<h2 id="%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5" tabindex="-1">问题排查</h2>
+<h3 id="srun-%E8%BF%90%E8%A1%8C%E8%B6%85%E6%97%B6" tabindex="-1">srun 运行超时</h3>
+<p>排查后为 firewalld 导致，分析思路为：</p>
+<p>tcpdump 看 slurm-controller 节点拒绝 35683 端口连接</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller log<span class="token punctuation">]</span><span class="token comment"># tcpdump -n -i enp0s8 not port 22 -c 40 |&amp; less</span>
+<span class="token punctuation">..</span>.
+05:21:59.758261 IP <span class="token number">192.168</span>.1.101.50952 <span class="token operator">></span> <span class="token number">192.168</span>.1.100.35683: Flags <span class="token punctuation">[</span>S<span class="token punctuation">]</span>, <span class="token function">seq</span> <span class="token number">352325565</span>
+<span class="token number">6</span>, win <span class="token number">29200</span>, options <span class="token punctuation">[</span>mss <span class="token number">1460</span>,sackOK,TS val <span class="token number">2648148599</span> ecr <span class="token number">0</span>,nop,wscale <span class="token number">7</span><span class="token punctuation">]</span>, length <span class="token number">0</span>
+05:21:59.758282 IP <span class="token number">192.168</span>.1.100 <span class="token operator">></span> <span class="token number">192.168</span>.1.101: ICMP <span class="token function">host</span> <span class="token number">192.168</span>.1.100 unreachable
+- admin prohibited filter, length <span class="token number">68</span></code></pre>
+<p>端口 35683 为 srun 进程</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment"># netstat -nap | grep srun</span>
+tcp        <span class="token number">0</span>      <span class="token number">0</span> <span class="token number">0.0</span>.0.0:38217           <span class="token number">0.0</span>.0.0:*               LISTEN      <span class="token number">202777</span>/srun
+tcp        <span class="token number">0</span>      <span class="token number">0</span> <span class="token number">0.0</span>.0.0:33805           <span class="token number">0.0</span>.0.0:*               LISTEN      <span class="token number">202777</span>/srun
+tcp        <span class="token number">0</span>      <span class="token number">0</span> <span class="token number">0.0</span>.0.0:34135           <span class="token number">0.0</span>.0.0:*               LISTEN      <span class="token number">202777</span>/srun
+tcp        <span class="token number">0</span>      <span class="token number">0</span> <span class="token number">0.0</span>.0.0:45913           <span class="token number">0.0</span>.0.0:*               LISTEN      <span class="token number">202777</span>/srun
+tcp        <span class="token number">0</span>      <span class="token number">0</span> <span class="token number">0.0</span>.0.0:35683           <span class="token number">0.0</span>.0.0:*               LISTEN      <span class="token number">202777</span>/srun
+<span class="token punctuation">[</span>root@slurm-controller slurm-cluster<span class="token punctuation">]</span><span class="token comment">#</span></code></pre>
+<p>firewalld-cmd 启用日志</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@slurm-controller log<span class="token punctuation">]</span><span class="token comment">#  firewall-cmd --set-log-denied=all</span>
+Warning: ALREADY_SET: all
+success
+<span class="token punctuation">[</span>root@slurm-controller log<span class="token punctuation">]</span><span class="token comment"># sudo firewall-cmd --get-active-zones</span>
+public
+  interfaces: enp0s8 enp0s3
+<span class="token punctuation">[</span>root@slurm-controller log<span class="token punctuation">]</span><span class="token comment">#</span></code></pre>
+<p>dmesg -Tw 验证端口被 firewalld drop</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span>Sun Apr <span class="token number">27</span> 05:21:54 <span class="token number">2025</span><span class="token punctuation">]</span> FINAL_REJECT: <span class="token assign-left variable">IN</span><span class="token operator">=</span>enp0s8 <span class="token assign-left variable">OUT</span><span class="token operator">=</span> <span class="token assign-left variable">MAC</span><span class="token operator">=</span>08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 <span class="token assign-left variable">SRC</span><span class="token operator">=</span><span class="token number">192.168</span>.1.101 <span class="token assign-left variable">DST</span><span class="token operator">=</span><span class="token number">192.168</span>.1.100 <span class="token assign-left variable">LEN</span><span class="token operator">=</span><span class="token number">60</span> <span class="token assign-left variable">TOS</span><span class="token operator">=</span>0x00 <span class="token assign-left variable">PREC</span><span class="token operator">=</span>0x00 <span class="token assign-left variable">TTL</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">ID</span><span class="token operator">=</span><span class="token number">44477</span> DF <span class="token assign-left variable">PROTO</span><span class="token operator">=</span>TCP <span class="token assign-left variable">SPT</span><span class="token operator">=</span><span class="token number">50952</span> <span class="token assign-left variable">DPT</span><span class="token operator">=</span><span class="token number">35683</span> <span class="token assign-left variable">WINDOW</span><span class="token operator">=</span><span class="token number">29200</span> <span class="token assign-left variable">RES</span><span class="token operator">=</span>0x00 SYN <span class="token assign-left variable">URGP</span><span class="token operator">=</span><span class="token number">0</span>
+<span class="token punctuation">[</span>Sun Apr <span class="token number">27</span> 05:21:55 <span class="token number">2025</span><span class="token punctuation">]</span> FINAL_REJECT: <span class="token assign-left variable">IN</span><span class="token operator">=</span>enp0s8 <span class="token assign-left variable">OUT</span><span class="token operator">=</span> <span class="token assign-left variable">MAC</span><span class="token operator">=</span>08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 <span class="token assign-left variable">SRC</span><span class="token operator">=</span><span class="token number">192.168</span>.1.101 <span class="token assign-left variable">DST</span><span class="token operator">=</span><span class="token number">192.168</span>.1.100 <span class="token assign-left variable">LEN</span><span class="token operator">=</span><span class="token number">60</span> <span class="token assign-left variable">TOS</span><span class="token operator">=</span>0x00 <span class="token assign-left variable">PREC</span><span class="token operator">=</span>0x00 <span class="token assign-left variable">TTL</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">ID</span><span class="token operator">=</span><span class="token number">62684</span> DF <span class="token assign-left variable">PROTO</span><span class="token operator">=</span>TCP <span class="token assign-left variable">SPT</span><span class="token operator">=</span><span class="token number">50968</span> <span class="token assign-left variable">DPT</span><span class="token operator">=</span><span class="token number">35683</span> <span class="token assign-left variable">WINDOW</span><span class="token operator">=</span><span class="token number">29200</span> <span class="token assign-left variable">RES</span><span class="token operator">=</span>0x00 SYN <span class="token assign-left variable">URGP</span><span class="token operator">=</span><span class="token number">0</span></code></pre>
+<p>ansible 内允许32768-60999/tcp 高端口通过后解决</p>
+<h3 id="srun--o-%E5%8F%82%E6%95%B0%E4%BD%8D%E7%BD%AE%E9%97%AE%E9%A2%98" tabindex="-1">srun -o 参数位置问题</h3>
+<p>-o 参数位置写在执行文件后面会导致没有重定向输出且无报错</p>
+<p>复现</p>
+<pre class="language-bash"><code class="language-bash">zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ sbatch /mnt/slurm_shared/test.sh <span class="token parameter variable">-o</span> ./alog
+Submitted batch job <span class="token number">11140</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ <span class="token builtin class-name">echo</span> <span class="token variable">$?</span>
+<span class="token number">0</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">ls</span> ./alog
+ls: cannot access <span class="token string">'./alog'</span><span class="token builtin class-name">:</span> No such <span class="token function">file</span> or directory
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ sbatch <span class="token parameter variable">-o</span> ./alog /mnt/slurm_shared/test.sh
+Submitted batch job <span class="token number">11142</span>
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$ <span class="token function">ls</span> ./alog
+./alog
+zhihao@slurm-controller<span class="token operator">|</span>/mnt/slurm_shared/slurm-lab/Test<span class="token operator">|</span>$</code></pre>
+<p>因为 -o 参数被认为是执行文件的参数了，逻辑上也合理，注意即可</p>
+<h3 id="sbatch-%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91%E9%97%AE%E9%A2%98" tabindex="-1">sbatch 输出重定向问题</h3>
+<p>问题为 sbatch 提交脚本后无法运行且无任何输出，squeue 内任务显示状态PD，NODELIST 为 none</p>
+<p>无输出导致排查困难，只能注释文本内容测试。排查后发现因为脚本内标准输入输出重定向路径写错，logs 文件夹不存在，创建文件夹后正常运行。</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment">#SBATCH --output=logs/vina_mol_%j.out</span>
+<span class="token comment">#SBATCH --error=logs/vina_mol_%j.err</span></code></pre>
+
+  </article>
+</section>
+    </main>
+    <script src="/javascript/bundle.js"></script>
+    </script>
+  </body>
+</html>
