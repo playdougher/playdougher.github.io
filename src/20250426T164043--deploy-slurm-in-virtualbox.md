@@ -8,8 +8,6 @@ eleventyNavigation:
   parent: Home
 ---
 
-# virtualbox 内部署 slurm
-
 ## 概览
 
 我使用 Rocky-8.10-x86_64-dvd1.iso 在 virutalbox 虚拟机内构建了 3 节点 slurm 集群，包含一个控制节点（ 主机名 slurm-controller ），两个计算节点（ 主机名 slurm-compute[1,2] ），配置均为 4 cpu, 3G mem, 50G ssd。slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ nfs 共享文件夹。
