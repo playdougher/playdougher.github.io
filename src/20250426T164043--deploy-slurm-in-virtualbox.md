@@ -12,7 +12,7 @@ eleventyNavigation:
 ## 概览
 
 尝试将一个分子对接流程并行化
-```
+``` bash
 zhihao@dust|/home/zhihao/Downloads/mol-docking/Test|$ ls
 2w17.pdb  conf.txt  pro.pdb  receptor.pdbqt  testset200.sdf  vina.sh
 zhihao@dust|/home/zhihao/Downloads/mol-docking/Test|$
@@ -24,7 +24,7 @@ zhihao@dust|/home/zhihao/Downloads/mol-docking/Test|$
 
 集群安装ansible
 
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/.ssh|$ sudo yum install ansible -y
 [sudo] password for zhihao:
 Last metadata expiration check: 1:15:45 ago on Sat 26 Apr 2025 04:30:06 AM EDT.
@@ -65,7 +65,7 @@ zhihao@slurm-controller|/home/zhihao/.ssh|$ ssh -t slurm-compute2 sudo yum insta
 ```
 
 创建 ansible 目录，创建主机清单
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads|$ mkdir -p slurm-cluster
 zhihao@slurm-controller|/home/zhihao/Downloads|$ cd slurm-cluster/
 /home/zhihao/Downloads/slurm-cluster
@@ -91,7 +91,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 ```
 
 创建集群 playbook
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat slurm-cluster.yml
 - name: configure common roles
   hosts: slurm
@@ -112,7 +112,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 ```
 
 创建角色目录
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ mkdir -p roles/common/{tasks,templates}
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ mkdir -p roles/slurm-controller/{tasks,templates}
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ mkdir -p roles/slurm-compute-node/{tasks,templates}
@@ -121,7 +121,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 编写 common 角色，添加 epel、powertools 仓库，创建 slurm 用户
 
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/common/tasks/main.yml
 - name: install epel repository
   dnf:
@@ -145,7 +145,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 ```
 
 编写 slurm-controller 角色
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-controller/tasks/main.yml
 - name: install slurm packages
   dnf:
@@ -246,7 +246,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 编写 slurm-compute-node 角色
 
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-compute-node/tasks/main.yml
 - name: copy munge key from slurm-controller
   become: yes
@@ -300,7 +300,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 ```
 
 创建 slurm controller 模板
-```
+``` bash
 [zhihao@slurm-controller slurm-cluster]$ cat roles/slurm-controller/templates/slurm.conf.j2 
 ControlMachine={% raw %}{{ inventory_hostname }}{% endraw %}
 AuthType=auth/munge
@@ -351,7 +351,7 @@ PartitionName=debug Nodes=slurm-compute[1-2] Default=YES MaxTime=INFINITE State=
 ```
 
 创建 slurm database 模板
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-controller/templates/slurmdbd.conf.j2
 AuthType=auth/munge
 DebugLevel=4
@@ -376,7 +376,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 ```
 
 运行 slurm playbook
-```
+``` bash
 [root@slurm-controller slurm-cluster]# ansible-playbook -i inventory.ini slurm-cluster.yml
 
 PLAY [configure common roles] ********************************************************
@@ -499,7 +499,7 @@ slurm-controller           : ok=17   changed=3    unreachable=0    failed=0    s
 
 检查集群状态
 
-```
+``` bash
 [root@slurm-controller slurm-cluster]# sinfo
 PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
 debug*       up   infinite      2   idle slurm-compute[1-2]
@@ -519,7 +519,7 @@ debug*       up   infinite      2   idle slurm-compute[1-2]
 ```
 
 添加zhihao为管理员
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ sudo sacctmgr add account name=zhihao
  Adding Account(s)
   zhihao
@@ -552,7 +552,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 检查脚本内容
 
-```
+``` bash
 [root@slurm-controller Test]# cat vina.sh
 # This is the serial script
 export PATH=/home/user/Programs/autodock/autodock_vina_1_1_2_linux_x86/bin/:$PATH
@@ -589,7 +589,7 @@ cd ../
 - 收集 sdf 结果文件    
 
 尝试运行脚本失败
-```
+``` bash
 [root@slurm-controller Test]# ./vina.sh
 ./vina.sh: line 8: prepare_receptor4.py: command not found
 ./vina.sh: line 9: obabel: command not found
@@ -599,7 +599,7 @@ ls: cannot access '*.mol2': No such file or directory
 ```
 
 下载解压 autodock_vina_1_1_2_linux_x86.tgz, mgltools_x86_64Linux2_1.5.6.tar_.gz
-```
+``` bash
 [root@slurm-controller ~]# wget "https://vina.scripps.edu/wp-content/uploads/sites/55/2020/12/autodock_vina_1_1_2_linux_x86.tgz"
 --2025-04-27 09:11:13--  https://vina.scripps.edu/wp-content/uploads/sites/55/2020/12/autodock_vina_1_1_2_linux_x86.tgz
 Resolving vina.scripps.edu (vina.scripps.edu)... 192.26.252.19
@@ -632,7 +632,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads|$
 ```
 
 安装 mgltools
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6|$ ./install.sh
 ...
 tk8.4/safetk.tcl
@@ -689,7 +689,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/mgltools_x86_64Linux2_1.5.6|$
 ```
 
 更新 vina.sh 环境变量
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test|$ head -3 vina.sh
 # This is the serial script
 export PATH=/home/zhihao/Downloads/autodock_vina_1_1_2_linux_x86/bin:$PATH
@@ -699,13 +699,13 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test|$
 
 安装 openbabel-3.1.1-18.el8.x86_64
 
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads|$ sudo dnf install openbabel
 ...
 ```
 
 环境基本准备好，再次运行报错
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test|$ ./vina.sh
 'Deleting non-standard residues:AACE0_AACT1299_AI191300_ from pro
 ==============================
@@ -720,7 +720,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test|$
 
 重命名 testset200.sdf 为 testset.sdf 后 vina.sh 可运行
 
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test|$ ./vina.sh
 'Deleting non-standard residues:AACE0_AACT1299_AI191300_ from pro
 201 molecules converted
@@ -952,7 +952,7 @@ Performing search ...
 ```
 
 观察进程负载，vina 仅使用一个核
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/autodock_vina_1_1_2_linux_x86/bin|$ pidstat 1
 Linux 4.18.0-553.el8_10.x86_64 (slurm-controller)       04/27/2025      _x86_64_     (4 CPU)
 
@@ -976,7 +976,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/autodock_vina_1_1_2_linux_x86/bin
 ```
 
 修改 vina --cpu 参数为 3，重新运行 vina.sh
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test|$ ./vina.sh
 ...
 Writing output ... done.
@@ -1065,7 +1065,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test|$
 ```
 
 output.sdf 输出看起来正常
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test/mols|$ grep -c out.pdbqt output.sdf
 1990
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test/mols|$ ls *.mol2 | wc -l
@@ -1122,7 +1122,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-lab/Test/mols|$
 分析知 for 循环内过程为分子匹配过程，相互独立，可以改为并行逻辑
 
 移动 vina 项目到 /mnt/slurm_shared/ 共享文件夹
-```
+``` bash
 zhihao@slurm-controller|/home/zhihao/Downloads|$ rsync -auv slurm-lab /mnt/slurm_shared/
 sending incremental file list
 slurm-lab/
@@ -1145,7 +1145,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads|$
 vina.sh 改写为三个脚本，vina-start.sh, vina-mol.sh, vina-post.sh，其中 vina-mol.sh 可并行化。
 
 vina-start.sh
-```
+``` bash
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ cat vina-start.sh
 #!/bin/bash
 #SBATCH --job-name=vina_docking
@@ -1173,7 +1173,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 ```
 
 vina-mol.sh
-```
+``` bash
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ cat vina-mol.sh
 #!/bin/bash
 #SBATCH --array=1-201
@@ -1207,7 +1207,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 ```
 
 vina-post.sh
-```
+``` bash
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ cat vina-post.sh
 #!/bin/bash
 echo "now in $(pwd)"
@@ -1217,7 +1217,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 ```
 
 sbatch 提交 vina-start.sh，双节点八核都在工作。 检查 tempxx.sdf 正常生成，结束后会产生 output.sdf 结果文件，测试结束。
-```
+``` bash
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch vina-start.sh
 Submitted batch job 11419
 [root@slurm-controller slurm-cluster]# squeue
@@ -1263,7 +1263,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 ```
 
 output.sdf 已生成
-```
+``` bash
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$ du -sh output.sdf
 6.9M    output.sdf
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$ grep pdbqt output.sdf | uniq -c | wc -l
@@ -1293,7 +1293,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 排查后为 firewalld 导致，分析思路为：
 
 tcpdump 看 slurm-controller 节点拒绝 35683 端口连接
-```
+``` bash
 [root@slurm-controller log]# tcpdump -n -i enp0s8 not port 22 -c 40 |& less
 ...
 05:21:59.758261 IP 192.168.1.101.50952 > 192.168.1.100.35683: Flags [S], seq 352325565
@@ -1302,7 +1302,7 @@ tcpdump 看 slurm-controller 节点拒绝 35683 端口连接
 - admin prohibited filter, length 68
 ```
 端口 35683 为 srun 进程
-```
+``` bash
 [root@slurm-controller slurm-cluster]# netstat -nap | grep srun
 tcp        0      0 0.0.0.0:38217           0.0.0.0:*               LISTEN      202777/srun
 tcp        0      0 0.0.0.0:33805           0.0.0.0:*               LISTEN      202777/srun
@@ -1313,7 +1313,7 @@ tcp        0      0 0.0.0.0:35683           0.0.0.0:*               LISTEN      
 ```
 
 firewalld-cmd 启用日志
-```
+``` bash
 [root@slurm-controller log]#  firewall-cmd --set-log-denied=all
 Warning: ALREADY_SET: all
 success
@@ -1324,7 +1324,7 @@ public
 ```
 
 dmesg -Tw 验证端口被 firewalld drop
-```
+``` bash
 [Sun Apr 27 05:21:54 2025] FINAL_REJECT: IN=enp0s8 OUT= MAC=08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 SRC=192.168.1.101 DST=192.168.1.100 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=44477 DF PROTO=TCP SPT=50952 DPT=35683 WINDOW=29200 RES=0x00 SYN URGP=0
 [Sun Apr 27 05:21:55 2025] FINAL_REJECT: IN=enp0s8 OUT= MAC=08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 SRC=192.168.1.101 DST=192.168.1.100 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=62684 DF PROTO=TCP SPT=50968 DPT=35683 WINDOW=29200 RES=0x00 SYN URGP=0
 ```
@@ -1335,7 +1335,7 @@ ansible 内允许32768-60999/tcp 高端口通过后解决
 -o 参数位置写在执行文件后面会导致没有重定向输出且无报错
 
 复现
-```
+``` bash
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch /mnt/slurm_shared/test.sh -o ./alog
 Submitted batch job 11140
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ echo $?
@@ -1356,7 +1356,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 问题为 sbatch 提交脚本后无法运行且无任何输出，squeue 内任务显示状态PD，NODELIST 为 none  
   
 无输出导致排查困难，只能注释文本内容测试。排查后发现因为脚本内标准输入输出重定向路径写错，logs 文件夹不存在，创建文件夹后正常运行。
-```
+``` bash
 #SBATCH --output=logs/vina_mol_%j.out
 #SBATCH --error=logs/vina_mol_%j.err
 ```
