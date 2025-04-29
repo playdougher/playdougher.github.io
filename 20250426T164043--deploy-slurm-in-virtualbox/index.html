@@ -60,7 +60,7 @@
     </p>
     <h2>Table Of Contents</h2>      
     <nav class="toc" >
-        <ul><li><a href="#%E6%A6%82%E8%A7%88">概览</a></li><li><a href="#ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-slurm-%E9%9B%86%E7%BE%A4">ansible 自动部署 slurm 集群</a></li><li><a href="#%E8%BF%90%E8%A1%8C-vina-demo">运行 vina demo</a></li><li><a href="#vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96">vina.sh 脚本并行化</a></li><li><a href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5">问题排查</a><ul><li><a href="#srun-%E8%BF%90%E8%A1%8C%E8%B6%85%E6%97%B6">srun 运行超时</a></li><li><a href="#srun--o-%E5%8F%82%E6%95%B0%E4%BD%8D%E7%BD%AE%E9%97%AE%E9%A2%98">srun -o 参数位置问题</a></li><li><a href="#sbatch-%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91%E9%97%AE%E9%A2%98">sbatch 输出重定向问题</a></li></ul></li></ul>
+        <ul><li><a href="#%E6%A6%82%E8%A7%88">概览</a></li><li><a href="#ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-slurm-%E9%9B%86%E7%BE%A4">ansible 自动部署 slurm 集群</a></li><li><a href="#%E8%BF%90%E8%A1%8C-vina-demo">运行 vina demo</a></li><li><a href="#vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96">vina.sh 脚本并行化</a></li><li><a href="#%E5%8D%83%E4%B8%87%E5%88%86%E5%AD%90%E5%AF%B9%E6%8E%A5%E6%9E%B6%E6%9E%84%E6%80%9D%E8%80%83">千万分子对接架构思考</a></li><li><a href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5">问题排查</a><ul><li><a href="#srun-%E8%BF%90%E8%A1%8C%E8%B6%85%E6%97%B6">srun 运行超时</a></li><li><a href="#srun--o-%E5%8F%82%E6%95%B0%E4%BD%8D%E7%BD%AE%E9%97%AE%E9%A2%98">srun -o 参数位置问题</a></li><li><a href="#sbatch-%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91%E9%97%AE%E9%A2%98">sbatch 输出重定向问题</a></li></ul></li></ul>
       </nav>
     <h2 id="%E6%A6%82%E8%A7%88" tabindex="-1">概览</h2>
 <p>尝试将一个分子对接流程并行化</p>
@@ -569,14 +569,6 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 </code></pre>
 <h2 id="%E8%BF%90%E8%A1%8C-vina-demo" tabindex="-1">运行 vina demo</h2>
-<p>尝试运行脚本失败</p>
-<pre><code>[root@slurm-controller Test]# ./vina.sh
-./vina.sh: line 8: prepare_receptor4.py: command not found
-./vina.sh: line 9: obabel: command not found
-./vina.sh: line 11: obabel: command not found
-ls: cannot access '*.mol2': No such file or directory
-[root@slurm-controller Test]#
-</code></pre>
 <p>检查脚本内容</p>
 <pre><code>[root@slurm-controller Test]# cat vina.sh
 # This is the serial script
@@ -599,6 +591,28 @@ do
         rm log.txt ligand.pdbqt out.pdbqt temp.sdf
 done
 cd ../
+[root@slurm-controller Test]#
+</code></pre>
+<p>脚本结构为：</p>
+<ul>
+<li>受体蛋白文件为 pdb, 转换为 pdbqt 格式供 vina 使用</li>
+<li>小分子结构文件 testset.sdf 转换成 testset.mol2 格式</li>
+<li>testset.mol2 多分子拆分为 vs&lt;id&gt;.mol2 单分子文件</li>
+<li>循环
+<ul>
+<li>mol2 转为 pdbqt</li>
+<li>vina 对配体、受体 pdbqt 文件对接，输出 pdbqt 对接结果</li>
+<li>pdbqt 对接结果转回 sdf</li>
+</ul>
+</li>
+<li>收集 sdf 结果文件</li>
+</ul>
+<p>尝试运行脚本失败</p>
+<pre><code>[root@slurm-controller Test]# ./vina.sh
+./vina.sh: line 8: prepare_receptor4.py: command not found
+./vina.sh: line 9: obabel: command not found
+./vina.sh: line 11: obabel: command not found
+ls: cannot access '*.mol2': No such file or directory
 [root@slurm-controller Test]#
 </code></pre>
 <p>下载解压 autodock_vina_1_1_2_linux_x86.tgz, mgltools_x86_64Linux2_1.5.6.tar_.gz</p>
@@ -1250,6 +1264,8 @@ out100.pdbqt
    -0.0180   26.3120   10.6830 N   0  0  0  0  0  2  0  0  0  0  0  0
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 </code></pre>
+<h2 id="%E5%8D%83%E4%B8%87%E5%88%86%E5%AD%90%E5%AF%B9%E6%8E%A5%E6%9E%B6%E6%9E%84%E6%80%9D%E8%80%83" tabindex="-1">千万分子对接架构思考</h2>
+<p>将大分子文件拆分为较小的分子文件，存储到分布式存储，slurm 计算集群主节点运行 slurm 控制器和数据库，计算节点运行 slurmd 服务，配置自动伸缩组动态扩展资源。计算结果写入分布式存储。</p>
 <h2 id="%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5" tabindex="-1">问题排查</h2>
 <h3 id="srun-%E8%BF%90%E8%A1%8C%E8%B6%85%E6%97%B6" tabindex="-1">srun 运行超时</h3>
 <p>排查后为 firewalld 导致，分析思路为：</p>
