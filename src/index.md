@@ -10,7 +10,7 @@ eleventyNavigation:
 
 ## Software projects
 
-1. [slurm 运行 vina 分子对接流程](20250426T164043--deploy-slurm-in-virtualbox)
+1. [使用slurm加速分子对接流程](20250426T164043--accelerate-the-molecular-docking-process-with-slurm)
 1. [LFS-Project-Appnote](20240421T185748--lfs-project-appnote__appnote_lfs)
 1. [The-Use-of-Inputrc-File](20240715T224540--the-use-of-inputrc-file__inputrc)
 1. [The-Use-of-Bashrc-File](20240718T195719--the-use-of-bashrc-file__bashrc)
