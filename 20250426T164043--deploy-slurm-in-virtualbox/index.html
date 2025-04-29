@@ -60,11 +60,16 @@
     </p>
     <h2>Table Of Contents</h2>      
     <nav class="toc" >
-        <ul><li><a href="#%E6%A6%82%E8%A7%88">概览</a></li><li><a href="#ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4">ansible 自动部署集群</a></li><li><a href="#%E8%BF%90%E8%A1%8C-vina-demo">运行 vina demo</a></li><li><a href="#vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96">vina.sh 脚本并行化</a></li><li><a href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5">问题排查</a><ul><li><a href="#srun-%E8%BF%90%E8%A1%8C%E8%B6%85%E6%97%B6">srun 运行超时</a></li><li><a href="#srun--o-%E5%8F%82%E6%95%B0%E4%BD%8D%E7%BD%AE%E9%97%AE%E9%A2%98">srun -o 参数位置问题</a></li><li><a href="#sbatch-%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91%E9%97%AE%E9%A2%98">sbatch 输出重定向问题</a></li></ul></li></ul>
+        <ul><li><a href="#%E6%A6%82%E8%A7%88">概览</a></li><li><a href="#ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-slurm-%E9%9B%86%E7%BE%A4">ansible 自动部署 slurm 集群</a></li><li><a href="#%E8%BF%90%E8%A1%8C-vina-demo">运行 vina demo</a></li><li><a href="#vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96">vina.sh 脚本并行化</a></li><li><a href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5">问题排查</a><ul><li><a href="#srun-%E8%BF%90%E8%A1%8C%E8%B6%85%E6%97%B6">srun 运行超时</a></li><li><a href="#srun--o-%E5%8F%82%E6%95%B0%E4%BD%8D%E7%BD%AE%E9%97%AE%E9%A2%98">srun -o 参数位置问题</a></li><li><a href="#sbatch-%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91%E9%97%AE%E9%A2%98">sbatch 输出重定向问题</a></li></ul></li></ul>
       </nav>
     <h2 id="%E6%A6%82%E8%A7%88" tabindex="-1">概览</h2>
-<p>我使用 Rocky-8.10-x86_64-dvd1.iso 在 virutalbox 虚拟机内构建了 3 节点 slurm 集群，包含一个控制节点（ 主机名 slurm-controller ），两个计算节点（ 主机名 slurm-compute[1,2] ），配置均为 4 cpu, 3G mem, 50G ssd。slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ nfs 共享文件夹。</p>
-<h2 id="ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4" tabindex="-1">ansible 自动部署集群</h2>
+<p>尝试将一个分子对接流程并行化</p>
+<pre><code>zhihao@dust|/home/zhihao/Downloads/mol-docking/Test|$ ls
+2w17.pdb  conf.txt  pro.pdb  receptor.pdbqt  testset200.sdf  vina.sh
+zhihao@dust|/home/zhihao/Downloads/mol-docking/Test|$
+</code></pre>
+<p>集群搭建使用 virtualbox, 镜像为 Rocky-8.10-x86_64-dvd1.iso。共构建 3 节点，包含一个控制节点（ 主机名 slurm-controller ），两个计算节点（ 主机名 slurm-compute[1,2] ），配置均为 4 cpu, 3G mem, 50G ssd。slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ nfs 共享文件夹。</p>
+<h2 id="ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-slurm-%E9%9B%86%E7%BE%A4" tabindex="-1">ansible 自动部署 slurm 集群</h2>
 <p>集群安装ansible</p>
 <pre><code>zhihao@slurm-controller|/home/zhihao/.ssh|$ sudo yum install ansible -y
 [sudo] password for zhihao:
