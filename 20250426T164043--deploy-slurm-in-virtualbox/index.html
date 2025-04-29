@@ -1,80 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/style.css" />
-    <!-- Some html boilerplate omitted -->
-    <!-- <link rel="stylesheet" href="/themes/prism-one-light.css" /> -->
-    <!-- <link rel="stylesheet" href="/themes/prism-one-dark.css" /> -->
-    <!-- <link rel="stylesheet" href="/themes/prism-material-dark.css" /> -->
-    <link rel="stylesheet" href="/themes/prism-laserwave.css" />
-    <!-- <link rel="stylesheet" href="/themes/new.css" />     -->
-    <title>deploy slurm in virtualbox</title>
-  </head>
-  <body>
-    <button onclick="topFunction()" id="topButton" title="Go to top"><b>^</b></button>    
-    <header>
-      <a href="/">WuZhihao's Blog</a>
-      <nav>
-        <a href="/about">About</a> 
-      </nav>
-    </header>
-    <main>
-      <nav>
-
-
-
-<ul class="breadcrumb">
-  <li>
-    <a href="/">Home</a>
-  </li>
-  <li class="my-active-class">
-    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy-slurm-in-virtualbox</a>
-  </li>
-</ul>
-</nav>
-
-
-      <!--<header><nav>
-
-
-
-<ul class="breadcrumb">
-  <li>
-    <a href="/">Home</a>
-  </li>
-  <li class="my-active-class">
-    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy-slurm-in-virtualbox</a>
-  </li>
-</ul>
-</nav>
-
-</header> -->
-      
-<section>
-  <article>
-    <h1>deploy slurm in virtualbox</h1>
-    <p>
-      Published on: 2025-04-26T08:40:43
-    </p>
-    <h2>Table Of Contents</h2>      
-    <nav class="toc" >
-        <ul><li><a href="#%E8%BF%90%E8%A1%8C-vina">运行 vina</a></li><li><a href="#vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96">vina.sh 脚本并行化</a></li><li><a href="#faqs">FAQs</a></li></ul>
-      </nav>
-    <p>我使用 Rocky-8.10-x86_64-dvd1.iso 在 virutalbox 虚拟机内构建了 3 节点 slurm 集群，包含一个控制节点（ slurm-controller ），两个计算节点（ slurm-compute[1,2] ），slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ 共享文件夹。</p>
-<ul>
-<li>初始配置
-<ul>
-<li>硬件
-<ul>
-<li>4 cpu, 3G mem, 50G ssd</li>
-</ul>
-</li>
-<li>互相免密登陆</li>
-</ul>
-</li>
-</ul>
+<h1 id="virtualbox-%E5%86%85%E9%83%A8%E7%BD%B2-slurm" tabindex="-1">virtualbox 内部署 slurm</h1>
+<h2 id="%E6%A6%82%E8%A7%88" tabindex="-1">概览</h2>
+<p>我使用 Rocky-8.10-x86_64-dvd1.iso 在 virutalbox 虚拟机内构建了 3 节点 slurm 集群，包含一个控制节点（ 主机名 slurm-controller ），两个计算节点（ 主机名 slurm-compute[1,2] ），配置均为 4 cpu, 3G mem, 50G ssd。slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ nfs 共享文件夹。</p>
+<h2 id="ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4" tabindex="-1">ansible 自动部署集群</h2>
 <p>集群安装ansible</p>
 <pre><code>zhihao@slurm-controller|/home/zhihao/.ssh|$ sudo yum install ansible -y
 [sudo] password for zhihao:
@@ -336,22 +263,31 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 </code></pre>
 <p>创建 slurm controller 模板</p>
-<pre><code>zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-controller/templates/slurm.conf.j2
-ClusterName=rocky_cluster
+<pre><code>[zhihao@slurm-controller slurm-cluster]$ cat roles/slurm-controller/templates/slurm.conf.j2 
 ControlMachine=
-SlurmUser=slurm
-SlurmctldPort=6817
-SlurmdPort=6818
 AuthType=auth/munge
-StateSaveLocation=/var/spool/slurm/ctld
-SlurmdSpoolDir=/var/spool/slurm/d
-SwitchType=switch/none
-MpiDefault=none
-SlurmctldPidFile=/var/run/slurmctld.pid
-SlurmdPidFile=/var/run/slurmd.pid
+CryptoType=crypto/munge
+MpiDefault=pmix
 ProctrackType=proctrack/cgroup
 ReturnToService=1
-TaskPlugin=task/cgroup
+SlurmctldPidFile=/var/run/slurm/slurmctld.pid
+SlurmctldPort=6817
+SlurmdPidFile=/var/run/slurm/slurmd.pid
+SlurmdPort=6818
+SlurmdSpoolDir=/var/spool/slurm/d
+SlurmUser=slurm
+StateSaveLocation=/var/spool/slurm/ctld
+SwitchType=switch/none
+TaskPlugin=task/none
+InactiveLimit=0
+KillWait=30
+MinJobAge=300
+SlurmctldTimeout=120
+SlurmdTimeout=300
+Waittime=0
+SchedulerType=sched/backfill
+SelectType=select/cons_res
+SelectTypeParameters=CR_CPU
 
 AccountingStorageEnforce=limits
 AccountingStorageHost=
@@ -359,12 +295,21 @@ AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageUser=slurm
 AccountingStoreJobComment=YES
 
+ClusterName=rocky_cluster
+JobCompType=jobcomp/none
+JobAcctGatherFrequency=30
+JobAcctGatherType=jobacct_gather/none
+SlurmctldDebug=3
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdDebug=3
+SlurmdLogFile=/var/log/slurm/slurmd.log
+
 # Nodes Configuration
 NodeName=slurm-compute1 CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=4 ThreadsPerCore=1 RealMemory=2786
 NodeName=slurm-compute2 CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=4 ThreadsPerCore=1 RealMemory=2786
 PartitionName=debug Nodes=slurm-compute[1-2] Default=YES MaxTime=INFINITE State=UP
 
-zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
+[zhihao@slurm-controller slurm-cluster]$ 
 </code></pre>
 <p>创建 slurm database 模板</p>
 <pre><code>zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-controller/templates/slurmdbd.conf.j2
@@ -527,7 +472,7 @@ debug*       up   infinite      2   idle slurm-compute[1-2]
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
 [root@slurm-controller slurm-cluster]#
 </code></pre>
-<p>添加普通用户为管理员</p>
+<p>添加zhihao为管理员</p>
 <pre><code>zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ sudo sacctmgr add account name=zhihao
  Adding Account(s)
   zhihao
@@ -555,7 +500,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ sacctmgr show use
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 </code></pre>
-<h2 id="%E8%BF%90%E8%A1%8C-vina" tabindex="-1">运行 vina</h2>
+<h2 id="%E8%BF%90%E8%A1%8C-vina-demo" tabindex="-1">运行 vina demo</h2>
 <p>尝试运行脚本失败</p>
 <pre><code>[root@slurm-controller Test]# ./vina.sh
 ./vina.sh: line 8: prepare_receptor4.py: command not found
@@ -1109,6 +1054,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads|$ mv autodock_vina_1_1_2_linux_x8
 zhihao@slurm-controller|/home/zhihao/Downloads|$
 </code></pre>
 <p>vina.sh 改写为三个脚本，vina-start.sh, vina-mol.sh, vina-post.sh，其中 vina-mol.sh 可并行化。</p>
+<p>vina-start.sh</p>
 <pre><code>zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ cat vina-start.sh
 #!/bin/bash
 #SBATCH --job-name=vina_docking
@@ -1174,7 +1120,7 @@ cat temp*.sdf &gt; output.sdf
 cd ..
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 </code></pre>
-<p>sbatch 提交 vina-start.sh，双节点八核都在工作。 检查 tempxx.sdf 正常生成，结束后会产生 output.sdf 结果文件</p>
+<p>sbatch 提交 vina-start.sh，双节点八核都在工作。 检查 tempxx.sdf 正常生成，结束后会产生 output.sdf 结果文件，测试结束。</p>
 <pre><code>zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch vina-start.sh
 Submitted batch job 11419
 [root@slurm-controller slurm-cluster]# squeue
@@ -1236,8 +1182,8 @@ out100.pdbqt
    -0.0180   26.3120   10.6830 N   0  0  0  0  0  2  0  0  0  0  0  0
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 </code></pre>
-<h2 id="faqs" tabindex="-1">FAQs</h2>
-<p>Q: firewalld 导致 srun 超时
+<h2 id="%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5" tabindex="-1">问题排查</h2>
+<p>Q: firewalld 导致 srun 超时<br>
 A:</p>
 <ul>
 <li>tcpdump 看 slurm-controller 节点拒绝 35683 端口连接</li>
@@ -1278,8 +1224,7 @@ public
 <ul>
 <li>ansible 内允许32768-60999/tcp 高端口通过</li>
 </ul>
-<p>&lt;img src=&quot;/home/zhihao/Pictures/2024-07-10_16-45.pngg&quot; alt=&quot;alt text&quot; width=&quot;auto&quot; height=&quot;10%&quot; /&gt;</p>
-<p>Q: srun -o 参数位置写错，无报错，可能为bug
+<p>Q: srun -o 参数位置写错，无报错，可能为bug<br>
 A:</p>
 <pre><code>zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch /mnt/slurm_shared/test.sh -o ./alog
 Submitted batch job 11140
@@ -1293,17 +1238,9 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ ls ./alog
 ./alog
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 </code></pre>
-<p>Q: sbatch 脚本无任何输出，squeue 内任务显示状态PD，NODELIST 为 none
-A:
+<p>Q: sbatch 脚本无任何输出，squeue 内任务显示状态PD，NODELIST 为 none<br>
+A:<br>
 该问题比较麻烦，没有输出可以排查，只能注释文本内容测试。排查后发现原因为脚本内标准输入输出重定向路径写错，logs 文件夹不存在，创建文件夹后正常运行。</p>
 <pre><code>#SBATCH --output=logs/vina_mol_%j.out
 #SBATCH --error=logs/vina_mol_%j.err
 </code></pre>
-
-  </article>
-</section>
-    </main>
-    <script src="/javascript/bundle.js"></script>
-    </script>
-  </body>
-</html>
