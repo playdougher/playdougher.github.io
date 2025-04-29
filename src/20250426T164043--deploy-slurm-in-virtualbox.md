@@ -5,7 +5,7 @@ tags:       []
 identifier: "20250426T164043"
 eleventyNavigation:
   key: "deploy-slurm-in-virtualbox"
-    parent: Home
+  parent: Home
 ---
 
 # virtualbox 内部署 slurm
