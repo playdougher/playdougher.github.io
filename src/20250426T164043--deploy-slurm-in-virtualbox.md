@@ -3,18 +3,18 @@ title:      "deploy slurm in virtualbox"
 date:       2025-04-26T16:40:43+08:00
 tags:       []
 identifier: "20250426T164043"
-layout: "layouts/post.njk"
 eleventyNavigation:
   key: "deploy-slurm-in-virtualbox"
-  parent: Home
+    parent: Home
 ---
 
-我使用 Rocky-8.10-x86_64-dvd1.iso 在 virutalbox 虚拟机内构建了 3 节点 slurm 集群，包含一个控制节点（ slurm-controller ），两个计算节点（ slurm-compute[1,2] ），slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ 共享文件夹。
+# virtualbox 内部署 slurm
 
-- 初始配置
-    - 硬件
-        - 4 cpu, 3G mem, 50G ssd
-    - 互相免密登陆
+## 概览
+
+我使用 Rocky-8.10-x86_64-dvd1.iso 在 virutalbox 虚拟机内构建了 3 节点 slurm 集群，包含一个控制节点（ 主机名 slurm-controller ），两个计算节点（ 主机名 slurm-compute[1,2] ），配置均为 4 cpu, 3G mem, 50G ssd。slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ nfs 共享文件夹。
+
+## ansible 自动部署集群
 
 集群安装ansible
 
@@ -295,22 +295,31 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 创建 slurm controller 模板
 ```
-zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-controller/templates/slurm.conf.j2
-ClusterName=rocky_cluster
+[zhihao@slurm-controller slurm-cluster]$ cat roles/slurm-controller/templates/slurm.conf.j2 
 ControlMachine={{ inventory_hostname }}
-SlurmUser=slurm
-SlurmctldPort=6817
-SlurmdPort=6818
 AuthType=auth/munge
-StateSaveLocation=/var/spool/slurm/ctld
-SlurmdSpoolDir=/var/spool/slurm/d
-SwitchType=switch/none
-MpiDefault=none
-SlurmctldPidFile=/var/run/slurmctld.pid
-SlurmdPidFile=/var/run/slurmd.pid
+CryptoType=crypto/munge
+MpiDefault=pmix
 ProctrackType=proctrack/cgroup
 ReturnToService=1
-TaskPlugin=task/cgroup
+SlurmctldPidFile=/var/run/slurm/slurmctld.pid
+SlurmctldPort=6817
+SlurmdPidFile=/var/run/slurm/slurmd.pid
+SlurmdPort=6818
+SlurmdSpoolDir=/var/spool/slurm/d
+SlurmUser=slurm
+StateSaveLocation=/var/spool/slurm/ctld
+SwitchType=switch/none
+TaskPlugin=task/none
+InactiveLimit=0
+KillWait=30
+MinJobAge=300
+SlurmctldTimeout=120
+SlurmdTimeout=300
+Waittime=0
+SchedulerType=sched/backfill
+SelectType=select/cons_res
+SelectTypeParameters=CR_CPU
 
 AccountingStorageEnforce=limits
 AccountingStorageHost={{ inventory_hostname }}
@@ -318,12 +327,21 @@ AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageUser=slurm
 AccountingStoreJobComment=YES
 
+ClusterName=rocky_cluster
+JobCompType=jobcomp/none
+JobAcctGatherFrequency=30
+JobAcctGatherType=jobacct_gather/none
+SlurmctldDebug=3
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdDebug=3
+SlurmdLogFile=/var/log/slurm/slurmd.log
+
 # Nodes Configuration
 NodeName=slurm-compute1 CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=4 ThreadsPerCore=1 RealMemory=2786
 NodeName=slurm-compute2 CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=4 ThreadsPerCore=1 RealMemory=2786
 PartitionName=debug Nodes=slurm-compute[1-2] Default=YES MaxTime=INFINITE State=UP
 
-zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
+[zhihao@slurm-controller slurm-cluster]$ 
 ```
 
 创建 slurm database 模板
@@ -494,7 +512,7 @@ debug*       up   infinite      2   idle slurm-compute[1-2]
 [root@slurm-controller slurm-cluster]#
 ```
 
-添加普通用户为管理员
+添加zhihao为管理员
 ```
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ sudo sacctmgr add account name=zhihao
  Adding Account(s)
@@ -524,7 +542,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 ```
 
-## 运行 vina
+## 运行 vina demo
 
 尝试运行脚本失败
 ```
@@ -1108,6 +1126,8 @@ zhihao@slurm-controller|/home/zhihao/Downloads|$
 ```
 
 vina.sh 改写为三个脚本，vina-start.sh, vina-mol.sh, vina-post.sh，其中 vina-mol.sh 可并行化。
+
+vina-start.sh
 ```
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ cat vina-start.sh
 #!/bin/bash
@@ -1179,7 +1199,7 @@ cd ..
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 ```
 
-sbatch 提交 vina-start.sh，双节点八核都在工作。 检查 tempxx.sdf 正常生成，结束后会产生 output.sdf 结果文件
+sbatch 提交 vina-start.sh，双节点八核都在工作。 检查 tempxx.sdf 正常生成，结束后会产生 output.sdf 结果文件，测试结束。
 ```
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch vina-start.sh
 Submitted batch job 11419
@@ -1245,9 +1265,9 @@ out100.pdbqt
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 ```
 
-## FAQs
+## 问题排查
 
-Q: firewalld 导致 srun 超时
+Q: firewalld 导致 srun 超时  
 A: 
 
 - tcpdump 看 slurm-controller 节点拒绝 35683 端口连接
@@ -1288,9 +1308,7 @@ dmesg -Tw 验证端口被 firewalld drop
 ```
 - ansible 内允许32768-60999/tcp 高端口通过
 
-<img src="/home/zhihao/Pictures/2024-07-10_16-45.pngg" alt="alt text" width="auto" height="10%" />
-
-Q: srun -o 参数位置写错，无报错，可能为bug
+Q: srun -o 参数位置写错，无报错，可能为bug  
 A:
 
 ```
@@ -1307,8 +1325,8 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ ls ./alog
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 ```
 
-Q: sbatch 脚本无任何输出，squeue 内任务显示状态PD，NODELIST 为 none
-A:
+Q: sbatch 脚本无任何输出，squeue 内任务显示状态PD，NODELIST 为 none  
+A:  
 该问题比较麻烦，没有输出可以排查，只能注释文本内容测试。排查后发现原因为脚本内标准输入输出重定向路径写错，logs 文件夹不存在，创建文件夹后正常运行。
 ```
 #SBATCH --output=logs/vina_mol_%j.out
