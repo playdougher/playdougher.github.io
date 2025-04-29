@@ -1266,8 +1266,10 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 
 ## 问题排查
 
-Q: firewalld 导致 srun 超时  
+Q: srun 运行超时  
 A: 
+
+排查后为firewalld 导致，分析思路为：
 
 tcpdump 看 slurm-controller 节点拒绝 35683 端口连接
 ```
@@ -1307,9 +1309,9 @@ dmesg -Tw 验证端口被 firewalld drop
 ```
 ansible 内允许32768-60999/tcp 高端口通过后解决
 
-Q: srun -o 参数位置写错，无报错，可能为bug  
+Q: srun -o 参数位置写在执行文件后面导致没有重定向输出且无报错
 A:
-
+复现
 ```
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch /mnt/slurm_shared/test.sh -o ./alog
 Submitted batch job 11140
@@ -1323,6 +1325,8 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ ls ./alog
 ./alog
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 ```
+
+因为 -o 参数被认为是执行文件的参数了，逻辑上也合理，注意即可
 
 Q: sbatch 脚本无任何输出，squeue 内任务显示状态PD，NODELIST 为 none  
 A:  
