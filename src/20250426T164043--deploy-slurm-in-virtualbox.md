@@ -3,6 +3,7 @@ title:      "deploy slurm in virtualbox"
 date:       2025-04-26T16:40:43+08:00
 tags:       []
 identifier: "20250426T164043"
+layout: "layouts/post.njk"
 eleventyNavigation:
   key: "deploy-slurm-in-virtualbox"
   parent: Home
