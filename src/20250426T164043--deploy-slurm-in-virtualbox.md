@@ -1266,10 +1266,9 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 
 ## 问题排查
 
-Q: srun 运行超时  
-A: 
-
-排查后为firewalld 导致，分析思路为：
+### srun 运行超时  
+ 
+排查后为 firewalld 导致，分析思路为：
 
 tcpdump 看 slurm-controller 节点拒绝 35683 端口连接
 ```
@@ -1309,8 +1308,10 @@ dmesg -Tw 验证端口被 firewalld drop
 ```
 ansible 内允许32768-60999/tcp 高端口通过后解决
 
-Q: srun -o 参数位置写在执行文件后面导致没有重定向输出且无报错
-A:
+### srun -o 参数位置问题
+
+-o 参数位置写在执行文件后面会导致没有重定向输出且无报错
+
 复现
 ```
 zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch /mnt/slurm_shared/test.sh -o ./alog
@@ -1328,9 +1329,11 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$
 
 因为 -o 参数被认为是执行文件的参数了，逻辑上也合理，注意即可
 
-Q: sbatch 脚本无任何输出，squeue 内任务显示状态PD，NODELIST 为 none  
-A:  
-该问题比较麻烦，没有输出可以排查，只能注释文本内容测试。排查后发现原因为脚本内标准输入输出重定向路径写错，logs 文件夹不存在，创建文件夹后正常运行。
+### sbatch 输出重定向问题
+
+问题为 sbatch 提交脚本后无法运行且无任何输出，squeue 内任务显示状态PD，NODELIST 为 none  
+  
+无输出导致排查困难，只能注释文本内容测试。排查后发现因为脚本内标准输入输出重定向路径写错，logs 文件夹不存在，创建文件夹后正常运行。
 ```
 #SBATCH --output=logs/vina_mol_%j.out
 #SBATCH --error=logs/vina_mol_%j.err
