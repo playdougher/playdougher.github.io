@@ -30,7 +30,7 @@
     <a href="/">Home</a>
   </li>
   <li class="my-active-class">
-    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy-slurm-in-virtualbox</a>
+    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy slurm in virtualbox</a>
   </li>
 </ul>
 </nav>
@@ -45,7 +45,7 @@
     <a href="/">Home</a>
   </li>
   <li class="my-active-class">
-    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy-slurm-in-virtualbox</a>
+    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy slurm in virtualbox</a>
   </li>
 </ul>
 </nav>
@@ -192,7 +192,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 - name: change owner and group of slurm dirs
   file:
-    path: &quot;&quot;
+    path: &quot;{{ item }}&quot;
     owner: slurm
     group: slurm
     recurse: yes
@@ -208,7 +208,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 - name: start and enable services
   systemd:
-    name: &quot;&quot;
+    name: &quot;{{ item }}&quot;
     state: started
     enabled: yes
   loop:
@@ -264,7 +264,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 - name: configure firewall
   firewalld:
-    port: &quot;&quot;
+    port: &quot;{{ item }}&quot;
     state: enabled
     permanent: yes
     immediate: yes
@@ -296,7 +296,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
   delegate_to: slurm-controller
 - name: start and enable services
   systemd:
-    name: &quot;&quot;
+    name: &quot;{{ item }}&quot;
     state: restarted
     enabled: yes
   loop:
@@ -305,7 +305,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 - name: change owner and group of slurm dirs
   file:
-    path: &quot;&quot;
+    path: &quot;{{ item }}&quot;
     owner: slurm
     group: slurm
     recurse: yes
@@ -316,7 +316,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 
 - name: configure firewall
   firewalld:
-    port: &quot;&quot;
+    port: &quot;{{ item }}&quot;
     state: enabled
     permanent: yes
     immediate: yes
@@ -327,7 +327,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 </code></pre>
 <p>创建 slurm controller 模板</p>
 <pre><code>[zhihao@slurm-controller slurm-cluster]$ cat roles/slurm-controller/templates/slurm.conf.j2 
-ControlMachine=
+ControlMachine={{ inventory_hostname }}
 AuthType=auth/munge
 CryptoType=crypto/munge
 MpiDefault=pmix
@@ -353,7 +353,7 @@ SelectType=select/cons_res
 SelectTypeParameters=CR_CPU
 
 AccountingStorageEnforce=limits
-AccountingStorageHost=
+AccountingStorageHost={{ inventory_hostname }}
 AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageUser=slurm
 AccountingStoreJobComment=YES
@@ -378,7 +378,7 @@ PartitionName=debug Nodes=slurm-compute[1-2] Default=YES MaxTime=INFINITE State=
 <pre><code>zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-controller/templates/slurmdbd.conf.j2
 AuthType=auth/munge
 DebugLevel=4
-DbdHost=
+DbdHost={{ inventory_hostname }}
 LogFile=/var/log/slurm/slurmdbd.log
 PidFile=/var/run/slurm/slurmdbd.pid
 PurgeEventAfter=1month
@@ -390,7 +390,7 @@ PurgeTXNAfter=1month
 PurgeUsageAfter=1month
 SlurmUser=slurm
 StorageType=accounting_storage/mysql
-StorageHost=
+StorageHost={{ inventory_hostname }}
 StoragePass=123456
 StorageUser=slurm
 StorageLoc=slurm_acct_db
@@ -1248,9 +1248,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 <h2 id="%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5" tabindex="-1">问题排查</h2>
 <p>Q: firewalld 导致 srun 超时<br>
 A:</p>
-<ul>
-<li>tcpdump 看 slurm-controller 节点拒绝 35683 端口连接</li>
-</ul>
+<p>tcpdump 看 slurm-controller 节点拒绝 35683 端口连接</p>
 <pre><code>[root@slurm-controller log]# tcpdump -n -i enp0s8 not port 22 -c 40 |&amp; less
 ...
 05:21:59.758261 IP 192.168.1.101.50952 &gt; 192.168.1.100.35683: Flags [S], seq 352325565
@@ -1258,9 +1256,7 @@ A:</p>
 05:21:59.758282 IP 192.168.1.100 &gt; 192.168.1.101: ICMP host 192.168.1.100 unreachable
 - admin prohibited filter, length 68
 </code></pre>
-<ul>
-<li>端口 35683 为 srun 进程</li>
-</ul>
+<p>端口 35683 为 srun 进程</p>
 <pre><code>[root@slurm-controller slurm-cluster]# netstat -nap | grep srun
 tcp        0      0 0.0.0.0:38217           0.0.0.0:*               LISTEN      202777/srun
 tcp        0      0 0.0.0.0:33805           0.0.0.0:*               LISTEN      202777/srun
@@ -1269,9 +1265,7 @@ tcp        0      0 0.0.0.0:45913           0.0.0.0:*               LISTEN      
 tcp        0      0 0.0.0.0:35683           0.0.0.0:*               LISTEN      202777/srun
 [root@slurm-controller slurm-cluster]#
 </code></pre>
-<ul>
-<li>firewalld-cmd 启用日志</li>
-</ul>
+<p>firewalld-cmd 启用日志</p>
 <pre><code>[root@slurm-controller log]#  firewall-cmd --set-log-denied=all
 Warning: ALREADY_SET: all
 success
@@ -1284,9 +1278,7 @@ public
 <pre><code>[Sun Apr 27 05:21:54 2025] FINAL_REJECT: IN=enp0s8 OUT= MAC=08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 SRC=192.168.1.101 DST=192.168.1.100 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=44477 DF PROTO=TCP SPT=50952 DPT=35683 WINDOW=29200 RES=0x00 SYN URGP=0
 [Sun Apr 27 05:21:55 2025] FINAL_REJECT: IN=enp0s8 OUT= MAC=08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 SRC=192.168.1.101 DST=192.168.1.100 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=62684 DF PROTO=TCP SPT=50968 DPT=35683 WINDOW=29200 RES=0x00 SYN URGP=0
 </code></pre>
-<ul>
-<li>ansible 内允许32768-60999/tcp 高端口通过</li>
-</ul>
+<p>ansible 内允许32768-60999/tcp 高端口通过后解决</p>
 <p>Q: srun -o 参数位置写错，无报错，可能为bug<br>
 A:</p>
 <pre><code>zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test|$ sbatch /mnt/slurm_shared/test.sh -o ./alog
