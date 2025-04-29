@@ -1,4 +1,68 @@
-<h2 id="%E6%A6%82%E8%A7%88" tabindex="-1">概览</h2>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- Some html boilerplate omitted -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-light.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-one-dark.css" /> -->
+    <!-- <link rel="stylesheet" href="/themes/prism-material-dark.css" /> -->
+    <link rel="stylesheet" href="/themes/prism-laserwave.css" />
+    <!-- <link rel="stylesheet" href="/themes/new.css" />     -->
+    <title>deploy slurm in virtualbox</title>
+  </head>
+  <body>
+    <button onclick="topFunction()" id="topButton" title="Go to top"><b>^</b></button>    
+    <header>
+      <a href="/">WuZhihao's Blog</a>
+      <nav>
+        <a href="/about">About</a> 
+      </nav>
+    </header>
+    <main>
+      <nav>
+
+
+
+<ul class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li class="my-active-class">
+    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy-slurm-in-virtualbox</a>
+  </li>
+</ul>
+</nav>
+
+
+      <!--<header><nav>
+
+
+
+<ul class="breadcrumb">
+  <li>
+    <a href="/">Home</a>
+  </li>
+  <li class="my-active-class">
+    <a href="/20250426T164043--deploy-slurm-in-virtualbox/">deploy-slurm-in-virtualbox</a>
+  </li>
+</ul>
+</nav>
+
+</header> -->
+      
+<section>
+  <article>
+    <h1>deploy slurm in virtualbox</h1>
+    <p>
+      Published on: 2025-04-26T08:40:43
+    </p>
+    <h2>Table Of Contents</h2>      
+    <nav class="toc" >
+        <ul><li><a href="#%E6%A6%82%E8%A7%88">概览</a></li><li><a href="#ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4">ansible 自动部署集群</a></li><li><a href="#%E8%BF%90%E8%A1%8C-vina-demo">运行 vina demo</a></li><li><a href="#vina.sh-%E8%84%9A%E6%9C%AC%E5%B9%B6%E8%A1%8C%E5%8C%96">vina.sh 脚本并行化</a></li><li><a href="#%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5">问题排查</a></li></ul>
+      </nav>
+    <h2 id="%E6%A6%82%E8%A7%88" tabindex="-1">概览</h2>
 <p>我使用 Rocky-8.10-x86_64-dvd1.iso 在 virutalbox 虚拟机内构建了 3 节点 slurm 集群，包含一个控制节点（ 主机名 slurm-controller ），两个计算节点（ 主机名 slurm-compute[1,2] ），配置均为 4 cpu, 3G mem, 50G ssd。slurm database 服务部署在控制节点上。集群使用 /mnt/slurm_shared/ nfs 共享文件夹。</p>
 <h2 id="ansible-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4" tabindex="-1">ansible 自动部署集群</h2>
 <p>集群安装ansible</p>
@@ -1243,3 +1307,11 @@ A:<br>
 <pre><code>#SBATCH --output=logs/vina_mol_%j.out
 #SBATCH --error=logs/vina_mol_%j.err
 </code></pre>
+
+  </article>
+</section>
+    </main>
+    <script src="/javascript/bundle.js"></script>
+    </script>
+  </body>
+</html>
