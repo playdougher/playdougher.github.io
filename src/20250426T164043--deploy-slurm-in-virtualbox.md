@@ -5,7 +5,7 @@ tags:       []
 identifier: "20250426T164043"
 layout: "layouts/post.njk"
 eleventyNavigation:
-  key: "deploy-slurm-in-virtualbox"
+  key: "deploy slurm in virtualbox"
   parent: Home
 ---
 
@@ -155,7 +155,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-c
 
 - name: change owner and group of slurm dirs
   file:
-    path: "{{ item }}"
+    path: "{% raw %}{{ item }}{% endraw %}"
     owner: slurm
     group: slurm
     recurse: yes
@@ -171,7 +171,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-c
 
 - name: start and enable services
   systemd:
-    name: "{{ item }}"
+    name: "{% raw %}{{ item }}{% endraw %}"
     state: started
     enabled: yes
   loop:
@@ -227,7 +227,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-c
 
 - name: configure firewall
   firewalld:
-    port: "{{ item }}"
+    port: "{% raw %}{{ item }}{% endraw %}"
     state: enabled
     permanent: yes
     immediate: yes
@@ -262,7 +262,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-c
   delegate_to: slurm-controller
 - name: start and enable services
   systemd:
-    name: "{{ item }}"
+    name: "{% raw %}{{ item }}{% endraw %}"
     state: restarted
     enabled: yes
   loop:
@@ -271,7 +271,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-c
 
 - name: change owner and group of slurm dirs
   file:
-    path: "{{ item }}"
+    path: "{% raw %}{{ item }}{% endraw %}"
     owner: slurm
     group: slurm
     recurse: yes
@@ -282,7 +282,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-c
 
 - name: configure firewall
   firewalld:
-    port: "{{ item }}"
+    port: "{% raw %}{{ item }}{% endraw %}"
     state: enabled
     permanent: yes
     immediate: yes
@@ -295,7 +295,7 @@ zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$
 创建 slurm controller 模板
 ```
 [zhihao@slurm-controller slurm-cluster]$ cat roles/slurm-controller/templates/slurm.conf.j2 
-ControlMachine={{ inventory_hostname }}
+ControlMachine={% raw %}{{ inventory_hostname }}{% endraw %}
 AuthType=auth/munge
 CryptoType=crypto/munge
 MpiDefault=pmix
@@ -321,7 +321,7 @@ SelectType=select/cons_res
 SelectTypeParameters=CR_CPU
 
 AccountingStorageEnforce=limits
-AccountingStorageHost={{ inventory_hostname }}
+AccountingStorageHost={% raw %}{{ inventory_hostname }}{% endraw %}
 AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageUser=slurm
 AccountingStoreJobComment=YES
@@ -348,7 +348,7 @@ PartitionName=debug Nodes=slurm-compute[1-2] Default=YES MaxTime=INFINITE State=
 zhihao@slurm-controller|/home/zhihao/Downloads/slurm-cluster|$ cat roles/slurm-controller/templates/slurmdbd.conf.j2
 AuthType=auth/munge
 DebugLevel=4
-DbdHost={{ inventory_hostname }}
+DbdHost={% raw %}{{ inventory_hostname }}{% endraw %}
 LogFile=/var/log/slurm/slurmdbd.log
 PidFile=/var/run/slurm/slurmdbd.pid
 PurgeEventAfter=1month
@@ -360,7 +360,7 @@ PurgeTXNAfter=1month
 PurgeUsageAfter=1month
 SlurmUser=slurm
 StorageType=accounting_storage/mysql
-StorageHost={{ inventory_hostname }}
+StorageHost={% raw %}{{ inventory_hostname }}{% endraw %}
 StoragePass=123456
 StorageUser=slurm
 StorageLoc=slurm_acct_db
@@ -1269,7 +1269,7 @@ zhihao@slurm-controller|/mnt/slurm_shared/slurm-lab/Test/mols|$
 Q: firewalld 导致 srun 超时  
 A: 
 
-- tcpdump 看 slurm-controller 节点拒绝 35683 端口连接
+tcpdump 看 slurm-controller 节点拒绝 35683 端口连接
 ```
 [root@slurm-controller log]# tcpdump -n -i enp0s8 not port 22 -c 40 |& less
 ...
@@ -1278,7 +1278,7 @@ A:
 05:21:59.758282 IP 192.168.1.100 > 192.168.1.101: ICMP host 192.168.1.100 unreachable
 - admin prohibited filter, length 68
 ```
-- 端口 35683 为 srun 进程
+端口 35683 为 srun 进程
 ```
 [root@slurm-controller slurm-cluster]# netstat -nap | grep srun
 tcp        0      0 0.0.0.0:38217           0.0.0.0:*               LISTEN      202777/srun
@@ -1289,7 +1289,7 @@ tcp        0      0 0.0.0.0:35683           0.0.0.0:*               LISTEN      
 [root@slurm-controller slurm-cluster]#
 ```
 
-- firewalld-cmd 启用日志
+firewalld-cmd 启用日志
 ```
 [root@slurm-controller log]#  firewall-cmd --set-log-denied=all
 Warning: ALREADY_SET: all
@@ -1305,7 +1305,7 @@ dmesg -Tw 验证端口被 firewalld drop
 [Sun Apr 27 05:21:54 2025] FINAL_REJECT: IN=enp0s8 OUT= MAC=08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 SRC=192.168.1.101 DST=192.168.1.100 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=44477 DF PROTO=TCP SPT=50952 DPT=35683 WINDOW=29200 RES=0x00 SYN URGP=0
 [Sun Apr 27 05:21:55 2025] FINAL_REJECT: IN=enp0s8 OUT= MAC=08:00:27:d5:e1:eb:08:00:27:22:8a:d0:08:00 SRC=192.168.1.101 DST=192.168.1.100 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=62684 DF PROTO=TCP SPT=50968 DPT=35683 WINDOW=29200 RES=0x00 SYN URGP=0
 ```
-- ansible 内允许32768-60999/tcp 高端口通过
+ansible 内允许32768-60999/tcp 高端口通过后解决
 
 Q: srun -o 参数位置写错，无报错，可能为bug  
 A:
